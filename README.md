@@ -8,3 +8,4 @@
 - ByteByteGo Playlists (Andrew Ng) - https://www.youtube.com/@ByteByteGo/playlists
 - ByteMonk Playlists - https://www.youtube.com/@ByteMonk/playlists
 - DevOps (Techworld with Nana) - https://www.youtube.com/@TechWorldwithNana/courses
+- Leetcode Patterns (Code in Motion) - https://www.youtube.com/playlist?list=PLHm8nzcbp3_19DiTlDg8QYvR-hN5jzPCp
