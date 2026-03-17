@@ -19,3 +19,4 @@
 
 ## AI
 - ByteByteAI - https://www.youtube.com/@TeamByteByteAI
+- AI For Beginners - https://www.youtube.com/@EasyAIForAll/videos
