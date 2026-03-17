@@ -11,11 +11,14 @@
 - Software Architecture, DDD (Drawing Boxes) - https://www.youtube.com/watch?v=JubdZIdLQ4M&list=PLsrRMpHuSOU1_AaGbbuJSxhYZmhsWYirn
 - Software Architecture Monday (Mark Richardson) - https://www.youtube.com/watch?v=fcVIIFQ_DZ4&list=PLdsOZAx8I5umhnn5LLTNJbFgwA3xbycar
 
+## Coding 
+- Coding Questions (ByteByByte) - https://www.youtube.com/@ByteByByte/courses
+- Leetcode Patterns (Code in Motion) - https://www.youtube.com/playlist?list=PLHm8nzcbp3_19DiTlDg8QYvR-hN5jzPCp
+
 ## Misc
 - Networking Fundamentals (Practical Networking) - https://www.youtube.com/watch?v=bj-Yfakjllc&list=PLIFyRwBY_4bRLmKfP1KnZA6rZbRHtxmXi
 - Javascript Visualized (Lydia Hallie) - https://www.youtube.com/@theavocoder/videos
 - DevOps (Techworld with Nana) - https://www.youtube.com/@TechWorldwithNana/courses
-- Leetcode Patterns (Code in Motion) - https://www.youtube.com/playlist?list=PLHm8nzcbp3_19DiTlDg8QYvR-hN5jzPCp
 
 ## AI
 - ByteByteAI - https://www.youtube.com/@TeamByteByteAI
