@@ -7,3 +7,4 @@
 - Networking Fundamentals (Practical Networking) - https://www.youtube.com/watch?v=bj-Yfakjllc&list=PLIFyRwBY_4bRLmKfP1KnZA6rZbRHtxmXi
 - ByteByteGo Playlists (Andrew Ng) - https://www.youtube.com/@ByteByteGo/playlists
 - ByteMonk Playlists - https://www.youtube.com/@ByteMonk/playlists
+- DevOps (Techworld with Nana) - https://www.youtube.com/@TechWorldwithNana/courses
