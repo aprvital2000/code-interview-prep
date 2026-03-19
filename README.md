@@ -8,7 +8,7 @@
 
 ## Kafka
 - Apache Kafka® Introduction (Confluent) - https://www.youtube.com/watch?v=-DyWhcX3Dpc&list=PLa7VYi0yPIH2PelhRHoFR5iQgflg-y6JA
-- Apache Kafka® Architecture Course (Confluent) - https://www.youtube.com/watch?v=RYC-7wECMds&list=PLa7VYi0yPIH14oEOfwbcE9_gM5lOZ4ICN
+- Apache Kafka® Internal Architecture (Confluent) - https://www.youtube.com/watch?v=RYC-7wECMds&list=PLa7VYi0yPIH14oEOfwbcE9_gM5lOZ4ICN
 
 ## Software Architecture
 - Software Architecture, DDD (Drawing Boxes) - https://www.youtube.com/watch?v=JubdZIdLQ4M&list=PLsrRMpHuSOU1_AaGbbuJSxhYZmhsWYirn
