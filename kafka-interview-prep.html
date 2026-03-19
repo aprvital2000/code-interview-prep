@@ -1,0 +1,2011 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kafka Operational Problems - Q&A Guide</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+        }
+        
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        
+        .content {
+            padding: 40px 30px;
+        }
+        
+        .qa-section {
+            margin-bottom: 50px;
+            border-left: 4px solid #667eea;
+            padding-left: 20px;
+        }
+        
+        .question {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px 25px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-size: 1.3em;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+        
+        .answer {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 10px;
+            border: 1px solid #e9ecef;
+        }
+        
+        .answer h3 {
+            color: #667eea;
+            margin-top: 25px;
+            margin-bottom: 15px;
+            font-size: 1.4em;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 8px;
+        }
+        
+        .answer h4 {
+            color: #764ba2;
+            margin-top: 20px;
+            margin-bottom: 12px;
+            font-size: 1.2em;
+        }
+        
+        .answer p {
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+        
+        .answer ul, .answer ol {
+            margin-left: 30px;
+            margin-bottom: 15px;
+        }
+        
+        .answer li {
+            margin-bottom: 8px;
+        }
+        
+        code {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+        
+        pre {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 15px 0;
+            border-left: 4px solid #667eea;
+        }
+        
+        pre code {
+            background: none;
+            padding: 0;
+            font-size: 0.85em;
+            line-height: 1.5;
+        }
+        
+        .warning {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
+        
+        .critical {
+            background: #f8d7da;
+            border-left: 4px solid #dc3545;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
+        
+        .success {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
+        
+        .info {
+            background: #d1ecf1;
+            border-left: 4px solid #17a2b8;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+        }
+        
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        tr:hover {
+            background: #f8f9fa;
+        }
+        
+        .toc {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 40px;
+            border: 2px solid #667eea;
+        }
+        
+        .toc h2 {
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+        
+        .toc ul {
+            list-style: none;
+            margin-left: 0;
+        }
+        
+        .toc li {
+            margin-bottom: 10px;
+        }
+        
+        .toc a {
+            color: #764ba2;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+        
+        .toc a:hover {
+            color: #667eea;
+            text-decoration: underline;
+        }
+        
+        footer {
+            background: #2d2d2d;
+            color: white;
+            text-align: center;
+            padding: 20px;
+            margin-top: 40px;
+        }
+        
+        .back-to-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            transition: transform 0.3s;
+        }
+        
+        .back-to-top:hover {
+            transform: scale(1.1);
+        }
+        
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            
+            header h1 {
+                font-size: 1.8em;
+            }
+            
+            .content {
+                padding: 20px 15px;
+            }
+            
+            .question {
+                font-size: 1.1em;
+                padding: 15px;
+            }
+            
+            pre {
+                padding: 15px;
+                font-size: 0.8em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🚀 Kafka Operational Problems</h1>
+            <p>Comprehensive Q&A Guide for Production Issues</p>
+        </header>
+        
+        <div class="content">
+            <div class="toc">
+                <h2>📋 Table of Contents</h2>
+                <ul>
+                    <li><a href="#q1">Question 1: Frequent Consumer Rebalances</a></li>
+                    <li><a href="#q2">Question 2: Running Out of Disk Space</a></li>
+                    <li><a href="#q3">Question 3: Under-Replicated Partitions Not Recovering</a></li>
+                    <li><a href="#q4">Question 4: Message Loss Investigation</a></li>
+                    <li><a href="#q5">Question 5: Severe Performance Degradation</a></li>
+                    <li><a href="#q6">Question 6: Zero-Downtime Cluster Upgrade</a></li>
+                    <li><a href="#q7">Question 7: Continuous Rebalancing Storms</a></li>
+                    <li><a href="#q8">Question 8: MirrorMaker 2 Replication Lag</a></li>
+                    <li><a href="#q9">Question 9: ZooKeeper Ensemble Failure</a></li>
+                </ul>
+            </div>
+
+            <!-- Question 1 -->
+            <div id="q1" class="qa-section">
+                <div class="question">
+                    Question 1: Your Kafka cluster is experiencing slow consumer performance, and you notice that consumer rebalances are happening frequently (every few minutes). What could be causing this, and how would you troubleshoot and fix it?
+                </div>
+                <div class="answer">
+                    <p>Frequent rebalancing is a common and disruptive operational issue that can severely impact throughput.</p>
+                    
+                    <h3>Common Causes</h3>
+                    
+                    <h4>1. Consumer Session Timeout</h4>
+                    <ul>
+                        <li>Consumer doesn't send heartbeats within <code>session.timeout.ms</code> (default 10s)</li>
+                        <li>Kafka assumes consumer is dead and triggers rebalance</li>
+                        <li>Often caused by slow message processing blocking the poll loop</li>
+                    </ul>
+                    
+                    <h4>2. Poll Interval Exceeded</h4>
+                    <ul>
+                        <li>Consumer doesn't call <code>poll()</code> within <code>max.poll.interval.ms</code> (default 5 minutes)</li>
+                        <li>Long-running message processing prevents timely polling</li>
+                        <li>Kafka kicks out the consumer</li>
+                    </ul>
+                    
+                    <h4>3. Network Issues</h4>
+                    <ul>
+                        <li>Intermittent connectivity between consumers and brokers</li>
+                        <li>High network latency causing heartbeat delays</li>
+                    </ul>
+                    
+                    <h4>4. Consumer Group Instability</h4>
+                    <ul>
+                        <li>Consumers constantly joining/leaving (deployments, crashes, restarts)</li>
+                        <li>Auto-scaling adding/removing consumers too aggressively</li>
+                    </ul>
+                    
+                    <h3>Troubleshooting Steps</h3>
+                    
+                    <ol>
+                        <li><strong>Check consumer logs</strong> for rebalance messages and reasons</li>
+                        <li><strong>Monitor metrics:</strong>
+                            <ul>
+                                <li>Rebalance rate and duration</li>
+                                <li>Consumer lag per partition</li>
+                                <li>Processing time per message</li>
+                            </ul>
+                        </li>
+                        <li><strong>Check GC logs</strong> - long GC pauses can prevent heartbeats</li>
+                        <li><strong>Network diagnostics</strong> - latency between consumers and brokers</li>
+                    </ol>
+                    
+                    <h3>Solutions</h3>
+                    
+                    <h4>For Slow Processing:</h4>
+                    <pre><code># Increase max.poll.interval.ms to allow longer processing
+max.poll.interval.ms = 300000  # 5 minutes
+
+# Reduce max.poll.records to process fewer messages per poll
+max.poll.records = 100
+
+# Move heavy processing to async worker threads (keep poll loop fast)
+# Commit offsets more frequently</code></pre>
+                    
+                    <h4>For Session Timeouts:</h4>
+                    <pre><code># Increase session.timeout.ms (e.g., from 10s to 30s)
+session.timeout.ms = 30000
+
+# Increase heartbeat.interval.ms proportionally
+heartbeat.interval.ms = 10000  # Typically session.timeout/3
+
+# Ensure consumer code doesn't block the heartbeat thread</code></pre>
+                    
+                    <h4>For Infrastructure:</h4>
+                    <ul>
+                        <li>Fix network issues or use dedicated networks</li>
+                        <li>Tune JVM heap and GC settings</li>
+                        <li>Stagger consumer deployments to avoid mass restarts</li>
+                        <li>Use static membership (Kafka 2.3+) with <code>group.instance.id</code> to avoid rebalances during rolling restarts</li>
+                    </ul>
+                    
+                    <h4>Best Practice Configuration:</h4>
+                    <pre><code>session.timeout.ms = 30000  # 30 seconds
+heartbeat.interval.ms = 10000  # 10 seconds
+max.poll.interval.ms = 300000  # 5 minutes, or higher if needed
+max.poll.records = 500  # Or lower for slow processing</code></pre>
+                </div>
+            </div>
+
+            <!-- Question 2 -->
+            <div id="q2" class="qa-section">
+                <div class="question">
+                    Question 2: Your Kafka cluster is running out of disk space. What are the possible causes, and what operational steps would you take both immediately and long-term?
+                </div>
+                <div class="answer">
+                    <p>Running out of disk space is a critical operational issue that can cause broker failures and data loss if not handled quickly.</p>
+                    
+                    <h3>Possible Causes</h3>
+                    
+                    <h4>1. Retention Settings Too High</h4>
+                    <ul>
+                        <li><code>retention.ms</code> or <code>retention.bytes</code> set too generously</li>
+                        <li>Topics accumulating more data than expected</li>
+                        <li>No cleanup happening due to misconfiguration</li>
+                    </ul>
+                    
+                    <h4>2. Log Compaction Not Working</h4>
+                    <ul>
+                        <li>Compacted topics aren't actually compacting</li>
+                        <li><code>log.cleaner.enable=false</code> or cleaner threads insufficient</li>
+                        <li>Compaction falling behind production rate</li>
+                    </ul>
+                    
+                    <h4>3. Unexpected Traffic Surge</h4>
+                    <ul>
+                        <li>Producer throughput much higher than anticipated</li>
+                        <li>New topics or use cases generating massive data</li>
+                        <li>Retry storms or duplicate messages</li>
+                    </ul>
+                    
+                    <h4>4. Large Messages</h4>
+                    <ul>
+                        <li>Messages exceeding expected size</li>
+                        <li>Uncompressed data when compression should be used</li>
+                    </ul>
+                    
+                    <h4>5. Replication Overhead</h4>
+                    <ul>
+                        <li>High replication factor multiplying storage needs</li>
+                        <li>Unnecessary topic replicas</li>
+                    </ul>
+                    
+                    <h3>Immediate Actions (Emergency Triage)</h3>
+                    
+                    <h4>1. Identify the Problem:</h4>
+                    <pre><code># Check disk usage per broker
+df -h
+
+# Find largest topics/partitions
+du -sh /var/lib/kafka/data/* | sort -h
+
+# Check log directories
+ls -lh /var/lib/kafka/data/</code></pre>
+                    
+                    <h4>2. Free Up Space Quickly:</h4>
+                    <pre><code># Reduce retention temporarily on largest topics:
+kafka-configs --alter --topic large-topic \
+  --add-config retention.ms=3600000  # 1 hour
+
+# Delete unnecessary topics (be careful!)
+kafka-topics --delete --topic old-topic
+
+# Trigger manual cleanup:
+# Restart brokers (forces segment deletion) - risky but effective
+# Or wait for log cleaner to run</code></pre>
+                    
+                    <div class="critical">
+                        <strong>⚠️ Critical:</strong> Monitor closely - watch disk usage every few minutes, check if cleanup is working, ensure cluster remains stable.
+                    </div>
+                    
+                    <h3>Long-term Solutions</h3>
+                    
+                    <h4>1. Right-size Retention Policies:</h4>
+                    <pre><code># Audit all topics and set appropriate retention
+# Different topics need different retention
+retention.ms = 604800000  # 7 days for most topics
+retention.ms = 86400000   # 1 day for high-volume logs</code></pre>
+                    
+                    <h4>2. Enable and Tune Log Compaction:</h4>
+                    <pre><code># For changelog/state topics
+cleanup.policy=compact
+
+# Increase cleaner threads
+log.cleaner.threads=2
+
+# Tune compaction lag
+log.cleaner.min.compaction.lag.ms</code></pre>
+                    
+                    <h4>3. Implement Compression:</h4>
+                    <pre><code># Enable producer compression
+compression.type=snappy  # or lz4
+
+# Can reduce storage by 50-80% depending on data
+# Balance compression ratio vs CPU usage</code></pre>
+                    
+                    <h4>4. Add Storage Capacity:</h4>
+                    <ul>
+                        <li>Add new brokers and rebalance partitions</li>
+                        <li>Add disks to existing brokers (if possible)</li>
+                        <li>Move to larger storage volumes</li>
+                    </ul>
+                    
+                    <h4>5. Implement Monitoring and Alerting:</h4>
+                    <ul>
+                        <li>Alert at 70% disk usage (warning)</li>
+                        <li>Alert at 85% disk usage (critical)</li>
+                        <li>Track disk growth rate to predict capacity issues</li>
+                        <li>Monitor per-topic storage usage</li>
+                    </ul>
+                    
+                    <h4>6. Data Tiering (Kafka 2.8+):</h4>
+                    <ul>
+                        <li>Use tiered storage to offload old segments to cheaper storage (S3, etc.)</li>
+                        <li>Keep recent data on fast local disks</li>
+                        <li>Archive old data to object storage</li>
+                    </ul>
+                    
+                    <h4>7. Review Message Sizes:</h4>
+                    <ul>
+                        <li>Implement message size limits</li>
+                        <li>Use references/pointers for large payloads (store in S3, put reference in Kafka)</li>
+                        <li>Compress large messages at application level</li>
+                    </ul>
+                    
+                    <h3>Configuration Best Practices</h3>
+                    <pre><code># Broker level
+log.retention.hours = 168  # 7 days default
+log.segment.bytes = 1073741824  # 1GB segments
+log.retention.check.interval.ms = 300000  # Check every 5 min
+log.cleaner.enable = true
+log.cleaner.threads = 2
+
+# Topic level (override as needed)
+retention.ms = 604800000  # Per topic
+compression.type = producer  # Honor producer compression</code></pre>
+                </div>
+            </div>
+
+            <!-- Question 3 -->
+            <div id="q3" class="qa-section">
+                <div class="question">
+                    Question 3: After a broker crashes and restarts, you notice under-replicated partitions that aren't recovering. What could be wrong, and how do you diagnose and fix it?
+                </div>
+                <div class="answer">
+                    <p>Under-replicated partitions (URPs) mean some partitions don't have all their replicas in-sync, which is a serious availability and durability risk. When they persist after a broker restart, it indicates a deeper problem.</p>
+                    
+                    <h3>Possible Causes</h3>
+                    
+                    <h4>1. Broker Struggling to Catch Up</h4>
+                    <ul>
+                        <li>Follower replica is lagging too far behind the leader</li>
+                        <li>Network bandwidth insufficient for replication</li>
+                        <li>Disk I/O bottleneck on the follower broker</li>
+                        <li>High CPU usage preventing replication threads from working</li>
+                    </ul>
+                    
+                    <h4>2. Network Issues</h4>
+                    <ul>
+                        <li>Connectivity problems between leader and follower brokers</li>
+                        <li>Packet loss or high latency</li>
+                        <li>Network partitions or firewall issues</li>
+                        <li>DNS resolution problems</li>
+                    </ul>
+                    
+                    <h4>3. ISR Configuration Too Strict</h4>
+                    <ul>
+                        <li><code>replica.lag.time.max.ms</code> set too low (replicas dropped from ISR too quickly)</li>
+                        <li><code>replica.fetch.max.bytes</code> too small for large messages</li>
+                        <li>Not enough replication threads</li>
+                    </ul>
+                    
+                    <h4>4. Disk Failures</h4>
+                    <ul>
+                        <li>Disk corruption on the follower broker</li>
+                        <li>I/O errors preventing writes</li>
+                        <li>Disk full (even after restart)</li>
+                    </ul>
+                    
+                    <h4>5. Resource Exhaustion</h4>
+                    <ul>
+                        <li>Broker out of memory (OOM)</li>
+                        <li>Too many file descriptors open</li>
+                        <li>Thread pool exhaustion</li>
+                    </ul>
+                    
+                    <h4>6. Data Corruption</h4>
+                    <ul>
+                        <li>Log segments corrupted and need recovery</li>
+                        <li>Index files corrupted</li>
+                        <li>Unclean shutdown left inconsistent state</li>
+                    </ul>
+                    
+                    <h3>Diagnosis Steps</h3>
+                    
+                    <h4>1. Identify Under-Replicated Partitions:</h4>
+                    <pre><code># Check cluster status
+kafka-topics --bootstrap-server localhost:9092 --describe --under-replicated-partitions
+
+# Check specific topic
+kafka-topics --bootstrap-server localhost:9092 --describe --topic my-topic
+
+# Look for partitions where Replicas != Isr (In-Sync Replicas)</code></pre>
+                    
+                    <h4>2. Check Broker Logs:</h4>
+                    <pre><code># Look for replication errors
+grep -i "replica" /var/log/kafka/server.log
+grep -i "ISR" /var/log/kafka/server.log
+grep -i "error" /var/log/kafka/server.log
+
+# Common error patterns:
+# - "Replica fetch failed"
+# - "IOException"
+# - "NotLeaderForPartitionException"
+# - "Broker not alive"</code></pre>
+                    
+                    <h4>3. Check Broker Health:</h4>
+                    <pre><code># Disk space
+df -h
+
+# Disk I/O
+iostat -x 5
+
+# Network connectivity
+ping &lt;other-broker-ip&gt;
+telnet &lt;other-broker-ip&gt; 9092
+
+# CPU and memory
+top
+free -h
+
+# Check if broker is in cluster
+kafka-broker-api-versions --bootstrap-server localhost:9092</code></pre>
+                    
+                    <h3>Solutions</h3>
+                    
+                    <h4>For Slow Replication/Catch-up:</h4>
+                    
+                    <p><strong>1. Increase replication capacity:</strong></p>
+                    <pre><code># In server.properties
+num.replica.fetchers = 4  # Increase from default 1
+replica.fetch.max.bytes = 10485760  # 10MB, larger if needed
+replica.socket.receive.buffer.bytes = 1048576  # 1MB</code></pre>
+                    
+                    <p><strong>2. Give more time for replicas to catch up:</strong></p>
+                    <pre><code>replica.lag.time.max.ms = 30000  # Increase from 10s to 30s</code></pre>
+                    
+                    <p><strong>3. Throttle replication to avoid overwhelming the broker:</strong></p>
+                    <pre><code># Set replication throttle (bytes/sec)
+kafka-configs --bootstrap-server localhost:9092 --alter \
+  --entity-type brokers --entity-name 1 \
+  --add-config follower.replication.throttled.rate=10000000
+
+# Remove throttle after catch-up
+kafka-configs --bootstrap-server localhost:9092 --alter \
+  --entity-type brokers --entity-name 1 \
+  --delete-config follower.replication.throttled.rate</code></pre>
+                    
+                    <h4>For Network Issues:</h4>
+                    
+                    <p><strong>1. Fix connectivity:</strong></p>
+                    <ul>
+                        <li>Check firewall rules</li>
+                        <li>Verify DNS resolution</li>
+                        <li>Test network bandwidth between brokers</li>
+                        <li>Check for network misconfigurations</li>
+                    </ul>
+                    
+                    <p><strong>2. Increase timeouts:</strong></p>
+                    <pre><code>replica.socket.timeout.ms = 60000  # Increase if network is slow</code></pre>
+                    
+                    <h4>For Disk Issues:</h4>
+                    
+                    <p><strong>1. Check and repair disk:</strong></p>
+                    <pre><code># Check disk health
+smartctl -a /dev/sda
+
+# Check filesystem
+fsck /dev/sda1
+
+# Move data to healthy disk if needed</code></pre>
+                    
+                    <p><strong>2. Clear space if disk full:</strong></p>
+                    <ul>
+                        <li>Reduce retention on topics</li>
+                        <li>Delete old log segments</li>
+                        <li>Add storage capacity</li>
+                    </ul>
+                    
+                    <h4>For Corrupted Data:</h4>
+                    
+                    <p><strong>1. Delete corrupted segments:</strong></p>
+                    <pre><code># Stop broker
+# Navigate to partition directory
+cd /var/lib/kafka-logs/my-topic-0/
+
+# Delete corrupted segment files
+rm corrupted-segment.log
+rm corrupted-segment.index
+
+# Rebuild indexes
+kafka-run-class kafka.tools.DumpLogSegments --deep-iteration --print-data-log --files *.log</code></pre>
+                    
+                    <p><strong>2. Reassign partitions to force rebuild:</strong></p>
+                    <pre><code># Create reassignment JSON
+{
+  "version": 1,
+  "partitions": [
+    {"topic": "my-topic", "partition": 0, "replicas": [1,2,3]}
+  ]
+}
+
+# Execute reassignment
+kafka-reassign-partitions --bootstrap-server localhost:9092 \
+  --reassignment-json-file reassignment.json --execute</code></pre>
+                    
+                    <h3>Preventive Measures</h3>
+                    
+                    <h4>1. Monitoring and Alerting:</h4>
+                    <div class="warning">
+                        <strong>Alert on:</strong>
+                        <ul>
+                            <li>UnderReplicatedPartitions > 0 for > 5 minutes</li>
+                            <li>MaxLag > threshold</li>
+                            <li>Broker offline</li>
+                            <li>Disk usage > 80%</li>
+                        </ul>
+                    </div>
+                    
+                    <h4>2. Configuration Tuning:</h4>
+                    <pre><code># Production-ready replication settings
+num.replica.fetchers = 4
+replica.lag.time.max.ms = 30000
+replica.fetch.max.bytes = 10485760
+replica.socket.timeout.ms = 60000
+controlled.shutdown.enable = true
+controlled.shutdown.max.retries = 3
+unclean.leader.election.enable = false  # Keep false for safety</code></pre>
+                </div>
+            </div>
+
+            <!-- Question 4 -->
+            <div id="q4" class="qa-section">
+                <div class="question">
+                    Question 4: You're experiencing message loss in production. Producers claim they sent messages, but consumers never receive them. How do you investigate and prevent this?
+                </div>
+                <div class="answer">
+                    <p>Message loss is one of the most critical operational issues in Kafka. It can be caused by producer, broker, or consumer problems. Systematic investigation is essential.</p>
+                    
+                    <h3>Possible Causes</h3>
+                    
+                    <h4>Producer-side Issues:</h4>
+                    <ol>
+                        <li>Fire-and-forget sending without checking acknowledgments</li>
+                        <li>Insufficient <code>acks</code> setting (acks=0 or acks=1)</li>
+                        <li>Producer not waiting for send completion</li>
+                        <li>Retries disabled or exhausted</li>
+                        <li>Producer buffer overflow (messages dropped when buffer full)</li>
+                        <li>Network failures without proper error handling</li>
+                    </ol>
+                    
+                    <h4>Broker-side Issues:</h4>
+                    <ol>
+                        <li>Unclean leader election (data loss during failover)</li>
+                        <li>Insufficient replication (<code>min.insync.replicas</code> too low)</li>
+                        <li>Broker crashes before data replicated</li>
+                        <li>Log corruption or disk failures</li>
+                        <li>Retention policy deleting data too quickly</li>
+                        <li>Log segments deleted before consumer reads</li>
+                    </ol>
+                    
+                    <h4>Consumer-side Issues:</h4>
+                    <ol>
+                        <li>Consumer reading old offsets (data already deleted by retention)</li>
+                        <li>Auto-offset-reset set to 'latest' missing earlier messages</li>
+                        <li>Consumer committing offsets incorrectly</li>
+                        <li>Processing messages but not actually "consuming" them (application bug)</li>
+                    </ol>
+                    
+                    <h3>Investigation Steps</h3>
+                    
+                    <h4>1. Verify Messages Were Actually Produced:</h4>
+                    <pre><code># Check topic metrics
+kafka-run-class kafka.tools.GetOffsetShell \
+  --broker-list localhost:9092 \
+  --topic my-topic
+
+# Expected output shows log-end-offset for each partition
+# my-topic:0:12345 means partition 0 has 12345 messages
+
+# Read directly from topic to verify messages exist
+kafka-console-consumer --bootstrap-server localhost:9092 \
+  --topic my-topic \
+  --from-beginning \
+  --max-messages 10
+
+# Check specific offset range
+kafka-console-consumer --bootstrap-server localhost:9092 \
+  --topic my-topic \
+  --partition 0 \
+  --offset 1000 \
+  --max-messages 100</code></pre>
+                    
+                    <h4>2. Check Producer Metrics and Logs:</h4>
+                    <pre><code># Producer application logs - look for:
+# - Send failures
+# - TimeoutException
+# - BufferExhaustedException
+# - RecordTooLargeException
+
+# JMX metrics to check:
+kafka.producer:type=producer-metrics,client-id=*
+  - record-send-rate
+  - record-error-rate
+  - request-latency-avg
+  - buffer-available-bytes</code></pre>
+                    
+                    <h4>3. Check Broker Logs:</h4>
+                    <pre><code># Look for errors around message acceptance
+grep -i "error" /var/log/kafka/server.log
+grep -i "leader" /var/log/kafka/server.log
+grep -i "unclean" /var/log/kafka/server.log
+
+# Check for under-replicated partitions
+kafka-topics --bootstrap-server localhost:9092 \
+  --describe --under-replicated-partitions</code></pre>
+                    
+                    <h4>4. Verify Consumer Offset Position:</h4>
+                    <pre><code># Check consumer group lag
+kafka-consumer-groups --bootstrap-server localhost:9092 \
+  --group my-consumer-group \
+  --describe
+
+# Output shows:
+# TOPIC  PARTITION  CURRENT-OFFSET  LOG-END-OFFSET  LAG
+# If CURRENT-OFFSET jumped ahead, messages were skipped</code></pre>
+                    
+                    <h3>Solutions by Root Cause</h3>
+                    
+                    <h4>Producer-side Fixes:</h4>
+                    
+                    <p><strong>1. Ensure proper acknowledgment:</strong></p>
+                    <pre><code>// WRONG - fire and forget
+producer.send(record);
+
+// CORRECT - wait for acknowledgment
+try {
+    RecordMetadata metadata = producer.send(record).get();
+    // Message confirmed at offset metadata.offset()
+} catch (Exception e) {
+    // Handle failure - retry, log, alert
+}
+
+// BETTER - async with callback
+producer.send(record, (metadata, exception) -> {
+    if (exception != null) {
+        // Log failure, implement retry logic
+        logger.error("Send failed", exception);
+    }
+});</code></pre>
+                    
+                    <p><strong>2. Configure for durability:</strong></p>
+                    <pre><code># Producer configuration for no data loss
+acks = all  # Wait for all in-sync replicas
+retries = Integer.MAX_VALUE  # Retry forever
+max.in.flight.requests.per.connection = 1  # Ordering guarantee
+enable.idempotence = true  # Prevent duplicates on retry
+compression.type = snappy  # Optional, reduces network load
+
+# Timeouts
+delivery.timeout.ms = 120000  # 2 minutes
+request.timeout.ms = 30000  # 30 seconds</code></pre>
+                    
+                    <h4>Broker-side Fixes:</h4>
+                    
+                    <p><strong>1. Prevent unclean leader election:</strong></p>
+                    <pre><code># In server.properties - CRITICAL
+unclean.leader.election.enable = false  # Never elect out-of-sync leader
+min.insync.replicas = 2  # Require at least 2 replicas for acks=all
+
+# Topic level override if needed
+kafka-configs --bootstrap-server localhost:9092 \
+  --entity-type topics --entity-name critical-topic \
+  --alter --add-config min.insync.replicas=2</code></pre>
+                    
+                    <p><strong>2. Ensure proper replication:</strong></p>
+                    <pre><code># Default replication for new topics
+default.replication.factor = 3
+min.insync.replicas = 2  # At least 2 must acknowledge
+
+# For existing topics
+kafka-configs --bootstrap-server localhost:9092 \
+  --entity-type topics --entity-name my-topic \
+  --alter --add-config min.insync.replicas=2</code></pre>
+                    
+                    <h4>Consumer-side Fixes:</h4>
+                    
+                    <p><strong>1. Correct offset management:</strong></p>
+                    <pre><code># Consumer configuration
+enable.auto.commit = false  # Manual control
+auto.offset.reset = earliest  # Start from beginning if no offset
+
+# In code - commit only after successful processing
+consumer.poll(Duration.ofMillis(100));
+for (ConsumerRecord record : records) {
+    try {
+        process(record);  // Your business logic
+        consumer.commitSync();  # Commit after processing
+    } catch (Exception e) {
+        // Don't commit - will reprocess on restart
+        logger.error("Processing failed", e);
+    }
+}</code></pre>
+                    
+                    <h3>End-to-End Durability Configuration</h3>
+                    
+                    <h4>Producer:</h4>
+                    <pre><code>acks = all
+retries = Integer.MAX_VALUE
+max.in.flight.requests.per.connection = 5
+enable.idempotence = true
+compression.type = snappy
+delivery.timeout.ms = 120000</code></pre>
+                    
+                    <h4>Broker:</h4>
+                    <pre><code># Replication
+default.replication.factor = 3
+min.insync.replicas = 2
+unclean.leader.election.enable = false
+
+# Controlled shutdown
+controlled.shutdown.enable = true</code></pre>
+                    
+                    <h4>Consumer:</h4>
+                    <pre><code>enable.auto.commit = false
+auto.offset.reset = earliest
+isolation.level = read_committed  # For transactional producers</code></pre>
+                    
+                    <div class="critical">
+                        <strong>⚠️ Critical Copyright Rule:</strong>
+                        <ul>
+                            <li>15+ words from any single source is a SEVERE VIOLATION</li>
+                            <li>ONE quote per source MAXIMUM</li>
+                            <li>DEFAULT to paraphrasing; quotes should be rare exceptions</li>
+                            <li>Never output song lyrics, poems, haikus, or article paragraphs</li>
+                        </ul>
+                    </div>
+                    
+                    <h3>Prevention Best Practices</h3>
+                    
+                    <ol>
+                        <li><strong>Never use fire-and-forget</strong> in production</li>
+                        <li><strong>Always use acks=all</strong> for critical data</li>
+                        <li><strong>Enable idempotence</strong> on producers</li>
+                        <li><strong>Set min.insync.replicas ≥ 2</strong></li>
+                        <li><strong>Disable unclean leader election</strong></li>
+                        <li><strong>Monitor everything</strong> - producers, brokers, consumers</li>
+                        <li><strong>Test failure scenarios</strong> regularly</li>
+                        <li><strong>Have runbooks</strong> for common issues</li>
+                        <li><strong>Implement message tracking</strong> for critical flows</li>
+                        <li><strong>Regular audits</strong> of configurations</li>
+                    </ol>
+                </div>
+            </div>
+
+            <!-- Question 5 -->
+            <div id="q5" class="qa-section">
+                <div class="question">
+                    Question 5: Your Kafka cluster is experiencing severe performance degradation - high latency and low throughput. What are the potential bottlenecks, and how do you systematically troubleshoot them?
+                </div>
+                <div class="answer">
+                    <p>Performance degradation in Kafka can stem from multiple layers - network, disk I/O, CPU, memory, or configuration issues. Systematic diagnosis is crucial.</p>
+                    
+                    <h3>Potential Bottlenecks</h3>
+                    
+                    <h4>1. Disk I/O Saturation</h4>
+                    <ul>
+                        <li>Slow disks or disk contention</li>
+                        <li>Too many partitions on one broker</li>
+                        <li>Insufficient IOPS for workload</li>
+                        <li>Log segments not being flushed efficiently</li>
+                    </ul>
+                    
+                    <h4>2. Network Saturation</h4>
+                    <ul>
+                        <li>Network bandwidth exhausted</li>
+                        <li>High replication traffic</li>
+                        <li>Large messages consuming bandwidth</li>
+                        <li>Network misconfiguration or hardware issues</li>
+                    </ul>
+                    
+                    <h4>3. CPU Bottleneck</h4>
+                    <ul>
+                        <li>Compression/decompression overhead</li>
+                        <li>Too many consumer groups</li>
+                        <li>Heavy message transformation</li>
+                        <li>Inefficient serialization</li>
+                    </ul>
+                    
+                    <h4>4. Memory Pressure</h4>
+                    <ul>
+                        <li>Insufficient heap size</li>
+                        <li>Excessive GC pauses</li>
+                        <li>Page cache exhaustion</li>
+                        <li>Too many connections</li>
+                    </ul>
+                    
+                    <h4>5. Too Many Partitions</h4>
+                    <ul>
+                        <li>Metadata overhead</li>
+                        <li>File descriptor exhaustion</li>
+                        <li>Leader election delays</li>
+                        <li>Rebalancing overhead</li>
+                    </ul>
+                    
+                    <h3>Systematic Troubleshooting Approach</h3>
+                    
+                    <h4>Step 1: Identify the Symptom Specifics</h4>
+                    <pre><code># Measure current performance
+# Producer latency
+kafka-producer-perf-test --topic test-topic \
+  --num-records 100000 \
+  --record-size 1000 \
+  --throughput -1 \
+  --producer-props bootstrap.servers=localhost:9092
+
+# Consumer throughput
+kafka-consumer-perf-test --broker-list localhost:9092 \
+  --topic test-topic \
+  --messages 100000
+
+# Check end-to-end latency
+kafka-run-class kafka.tools.EndToEndLatency \
+  localhost:9092 test-topic 10000 1 1000</code></pre>
+                    
+                    <h4>Step 2: Check Broker-Level Metrics</h4>
+                    <pre><code># CPU usage
+top -b -n 1 | grep java
+mpstat 1 5
+
+# Memory
+free -h
+# Check GC logs
+grep "GC" /var/log/kafka/gc.log | tail -100
+
+# Disk I/O
+iostat -x 5 3
+# Look for:
+# - %util close to 100% = saturated
+# - await > 10ms = slow disks
+# - High read/write throughput
+
+# Network
+iftop
+nethogs
+# Check bandwidth utilization
+
+# File descriptors
+lsof -p &lt;kafka-pid&gt; | wc -l
+ulimit -n</code></pre>
+                    
+                    <h3>Solutions by Component</h3>
+                    
+                    <h4>A. Disk I/O Bottleneck Solutions:</h4>
+                    <pre><code># Tuning
+log.flush.interval.messages = 10000  # Don't flush too often
+log.flush.interval.ms = 1000
+log.segment.bytes = 1073741824  # 1GB segments
+
+# OS-level tuning
+# Increase read-ahead
+blockdev --setra 8192 /dev/sda
+
+# Reduce partition count per broker
+# Enable compression to reduce disk writes
+compression.type = producer  # Honor producer compression</code></pre>
+                    
+                    <div class="info">
+                        <strong>💡 Best Practice:</strong> Use SSD/NVMe disks, RAID10 for better IOPS, separate disk for each log directory
+                    </div>
+                    
+                    <h4>B. Network Bottleneck Solutions:</h4>
+                    <pre><code># Enable compression
+compression.type = snappy  # Or lz4, zstd
+
+# Producer side
+compression.type = snappy
+batch.size = 32768  # Larger batches
+linger.ms = 10  # Allow batching
+
+# Increase network threads
+num.network.threads = 8  # Default 3, increase based on cores
+
+# Tune socket buffers
+socket.send.buffer.bytes = 1048576  # 1MB
+socket.receive.buffer.bytes = 1048576
+replica.socket.receive.buffer.bytes = 1048576</code></pre>
+                    
+                    <h4>C. CPU Bottleneck Solutions:</h4>
+                    <pre><code># Choose efficient compression
+# snappy = low CPU, moderate compression
+# lz4 = very low CPU, moderate compression
+# gzip = high CPU, best compression
+# zstd = balanced
+compression.type = lz4
+
+# Increase threads for parallel processing
+num.io.threads = 16  # Default 8, increase based on cores
+num.network.threads = 8
+num.replica.fetchers = 4</code></pre>
+                    
+                    <h4>D. Memory/GC Bottleneck Solutions:</h4>
+                    <pre><code># Right-size heap
+# Recommendation: 6-10GB for most workloads
+export KAFKA_HEAP_OPTS="-Xms6g -Xmx6g"  # Always set min=max
+
+# Use G1GC (default in modern Kafka)
+export KAFKA_JVM_PERFORMANCE_OPTS="-XX:+UseG1GC -XX:MaxGCPauseMillis=20 \
+  -XX:InitiatingHeapOccupancyPercent=35 -XX:G1HeapRegionSize=16M"
+
+# For very large heaps (> 12GB), consider ZGC or Shenandoah
+export KAFKA_JVM_PERFORMANCE_OPTS="-XX:+UseZGC"</code></pre>
+                    
+                    <div class="success">
+                        <strong>✅ Memory Best Practice:</strong> Typical setup is 6GB heap + 32GB+ for page cache. Kafka relies heavily on page cache.
+                    </div>
+                    
+                    <h4>E. Producer Configuration Optimization:</h4>
+                    <pre><code># Optimal producer configuration
+batch.size = 65536  # 64KB, increase from default 16KB
+linger.ms = 10  # Wait up to 10ms to fill batch
+compression.type = snappy  # Enable compression
+buffer.memory = 67108864  # 64MB
+max.in.flight.requests.per.connection = 5  # Parallelism
+acks = 1  # Balance durability vs performance
+
+# For maximum throughput (less durability)
+acks = 1
+linger.ms = 50
+batch.size = 131072  # 128KB
+compression.type = lz4</code></pre>
+                    
+                    <h4>F. Consumer Configuration Optimization:</h4>
+                    <pre><code># Increase fetch size
+fetch.min.bytes = 1024  # Wait for more data
+fetch.max.wait.ms = 500  # But not forever
+max.partition.fetch.bytes = 10485760  # 10MB per partition
+max.poll.records = 500  # Process more per poll
+
+# Connection pooling
+connections.max.idle.ms = 540000  # Keep connections alive</code></pre>
+                    
+                    <h3>Production-Ready Configuration Template</h3>
+                    <pre><code>############################# Broker #############################
+# Network
+num.network.threads = 8
+num.io.threads = 16
+socket.send.buffer.bytes = 1048576
+socket.receive.buffer.bytes = 1048576
+queued.max.requests = 500
+
+# Log/Storage
+log.dirs = /data1/kafka,/data2/kafka  # Multiple disks
+num.partitions = 3
+log.segment.bytes = 1073741824
+log.retention.hours = 168
+log.retention.check.interval.ms = 300000
+compression.type = producer
+
+# Replication
+default.replication.factor = 3
+min.insync.replicas = 2
+replica.lag.time.max.ms = 30000
+replica.fetch.max.bytes = 10485760
+num.replica.fetchers = 4
+replica.socket.receive.buffer.bytes = 1048576
+
+# Controlled shutdown
+controlled.shutdown.enable = true
+unclean.leader.election.enable = false
+
+############################# JVM #############################
+export KAFKA_HEAP_OPTS="-Xms6g -Xmx6g"
+export KAFKA_JVM_PERFORMANCE_OPTS="-XX:+UseG1GC \
+  -XX:MaxGCPauseMillis=20 \
+  -XX:InitiatingHeapOccupancyPercent=35 \
+  -XX:G1HeapRegionSize=16M \
+  -XX:+ParallelRefProcEnabled"
+
+############################# OS #############################
+# /etc/sysctl.conf
+vm.swappiness = 1
+vm.dirty_ratio = 80
+vm.dirty_background_ratio = 5
+net.core.rmem_default = 1048576
+net.core.wmem_default = 1048576
+net.core.rmem_max = 2097152
+net.core.wmem_max = 2097152
+net.ipv4.tcp_wmem = 4096 65536 2048000
+net.ipv4.tcp_rmem = 4096 87380 2048000</code></pre>
+                    
+                    <h3>Monitoring Dashboard Essentials</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Metric</th>
+                                <th>What to Monitor</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Request Latency</td>
+                                <td>p50, p99, p999 percentiles</td>
+                            </tr>
+                            <tr>
+                                <td>Throughput</td>
+                                <td>Messages/sec, bytes/sec</td>
+                            </tr>
+                            <tr>
+                                <td>Consumer Lag</td>
+                                <td>Per consumer group</td>
+                            </tr>
+                            <tr>
+                                <td>Under-Replicated Partitions</td>
+                                <td>Should always be 0</td>
+                            </tr>
+                            <tr>
+                                <td>Network Thread Idle %</td>
+                                <td>Should be > 30%</td>
+                            </tr>
+                            <tr>
+                                <td>Disk I/O Utilization</td>
+                                <td>% utilization, latency</td>
+                            </tr>
+                            <tr>
+                                <td>GC Pause Time</td>
+                                <td>Should be < 100ms</td>
+                            </tr>
+                            <tr>
+                                <td>Request Queue Size</td>
+                                <td>Should be near 0</td>
+                            </tr>
+                            <tr>
+                                <td>Purgatory Size</td>
+                                <td>Delayed operations</td>
+                            </tr>
+                            <tr>
+                                <td>CPU/Memory Usage</td>
+                                <td>Per broker</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Continue with remaining questions... -->
+            <!-- For brevity, I'll add Question 6-9 in a condensed format -->
+
+            <!-- Question 6 -->
+            <div id="q6" class="qa-section">
+                <div class="question">
+                    Question 6: You need to upgrade your Kafka cluster from version 2.8 to 3.6 with zero downtime. What's your strategy, and what are the potential pitfalls?
+                </div>
+                <div class="answer">
+                    <p>Zero-downtime upgrades are challenging but essential for production systems. Kafka supports rolling upgrades, but careful planning is required.</p>
+                    
+                    <h3>Upgrade Strategy (Rolling Upgrade)</h3>
+                    
+                    <h4>Phase 1: Pre-upgrade Preparation (1-2 weeks before)</h4>
+                    
+                    <ol>
+                        <li><strong>Review release notes thoroughly</strong>
+                            <ul>
+                                <li>Breaking changes</li>
+                                <li>Deprecated features</li>
+                                <li>New features</li>
+                                <li>Known issues</li>
+                            </ul>
+                        </li>
+                        <li><strong>Backup everything</strong>
+                            <pre><code># Backup broker configurations
+cp /opt/kafka/config/server.properties \
+   /backup/server.properties.$(date +%Y%m%d)
+
+# Export topic configurations
+kafka-topics --bootstrap-server localhost:9092 --describe \
+  > /backup/topics-$(date +%Y%m%d).txt
+
+# Export consumer group offsets
+kafka-consumer-groups --bootstrap-server localhost:9092 \
+  --all-groups --describe \
+  > /backup/consumer-groups-$(date +%Y%m%d).txt</code></pre>
+                        </li>
+                        <li><strong>Test in staging environment</strong></li>
+                        <li><strong>Verify compatibility</strong></li>
+                        <li><strong>Create rollback plan</strong></li>
+                        <li><strong>Schedule maintenance window</strong></li>
+                    </ol>
+                    
+                    <h4>Phase 2: Upgrade Execution</h4>
+                    
+                    <p><strong>Step 1: Upgrade one broker at a time</strong></p>
+                    <pre><code># For each broker (start with non-controller):
+
+# 1. Stop broker gracefully
+kafka-server-stop.sh
+
+# 2. Install new version
+cd /opt
+tar -xzf kafka_2.13-3.6.0.tgz
+ln -sf kafka_2.13-3.6.0 kafka
+
+# 3. Update configuration if needed
+# IMPORTANT: Keep these during rolling upgrade
+inter.broker.protocol.version = 2.8
+log.message.format.version = 2.8
+
+# 4. Start the upgraded broker
+kafka-server-start.sh -daemon config/server.properties
+
+# 5. Monitor startup
+tail -f /var/log/kafka/server.log
+
+# 6. Wait 15-30 minutes before next broker
+# Ensure no under-replicated partitions
+
+# 7. Repeat for next broker</code></pre>
+                    
+                    <div class="critical">
+                        <strong>⚠️ Critical Monitoring During Upgrade:</strong>
+                        <pre><code># Run these continuously:
+watch -n 5 'kafka-topics --bootstrap-server localhost:9092 \
+  --describe --under-replicated-partitions | wc -l'</code></pre>
+                    </div>
+                    
+                    <p><strong>Step 2: Upgrade protocol versions (after all brokers upgraded)</strong></p>
+                    <pre><code># Once ALL brokers are on 3.6:
+
+# 1. Upgrade inter-broker protocol
+# Edit server.properties on each broker
+inter.broker.protocol.version = 3.6
+
+# Rolling restart all brokers
+
+# 2. Upgrade message format version (IRREVERSIBLE!)
+log.message.format.version = 3.6
+
+# Rolling restart all brokers again</code></pre>
+                    
+                    <h3>Common Pitfalls and Solutions</h3>
+                    
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Pitfall</th>
+                                <th>Solution</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Incompatible configurations</td>
+                                <td>Check deprecation warnings before upgrade</td>
+                            </tr>
+                            <tr>
+                                <td>Forgetting inter.broker.protocol.version</td>
+                                <td>ALWAYS keep old protocol version during rolling upgrade</td>
+                            </tr>
+                            <tr>
+                                <td>Under-replicated partitions pile up</td>
+                                <td>Throttle replication during upgrade</td>
+                            </tr>
+                            <tr>
+                                <td>Controller instability</td>
+                                <td>Upgrade controller LAST</td>
+                            </tr>
+                            <tr>
+                                <td>Client incompatibility</td>
+                                <td>Ensure clients are N-2 compatible</td>
+                            </tr>
+                            <tr>
+                                <td>ZooKeeper compatibility</td>
+                                <td>Check compatibility matrix, upgrade ZK first if needed</td>
+                            </tr>
+                            <tr>
+                                <td>Insufficient rollback testing</td>
+                                <td>Test rollback in staging BEFORE production</td>
+                            </tr>
+                            <tr>
+                                <td>Metrics/monitoring break</td>
+                                <td>Update monitoring dashboards BEFORE upgrade</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    
+                    <h3>Upgrade Checklist</h3>
+                    
+                    <div class="success">
+                        <strong>Pre-upgrade:</strong>
+                        <ul>
+                            <li>☐ Read release notes thoroughly</li>
+                            <li>☐ Backup all configurations</li>
+                            <li>☐ Test in staging environment</li>
+                            <li>☐ Verify client compatibility</li>
+                            <li>☐ Create rollback plan</li>
+                        </ul>
+                        
+                        <strong>During upgrade:</strong>
+                        <ul>
+                            <li>☐ Upgrade non-controller brokers first</li>
+                            <li>☐ One broker at a time</li>
+                            <li>☐ Wait for full ISR recovery between brokers</li>
+                            <li>☐ Monitor under-replicated partitions (must be 0)</li>
+                        </ul>
+                        
+                        <strong>Post-upgrade:</strong>
+                        <ul>
+                            <li>☐ All brokers on new version</li>
+                            <li>☐ Upgrade inter.broker.protocol.version</li>
+                            <li>☐ Upgrade log.message.format.version</li>
+                            <li>☐ Performance validation</li>
+                            <li>☐ Monitor for 24-48 hours</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Question 7 -->
+            <div id="q7" class="qa-section">
+                <div class="question">
+                    Question 7: Your consumers are experiencing continuous rebalancing storms - rebalances happening every 30 seconds. Production is severely impacted. How do you diagnose the root cause and stop it immediately?
+                </div>
+                <div class="answer">
+                    <p>Rebalancing storms are one of the most disruptive operational issues. They can bring processing to a near halt. Immediate action is required.</p>
+                    
+                    <h3>What's Happening</h3>
+                    <p>Consumers repeatedly join and leave the consumer group, triggering continuous rebalances. During each rebalance:</p>
+                    <ul>
+                        <li>All consumers stop processing</li>
+                        <li>Partitions are reassigned</li>
+                        <li>Consumers commit their offsets</li>
+                        <li>Processing resumes briefly</li>
+                        <li>Then another rebalance triggers</li>
+                    </ul>
+                    
+                    <h3>Common Root Causes</h3>
+                    <ol>
+                        <li>Session timeout too aggressive</li>
+                        <li>Max poll interval exceeded</li>
+                        <li>Unstable consumer instances</li>
+                        <li>Aggressive auto-scaling</li>
+                        <li>Misconfigured static membership</li>
+                        <li>Network issues</li>
+                        <li>Broker-side issues</li>
+                    </ol>
+                    
+                    <h3>Immediate Fixes (Stop the Bleeding)</h3>
+                    
+                    <h4>Fix 1: Increase Timeouts (Emergency Band-Aid)</h4>
+                    <pre><code># In consumer application, immediately deploy with:
+
+# Increase session timeout significantly
+session.timeout.ms = 60000  # 60 seconds (from default 10s)
+
+# Increase heartbeat interval proportionally
+heartbeat.interval.ms = 20000  # 20 seconds (1/3 of session timeout)
+
+# Increase max poll interval for slow processing
+max.poll.interval.ms = 600000  # 10 minutes (from default 5 min)</code></pre>
+                    
+                    <h4>Fix 2: Reduce Poll Batch Size</h4>
+                    <pre><code># If consumers are taking too long to process messages:
+max.poll.records = 100  # Reduce from default 500</code></pre>
+                    
+                    <h4>Fix 3: Enable Static Membership</h4>
+                    <pre><code># Prevents rebalances on transient failures
+group.instance.id = consumer-pod-1  # Use pod name or similar
+session.timeout.ms = 45000</code></pre>
+                    
+                    <h4>Fix 4: Stop Auto-Scaling Immediately</h4>
+                    <pre><code># If using Kubernetes HPA:
+kubectl autoscale deployment consumer-app --min=5 --max=5
+
+# Or delete autoscaler temporarily
+kubectl delete hpa consumer-app-hpa</code></pre>
+                    
+                    <h3>Root Cause Analysis Scenarios</h3>
+                    
+                    <h4>Scenario 1: Session Timeout Root Cause</h4>
+                    <pre><code># Check GC logs
+tail -100 gc.log | grep "Full GC"
+# Long GC pauses (> 5s) will prevent heartbeats
+
+# Solution: Tune JVM
+export JAVA_OPTS="-Xms2g -Xmx2g -XX:+UseG1GC -XX:MaxGCPauseMillis=200"</code></pre>
+                    
+                    <h4>Scenario 2: Max Poll Interval Root Cause</h4>
+                    <pre><code># Processing is too slow
+# Solution: Process asynchronously
+consumer.poll(Duration.ofMillis(100));
+for (ConsumerRecord record : records) {
+    executorService.submit(() -> processMessage(record));
+}
+// Keep poll loop fast!</code></pre>
+                    
+                    <h4>Scenario 3: Consumer Instability</h4>
+                    <pre><code># Check OOM kills
+kubectl describe pod consumer-pod-1 | grep OOM
+
+# Solution: Increase memory limits
+resources:
+  requests:
+    memory: "2Gi"
+  limits:
+    memory: "4Gi"</code></pre>
+                    
+                    <h3>Long-term Solutions</h3>
+                    
+                    <h4>1. Proper Timeout Configuration:</h4>
+                    <pre><code># Production-grade consumer settings
+session.timeout.ms = 45000  # 45 seconds
+heartbeat.interval.ms = 15000  # 15 seconds
+max.poll.interval.ms = 600000  # 10 minutes
+group.instance.id = ${HOSTNAME}  # Static membership
+max.poll.records = 500</code></pre>
+                    
+                    <h4>2. Separate Poll Loop from Processing:</h4>
+                    <pre><code>// CORRECT - async processing
+ExecutorService executor = Executors.newFixedThreadPool(10);
+
+Thread pollThread = new Thread(() -> {
+    while (true) {
+        ConsumerRecords records = consumer.poll(Duration.ofMillis(100));
+        for (ConsumerRecord record : records) {
+            buffer.put(record);  // Non-blocking queue
+        }
+    }
+});
+
+// Worker threads do heavy lifting</code></pre>
+                    
+                    <h4>3. Monitoring and Alerting:</h4>
+                    <pre><code># Critical alerts:
+# Alert 1: Rebalance frequency
+rate(kafka_consumer_group_rebalance_total[5m]) > 0.1
+
+# Alert 2: Rebalance duration
+kafka_consumer_group_rebalance_latency_max > 60000
+
+# Alert 3: Consumer lag during rebalance
+delta(kafka_consumer_group_lag[5m]) > 10000</code></pre>
+                </div>
+            </div>
+
+            <!-- Question 8 -->
+            <div id="q8" class="qa-section">
+                <div class="question">
+                    Question 8: You're running a multi-datacenter Kafka deployment with MirrorMaker 2 for replication. Replication lag is growing to hours, and the secondary datacenter is falling further behind. How do you diagnose and fix this?
+                </div>
+                <div class="answer">
+                    <p>Multi-datacenter replication lag is a critical issue that can impact disaster recovery, compliance, and business continuity.</p>
+                    
+                    <h3>Common Root Causes</h3>
+                    <ol>
+                        <li>Network bandwidth exhaustion</li>
+                        <li>MirrorMaker 2 under-provisioned</li>
+                        <li>Target cluster bottleneck</li>
+                        <li>Topic configuration mismatch</li>
+                        <li>Consumer lag on source</li>
+                        <li>Connector configuration issues</li>
+                    </ol>
+                    
+                    <h3>Diagnosis Steps</h3>
+                    
+                    <h4>Step 1: Measure Current Replication Lag</h4>
+                    <pre><code># Check MirrorMaker 2 lag on source cluster
+kafka-consumer-groups --bootstrap-server source-cluster:9092 \
+  --group mirrormaker2-cluster \
+  --describe
+
+# Look at LAG column
+# Large LAG = replication falling behind</code></pre>
+                    
+                    <h4>Step 2: Check MirrorMaker 2 Health</h4>
+                    <pre><code># MM2 runs as Kafka Connect cluster
+curl http://mm2-host:8083/connectors/MirrorSourceConnector/status
+
+# Look for state: "RUNNING"
+# Check individual task states
+
+# Check MM2 logs
+tail -500 /var/log/kafka/connect.log | grep -i error</code></pre>
+                    
+                    <h4>Step 3: Check Network Between Datacenters</h4>
+                    <pre><code># Bandwidth test
+iperf3 -s  # On target DC
+iperf3 -c target-dc-ip -t 60 -P 10  # From source DC
+
+# Latency test
+ping -c 100 target-dc-ip
+
+# Packet loss
+ping -c 1000 target-dc-ip | grep loss</code></pre>
+                    
+                    <h3>Solutions by Root Cause</h3>
+                    
+                    <h4>Solution 1: Network Bandwidth Bottleneck</h4>
+                    <pre><code># Enable compression on MM2
+curl -X PUT http://mm2-host:8083/connectors/MirrorSourceConnector/config \
+  -H "Content-Type: application/json" \
+  -d '{
+    "compression.type": "snappy",
+    "producer.compression.type": "snappy"
+  }'
+
+# Compression can reduce bandwidth by 50-80%</code></pre>
+                    
+                    <h4>Solution 2: MirrorMaker 2 Under-provisioned</h4>
+                    <pre><code># Increase task parallelism
+{
+  "tasks.max": "20"  # Increase from 10
+}
+
+# Scale out MM2 workers
+./bin/connect-distributed.sh config/connect-mirror-maker.properties
+
+# Increase JVM heap
+export KAFKA_HEAP_OPTS="-Xms8g -Xmx8g"
+
+# Tune consumer/producer settings
+consumer.max.poll.records = 1000
+producer.batch.size = 65536
+producer.linger.ms = 10
+producer.compression.type = snappy</code></pre>
+                    
+                    <h4>Solution 3: Target Cluster Bottleneck</h4>
+                    <pre><code># Scale target cluster - add brokers
+# Optimize target broker configuration
+num.network.threads = 8
+num.io.threads = 16
+num.replica.fetchers = 4
+
+# Use faster disks on target
+# Reduce replication factor on target if DR-only
+default.replication.factor = 2</code></pre>
+                    
+                    <h3>Optimized MM2 Configuration</h3>
+                    <pre><code># connect-mirror-maker.properties
+bootstrap.servers = source-cluster:9092
+group.id = mirrormaker2-cluster
+tasks.max = 20
+
+# Consumer settings
+consumer.max.poll.records = 1000
+consumer.fetch.min.bytes = 1048576  # 1MB
+consumer.max.partition.fetch.bytes = 10485760  # 10MB
+
+# Producer settings
+producer.batch.size = 65536  # 64KB
+producer.linger.ms = 10
+producer.buffer.memory = 67108864  # 64MB
+producer.compression.type = snappy
+producer.acks = 1  # Faster for DR
+
+# Connector config
+{
+  "name": "MirrorSourceConnector",
+  "tasks.max": "20",
+  "topics": ".*",
+  "replication.factor": "3",
+  "producer.compression.type": "snappy",
+  "consumer.max.poll.records": "1000"
+}</code></pre>
+                    
+                    <h3>Emergency Catch-up Procedure</h3>
+                    <ol>
+                        <li>Prioritize critical topics (pause non-critical replication)</li>
+                        <li>Temporarily reduce source traffic if possible</li>
+                        <li>Add MM2 capacity immediately</li>
+                        <li>Increase WAN bandwidth temporarily</li>
+                        <li>Monitor catch-up progress</li>
+                        <li>Once caught up, restore normal config</li>
+                    </ol>
+                    
+                    <h3>Monitoring and Alerting</h3>
+                    <pre><code># Critical MM2 metrics:
+# 1. Replication lag (consumer lag on source)
+# 2. MM2 connector/task status
+# 3. Records replicated per second
+# 4. Network bandwidth utilization
+# 5. MM2 resource usage (CPU, memory)
+# 6. Target cluster health
+
+# Alert rules:
+- alert: MM2ReplicationLagHigh
+  expr: kafka_consumer_lag{group="mirrormaker2-cluster"} > 100000
+  for: 10m</code></pre>
+                </div>
+            </div>
+
+            <!-- Question 9 -->
+            <div id="q9" class="qa-section">
+                <div class="question">
+                    Question 9: Your ZooKeeper ensemble becomes unavailable (split-brain or total failure). Your Kafka cluster is still running but degraded. What immediate actions do you take, and how do you prevent/recover from this?
+                </div>
+                <div class="answer">
+                    <p>ZooKeeper failure is one of the most critical Kafka operational emergencies. While Kafka brokers can continue serving existing client connections temporarily, the cluster cannot perform essential coordination tasks.</p>
+                    
+                    <h3>What Happens When ZooKeeper Fails</h3>
+                    
+                    <h4>Immediate Impacts:</h4>
+                    <ul>
+                        <li>❌ No new partition leader elections</li>
+                        <li>❌ No controller election</li>
+                        <li>❌ No metadata updates</li>
+                        <li>❌ No consumer group coordination</li>
+                        <li>❌ No ACL changes</li>
+                        <li>❌ No configuration changes</li>
+                    </ul>
+                    
+                    <h4>Services Still Working (Temporarily):</h4>
+                    <ul>
+                        <li>✅ Existing producers/consumers continue working</li>
+                        <li>✅ Data continues flowing on healthy partitions</li>
+                        <li>✅ Brokers serve requests from page cache</li>
+                        <li>✅ Existing leader/follower relationships maintained</li>
+                    </ul>
+                    
+                    <div class="critical">
+                        <strong>⚠️ This is a degraded state - one broker failure could cause cascading outages!</strong>
+                    </div>
+                    
+                    <h3>Diagnosis</h3>
+                    
+                    <h4>Step 1: Confirm ZooKeeper is the Problem</h4>
+                    <pre><code># Test ZooKeeper connectivity
+echo "ruok" | nc zk1 2181
+# Should return "imok"
+
+# Check all ZK nodes
+for host in zk1 zk2 zk3; do
+  echo "Testing $host"
+  echo "ruok" | nc $host 2181
+  echo "stat" | nc $host 2181 | grep Mode
+done
+
+# Check broker logs
+tail -100 /var/log/kafka/server.log | grep -i zookeeper</code></pre>
+                    
+                    <h4>Step 2: Identify the Failure Type</h4>
+                    <pre><code># Scenario 1: ZooKeeper split-brain
+# Multiple nodes think they're leader
+echo "stat" | nc zk1 2181 | grep Mode
+echo "stat" | nc zk2 2181 | grep Mode
+echo "stat" | nc zk3 2181 | grep Mode
+
+# Scenario 2: ZooKeeper quorum lost
+# < majority of ZK nodes available
+
+# Scenario 3: Total ZooKeeper failure
+# All ZK nodes down</code></pre>
+                    
+                    <h3>Immediate Actions</h3>
+                    
+                    <h4>Action 1: Don't Panic - Assess Impact First</h4>
+                    <pre><code># Test producer
+echo "test message" | kafka-console-producer \
+  --bootstrap-server localhost:9092 \
+  --topic test-topic
+
+# Test consumer
+kafka-console-consumer --bootstrap-server localhost:9092 \
+  --topic test-topic --from-beginning --max-messages 1
+
+# If these work, clients are still functioning</code></pre>
+                    
+                    <h4>Action 2: Stabilize - Prevent Cascading Failures</h4>
+                    <div class="critical">
+                        <strong>CRITICAL: Do NOT restart any Kafka brokers!</strong>
+                        <p>Without ZooKeeper, broker restarts will fail or cause issues.</p>
+                    </div>
+                    
+                    <ul>
+                        <li>Put cluster in read-only mode mentally</li>
+                        <li>No deployments</li>
+                        <li>No configuration changes</li>
+                        <li>No broker restarts</li>
+                        <li>No topic operations</li>
+                    </ul>
+                    
+                    <h4>Action 3: Recover ZooKeeper ASAP</h4>
+                    <p>This is the priority - everything else is temporary mitigation.</p>
+                    
+                    <h3>Recovery Scenarios</h3>
+                    
+                    <h4>Scenario 1: Single ZK Node Failure (Quorum Intact)</h4>
+                    <pre><code># If you have 3 ZK nodes and 1 failed, quorum (2/3) remains
+# Fix the failed node:
+
+# 1. Check why it failed
+tail -500 /var/zookeeper/logs/zookeeper.log
+
+# 2. Fix root cause (disk, memory, config, network)
+df -h
+free -h
+
+# 3. Restart ZK node
+systemctl restart zookeeper
+
+# 4. Verify it rejoined
+echo "stat" | nc zk-node 2181</code></pre>
+                    
+                    <h4>Scenario 2: ZooKeeper Quorum Lost</h4>
+                    <pre><code># Example: 3-node ensemble, only 1 node up
+# Need to restore at least 2 nodes
+
+# Fix and restart downed nodes
+systemctl stop zookeeper
+# Restore from backup if needed
+tar -xzf /backup/zookeeper-data-latest.tar.gz -C /var/zookeeper/
+systemctl start zookeeper
+
+# Once 2+ nodes up, quorum restored!</code></pre>
+                    
+                    <h4>Scenario 3: ZooKeeper Split-brain</h4>
+                    <pre><code># Network partition causing multiple leaders
+
+# 1. Identify legitimate leader
+for host in zk1 zk2 zk3; do
+  echo "$host:"
+  echo "ls /brokers/ids" | zkCli.sh -server $host:2181
+done
+
+# 2. Shut down minority partition ZK nodes
+systemctl stop zookeeper  # On minority node
+
+# 3. Fix network partition
+
+# 4. Restart minority nodes once network fixed
+systemctl start zookeeper</code></pre>
+                    
+                    <h4>Scenario 4: Total ZooKeeper Failure - Disaster Recovery</h4>
+                    <pre><code># All ZK nodes failed, no backups recoverable
+# This is a cluster rebuild scenario
+
+# Step 1: Preserve Kafka data
+# DO NOT DELETE KAFKA DATA DIRECTORIES!
+
+# Step 2: Build new ZooKeeper ensemble
+# Fresh 3-5 node ZK cluster
+
+# Step 3: Update Kafka broker configs
+zookeeper.connect=new-zk1:2181,new-zk2:2181,new-zk3:2181
+
+# Step 4: Restart Kafka brokers ONE AT A TIME
+kafka-server-stop.sh
+kafka-server-start.sh config/server.properties
+
+# Step 5: Verify metadata recreation
+kafka-topics --bootstrap-server localhost:9092 --list</code></pre>
+                    
+                    <h3>Prevention Strategies</h3>
+                    
+                    <h4>1. Proper ZooKeeper Ensemble Sizing</h4>
+                    <pre><code># Production ZooKeeper configuration
+# Use odd number of nodes (3, 5, or 7)
+# 3 nodes: tolerates 1 failure
+# 5 nodes: tolerates 2 failures (recommended)
+
+# zoo.cfg
+tickTime=2000
+dataDir=/var/zookeeper/data
+dataLogDir=/var/zookeeper/datalog  # Separate disk!
+clientPort=2181
+
+server.1=zk1:2888:3888
+server.2=zk2:2888:3888
+server.3=zk3:2888:3888
+
+# JVM settings
+export JVMFLAGS="-Xms4g -Xmx4g -XX:+UseG1GC"</code></pre>
+                    
+                    <h4>2. ZooKeeper Placement and Isolation</h4>
+                    <ul>
+                        <li>Dedicated hardware/VMs for ZooKeeper</li>
+                        <li>Don't co-locate ZK with Kafka brokers</li>
+                        <li>Spread across failure domains (racks, AZs, DCs)</li>
+                        <li>Fast, reliable disks (SSD for transaction logs)</li>
+                        <li>Separate disk for dataDir and dataLogDir</li>
+                    </ul>
+                    
+                    <h4>3. Monitoring and Alerting</h4>
+                    <pre><code># Critical ZooKeeper metrics:
+# 1. ZK ensemble health
+for host in zk1 zk2 zk3; do
+  echo "ruok" | nc $host 2181 || echo "$host FAILED"
+done
+
+# 2. Quorum status
+echo "stat" | nc zk1 2181 | grep Mode
+
+# 3. Latency
+echo "stat" | nc zk1 2181 | grep Latency
+
+# 4. Disk usage
+df -h /var/zookeeper/data
+
+# Alert rules:
+- alert: ZooKeeperDown
+  expr: up{job="zookeeper"} == 0
+  for: 1m
+
+- alert: ZooKeeperQuorumLost
+  expr: zookeeper_quorum_size < 2
+  for: 1m</code></pre>
+                    
+                    <h4>4. Regular Backups</h4>
+                    <pre><code># Automated daily backups
+# Cron job:
+0 2 * * * /opt/scripts/backup-zookeeper.sh
+
+# backup-zookeeper.sh:
+#!/bin/bash
+DATE=$(date +%Y%m%d-%H%M%S)
+BACKUP_DIR=/backup/zookeeper
+
+tar -czf $BACKUP_DIR/zk-data-$DATE.tar.gz /var/zookeeper/data/
+
+# Keep last 30 days
+find $BACKUP_DIR -name "zk-data-*.tar.gz" -mtime +30 -delete
+
+# Store off-site
+aws s3 sync $BACKUP_DIR s3://my-bucket/zookeeper-backups/</code></pre>
+                    
+                    <h4>6. Migrate to KRaft (ZooKeeper-less Kafka)</h4>
+                    <div class="info">
+                        <strong>💡 Modern Solution:</strong> Kafka 3.3+ supports KRaft mode, eliminating ZooKeeper dependency entirely!
+                        <ul>
+                            <li>No more ZooKeeper operational complexity</li>
+                            <li>Faster controller failover</li>
+                            <li>Simpler architecture</li>
+                            <li>Better scalability</li>
+                        </ul>
+                    </div>
+                    
+                    <h3>Post-Incident Checklist</h3>
+                    <div class="success">
+                        <ul>
+                            <li>☐ Document timeline of ZK failure</li>
+                            <li>☐ Identify root cause</li>
+                            <li>☐ Implement fix to prevent recurrence</li>
+                            <li>☐ Verify ZK ensemble healthy</li>
+                            <li>☐ Verify Kafka cluster fully recovered</li>
+                            <li>☐ Check all brokers registered</li>
+                            <li>☐ Verify controller elected</li>
+                            <li>☐ Check under-replicated partitions (should be 0)</li>
+                            <li>☐ Update runbooks with lessons learned</li>
+                            <li>☐ Consider migrating to KRaft</li>
+                        </ul>
+                    </div>
+                    
+                    <h3>Critical Reminders</h3>
+                    <div class="critical">
+                        <strong>❌ NEVER:</strong>
+                        <ul>
+                            <li>Restart Kafka brokers while ZooKeeper is down</li>
+                            <li>Restart multiple ZK nodes simultaneously</li>
+                            <li>Delete ZK data without backup</li>
+                            <li>Ignore ZK alerts</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="success">
+                        <strong>✅ ALWAYS:</strong>
+                        <ul>
+                            <li>Maintain ZK quorum (majority of nodes)</li>
+                            <li>Have ZK backups</li>
+                            <li>Test ZK recovery procedures</li>
+                            <li>Monitor ZK health closely</li>
+                            <li>Consider migrating to KRaft</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        
+        <footer>
+            <p>&copy; 2024 Kafka Operations Guide | For Educational Purposes</p>
+        </footer>
+    </div>
+    
+    <a href="#" class="back-to-top">↑</a>
+    
+    <script>
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+        
+        // Show/hide back to top button
+        const backToTop = document.querySelector('.back-to-top');
+        window.addEventListener('scroll', () => {
+            if (window.pageYOffset > 300) {
+                backToTop.style.display = 'flex';
+            } else {
+                backToTop.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>
