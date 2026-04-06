@@ -1,0 +1,1469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Data Security Questions</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #080c10;
+    --surface: #0d1520;
+    --surface2: #111d2e;
+    --border: #1a2d44;
+    --accent: #00c2ff;
+    --accent2: #00ffa3;
+    --accent3: #ff6b35;
+    --text: #c8d8e8;
+    --text-dim: #5a7a94;
+    --text-bright: #e8f4ff;
+    --tag-pii: #ff4d6d22;
+    --tag-pci: #ffd60a22;
+    --tag-sox: #00c2ff22;
+    --code-bg: #060d15;
+    --sidebar-w: 280px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    line-height: 1.7;
+  }
+
+  /* ── LAYOUT ── */
+  .shell { display: flex; min-height: 100vh; }
+
+  /* ── SIDEBAR ── */
+  .sidebar {
+    width: var(--sidebar-w);
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    position: fixed;
+    top: 0; left: 0;
+    height: 100vh;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    z-index: 100;
+    transition: transform .3s ease;
+  }
+
+  .sidebar::-webkit-scrollbar { width: 4px; }
+  .sidebar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+  .sidebar-header {
+    padding: 24px 20px 16px;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+
+  .sidebar-logo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 13px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 4px;
+  }
+
+  .sidebar-subtitle {
+    font-size: 11px;
+    color: var(--text-dim);
+    letter-spacing: 0.05em;
+  }
+
+  .search-wrap {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+
+  .search-box {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 8px 12px;
+    color: var(--text-bright);
+    font-size: 12px;
+    font-family: 'Inter', sans-serif;
+    outline: none;
+    transition: border-color .2s;
+  }
+
+  .search-box::placeholder { color: var(--text-dim); }
+  .search-box:focus { border-color: var(--accent); }
+
+  .progress-wrap {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+
+  .progress-label {
+    font-size: 11px;
+    color: var(--text-dim);
+    margin-bottom: 6px;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .progress-bar {
+    height: 3px;
+    background: var(--border);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    border-radius: 2px;
+    transition: width .4s ease;
+  }
+
+  .nav-section {
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .nav-domain {
+    padding: 6px 16px 4px;
+    font-size: 10px;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+  }
+
+  .nav-link {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 16px 6px 20px;
+    font-size: 12px;
+    color: var(--text-dim);
+    text-decoration: none;
+    cursor: pointer;
+    transition: all .15s;
+    border-left: 2px solid transparent;
+  }
+
+  .nav-link:hover { color: var(--text); background: rgba(0,194,255,.04); }
+  .nav-link.active { color: var(--accent); border-left-color: var(--accent); background: rgba(0,194,255,.06); }
+  .nav-link.done { color: var(--accent2); }
+  .nav-link.done .q-num { color: var(--accent2); }
+
+  .q-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--text-dim);
+    min-width: 24px;
+    flex-shrink: 0;
+  }
+
+  .q-title { line-height: 1.3; flex: 1; }
+  .check-icon { font-size: 10px; flex-shrink: 0; opacity: 0.7; }
+
+  /* ── MAIN ── */
+  .main {
+    margin-left: var(--sidebar-w);
+    flex: 1;
+    max-width: 900px;
+    padding: 48px 48px 120px;
+  }
+
+  .hero {
+    margin-bottom: 56px;
+    padding-bottom: 40px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .hero-eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 0.1em;
+    margin-bottom: 12px;
+  }
+
+  .hero h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: 40px;
+    font-weight: 800;
+    color: var(--text-bright);
+    line-height: 1.1;
+    margin-bottom: 16px;
+  }
+
+  .hero h1 span { color: var(--accent); }
+
+  .hero-desc {
+    font-size: 15px;
+    color: var(--text-dim);
+    max-width: 560px;
+    line-height: 1.7;
+  }
+
+  .stats-row {
+    display: flex;
+    gap: 32px;
+    margin-top: 28px;
+    flex-wrap: wrap;
+  }
+
+  .stat {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+
+  .stat-num {
+    font-family: 'Syne', sans-serif;
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--text-bright);
+  }
+
+  .stat-num span { color: var(--accent); font-size: 18px; }
+
+  .stat-label {
+    font-size: 11px;
+    color: var(--text-dim);
+    letter-spacing: 0.05em;
+  }
+
+  /* ── DOMAIN SECTION ── */
+  .domain-section {
+    margin-bottom: 64px;
+  }
+
+  .domain-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 28px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .domain-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    background: rgba(0,194,255,.08);
+    border: 1px solid rgba(0,194,255,.2);
+    border-radius: 4px;
+    padding: 3px 8px;
+    flex-shrink: 0;
+  }
+
+  .domain-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text-bright);
+  }
+
+  .domain-count {
+    margin-left: auto;
+    font-size: 11px;
+    color: var(--text-dim);
+    flex-shrink: 0;
+  }
+
+  /* ── QUESTION CARD ── */
+  .q-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    margin-bottom: 20px;
+    overflow: hidden;
+    transition: border-color .2s;
+  }
+
+  .q-card:hover { border-color: #2a4060; }
+  .q-card.expanded { border-color: rgba(0,194,255,.25); }
+  .q-card.marked-done { border-color: rgba(0,255,163,.2); }
+
+  .q-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 20px 22px;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .q-badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    background: rgba(0,194,255,.1);
+    color: var(--accent);
+    border-radius: 4px;
+    padding: 3px 8px;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .q-card.marked-done .q-badge {
+    background: rgba(0,255,163,.1);
+    color: var(--accent2);
+  }
+
+  .q-question {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--text-bright);
+    flex: 1;
+    line-height: 1.4;
+  }
+
+  .q-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .done-btn {
+    font-size: 11px;
+    padding: 4px 10px;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text-dim);
+    cursor: pointer;
+    transition: all .15s;
+    font-family: 'Inter', sans-serif;
+    white-space: nowrap;
+  }
+
+  .done-btn:hover { border-color: var(--accent2); color: var(--accent2); }
+  .q-card.marked-done .done-btn { background: rgba(0,255,163,.1); border-color: var(--accent2); color: var(--accent2); }
+
+  .expand-arrow {
+    font-size: 12px;
+    color: var(--text-dim);
+    transition: transform .2s;
+    flex-shrink: 0;
+  }
+
+  .q-card.expanded .expand-arrow { transform: rotate(180deg); }
+
+  .q-body {
+    display: none;
+    padding: 0 22px 22px;
+    border-top: 1px solid var(--border);
+  }
+
+  .q-card.expanded .q-body { display: block; }
+
+  .q-body-inner {
+    padding-top: 20px;
+    font-size: 14px;
+    color: var(--text);
+    line-height: 1.8;
+  }
+
+  .q-body-inner p { margin-bottom: 12px; }
+  .q-body-inner p:last-child { margin-bottom: 0; }
+
+  .q-body-inner strong {
+    color: var(--text-bright);
+    font-weight: 600;
+  }
+
+  .q-body-inner ul, .q-body-inner ol {
+    padding-left: 20px;
+    margin: 10px 0;
+  }
+
+  .q-body-inner li { margin-bottom: 6px; }
+  .q-body-inner li > ul { margin: 4px 0 4px 0; }
+
+  .q-body-inner h4 {
+    font-family: 'Syne', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text-bright);
+    margin: 18px 0 8px;
+  }
+
+  .q-body-inner blockquote {
+    border-left: 2px solid var(--accent);
+    padding: 10px 14px;
+    background: rgba(0,194,255,.04);
+    border-radius: 0 6px 6px 0;
+    margin: 14px 0;
+    color: var(--text-dim);
+    font-size: 13px;
+  }
+
+  .q-body-inner pre {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px 18px;
+    overflow-x: auto;
+    margin: 14px 0;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    line-height: 1.6;
+    color: #7ec8e3;
+  }
+
+  .q-body-inner code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    background: rgba(0,194,255,.08);
+    color: var(--accent);
+    padding: 2px 6px;
+    border-radius: 3px;
+  }
+
+  .q-body-inner pre code {
+    background: none;
+    color: inherit;
+    padding: 0;
+    border-radius: 0;
+  }
+
+  /* Table */
+  .q-body-inner table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 14px 0;
+    font-size: 13px;
+  }
+
+  .q-body-inner th {
+    text-align: left;
+    padding: 8px 12px;
+    background: var(--surface2);
+    color: var(--text-dim);
+    font-weight: 500;
+    border: 1px solid var(--border);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.05em;
+  }
+
+  .q-body-inner td {
+    padding: 8px 12px;
+    border: 1px solid var(--border);
+    vertical-align: top;
+    color: var(--text);
+  }
+
+  .q-body-inner tr:nth-child(even) td { background: rgba(255,255,255,.01); }
+
+  /* Tags */
+  .tag {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    padding: 2px 7px;
+    border-radius: 3px;
+    letter-spacing: 0.05em;
+    margin-right: 4px;
+  }
+
+  .tag-pii { background: var(--tag-pii); color: #ff8099; border: 1px solid #ff4d6d44; }
+  .tag-pci { background: var(--tag-pci); color: #ffd60a; border: 1px solid #ffd60a44; }
+  .tag-sox { background: var(--tag-sox); color: var(--accent); border: 1px solid rgba(0,194,255,.3); }
+  .tag-gdpr { background: rgba(0,255,163,.08); color: var(--accent2); border: 1px solid rgba(0,255,163,.3); }
+
+  /* ── FILTER BAR ── */
+  .filter-bar {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 32px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .filter-label {
+    font-size: 11px;
+    color: var(--text-dim);
+    margin-right: 4px;
+  }
+
+  .filter-btn {
+    font-size: 11px;
+    padding: 5px 12px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text-dim);
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+    transition: all .15s;
+  }
+
+  .filter-btn:hover, .filter-btn.active {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: rgba(0,194,255,.06);
+  }
+
+  /* ── MOBILE TOGGLE ── */
+  .mob-toggle {
+    display: none;
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 200;
+    background: var(--accent);
+    color: var(--bg);
+    border: none;
+    border-radius: 50%;
+    width: 44px;
+    height: 44px;
+    font-size: 18px;
+    cursor: pointer;
+    box-shadow: 0 4px 20px rgba(0,194,255,.4);
+  }
+
+  .sidebar-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.6);
+    z-index: 99;
+  }
+
+  @media (max-width: 860px) {
+    .sidebar { transform: translateX(-100%); }
+    .sidebar.open { transform: translateX(0); }
+    .sidebar-overlay.open { display: block; }
+    .main { margin-left: 0; padding: 24px 20px 100px; }
+    .hero h1 { font-size: 28px; }
+    .mob-toggle { display: flex; align-items: center; justify-content: center; }
+  }
+
+  /* ── NO-RESULT ── */
+  .no-result {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--text-dim);
+    font-size: 14px;
+    display: none;
+  }
+
+  /* ── SCROLL TOP ── */
+  .scroll-top {
+    position: fixed;
+    bottom: 24px;
+    left: calc(var(--sidebar-w) + 24px);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    border-radius: 6px;
+    padding: 7px 12px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all .2s;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .scroll-top.visible { opacity: 1; pointer-events: all; }
+  .scroll-top:hover { border-color: var(--accent); color: var(--accent); }
+</style>
+</head>
+<body>
+
+<div class="shell">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-logo">Interview Prep</div>
+      <div class="sidebar-subtitle">Data &amp; Security Architect · 24Q · 11 Domains</div>
+    </div>
+
+    <div class="search-wrap">
+      <input class="search-box" id="searchBox" type="text" placeholder="Search questions…" autocomplete="off">
+    </div>
+
+    <div class="progress-wrap">
+      <div class="progress-label">
+        <span>Progress</span>
+        <span id="progressText">0 / 24</span>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+    </div>
+
+    <nav id="navLinks"></nav>
+  </aside>
+
+  <div class="sidebar-overlay" id="overlay"></div>
+
+  <!-- MAIN -->
+  <main class="main" id="mainContent">
+
+    <div class="hero">
+      <div class="hero-eyebrow">// INTERVIEW PREPARATION GUIDE</div>
+      <h1>Data &amp; Information<br><span>Security Architect</span></h1>
+      <p class="hero-desc">
+        Comprehensive Q&amp;A across the full data platform governance stack — from ingestion security to policy enforcement. Use the sidebar to navigate or search. Mark questions as done to track your readiness.
+      </p>
+      <div class="stats-row">
+        <div class="stat"><div class="stat-num">24<span>Q</span></div><div class="stat-label">Questions</div></div>
+        <div class="stat"><div class="stat-num">11</div><div class="stat-label">Domains</div></div>
+        <div class="stat"><div class="stat-num" style="color:var(--accent3)">SOX</div><div class="stat-label">+ PCI / GDPR</div></div>
+      </div>
+    </div>
+
+    <div class="filter-bar">
+      <span class="filter-label">Filter:</span>
+      <button class="filter-btn active" data-filter="all">All</button>
+      <button class="filter-btn" data-filter="todo">To Review</button>
+      <button class="filter-btn" data-filter="done">Completed</button>
+    </div>
+
+    <div id="content"></div>
+    <div class="no-result" id="noResult">No questions match your search.</div>
+
+  </main>
+</div>
+
+<button class="mob-toggle" id="mobToggle">☰</button>
+<button class="scroll-top" id="scrollTop">↑ Top</button>
+
+<script>
+const DOMAINS = [
+  {
+    id: "data-ingestion", num: "01", title: "Data Ingestion",
+    questions: [
+      {
+        id: "q1", num: "Q01",
+        q: "What are the key security and governance differences between batch and event-driven ingestion pipelines?",
+        tags: ["PII","PCI"],
+        a: `<p>Batch ingestion processes bounded datasets on a schedule — it's auditable, easier to validate schemas at load time, and supports bulk encryption before write. The trade-off is latency and potential for large blast-radius failures.</p>
+<p>Event-driven (streaming) ingestion via Kafka, Kinesis, or Pulsar processes unbounded, real-time data. Security considerations shift significantly:</p>
+<ul>
+  <li><strong>Schema Registry enforcement</strong> becomes critical — every event must conform to a registered Avro/Protobuf schema to prevent schema drift from poisoning downstream consumers.</li>
+  <li><strong>Producer authentication</strong> via mTLS or SASL/SCRAM prevents unauthorized event injection.</li>
+  <li><strong>Topic-level ACLs</strong> restrict which services can produce/consume from sensitive topics (e.g., PII events).</li>
+  <li><strong>At-rest encryption</strong> on broker storage + <strong>in-transit TLS</strong> are both required.</li>
+  <li><strong>Dead Letter Queues (DLQs)</strong> must be secured equally — malformed events often contain the same sensitive data.</li>
+</ul>
+<p>In a governed architecture, both modes feed through a metadata catalog entry with lineage tags, classification labels (PII, PCI, PHI), and retention policies enforced at ingestion time rather than at consumption.</p>`
+      },
+      {
+        id: "q2", num: "Q02",
+        q: "How do you enforce data classification and tagging at the point of ingestion?",
+        tags: ["PII","GDPR"],
+        a: `<p>Classification at ingestion is the "shift-left" of data governance. The goal: every dataset or event stream arrives in the platform already tagged, not discovered after the fact.</p>
+<h4>Mechanisms</h4>
+<ul>
+  <li><strong>Pre-ingestion contracts</strong> — producers register their feed with the data catalog (Collibra, Alation, DataHub) before the pipeline is activated. The catalog record includes sensitivity classification, owning domain, and expected PII fields.</li>
+  <li><strong>Schema-bound metadata</strong> — for event streams, embed classification tags in the schema registry entry (Confluent Schema Registry supports custom metadata). For batch, inject classification as a partition key or file-level manifest.</li>
+  <li><strong>Automated scanning at landing zone</strong> — use tools like AWS Macie, Google DLP, or Microsoft Purview to scan the raw/bronze layer and reconcile auto-detected classifications against declared ones. Mismatches trigger alerts or quarantine.</li>
+  <li><strong>Pipeline gateway policy</strong> — an OPA/Rego policy enforces that no pipeline job proceeds past the landing zone without a catalog entry containing a classification label. This is enforced at the orchestration layer (Airflow, Glue, Databricks Workflows).</li>
+</ul>
+<p>The output: every dataset in the platform has a verifiable chain of custody from point of origin, with classification labels that drive storage tiering, access control, and retention decisions automatically.</p>`
+      },
+      {
+        id: "q3", num: "Q03",
+        q: "How would you secure a multi-source ingestion pipeline where sources have different trust levels?",
+        tags: ["PII","PCI"],
+        a: `<p>Treat this as a zero-trust ingestion model. Trust level of the source determines the controls applied before data is promoted into the trusted zone.</p>
+<h4>Trust Tier Framework</h4>
+<table>
+  <tr><th>Source Tier</th><th>Example</th><th>Controls Applied</th></tr>
+  <tr><td>Internal (high trust)</td><td>Core banking system</td><td>Schema validation, lineage tag, encrypt-in-transit</td></tr>
+  <tr><td>Partner (medium trust)</td><td>Vendor API feed</td><td>mTLS, input sanitization, rate limiting, DLP scan</td></tr>
+  <tr><td>External (low trust)</td><td>Third-party data purchase</td><td>Quarantine zone, full DLP scan, manual sign-off before promotion</td></tr>
+</table>
+<h4>Key Design Patterns</h4>
+<ul>
+  <li><strong>Landing zone isolation</strong> — each trust tier lands in a segregated storage prefix/bucket with no cross-zone access until validation passes.</li>
+  <li><strong>Data quarantine</strong> — low-trust data sits in a read-only quarantine zone; automated scanners run classification and anomaly detection before a gated promotion step.</li>
+  <li><strong>Immutable audit log</strong> — every ingestion event is written to an append-only audit log (CloudTrail, Pub/Sub audit sink) regardless of outcome.</li>
+  <li><strong>Reject-and-alert</strong> — data that fails validation is rejected at the perimeter, not silently dropped, and an alert fires to the owning team.</li>
+</ul>
+<p>This maps well to a medallion architecture (Bronze/Silver/Gold) where trust and quality gates are enforced at each layer transition.</p>`
+      }
+    ]
+  },
+  {
+    id: "storage-tiering", num: "02", title: "Storage Tiering",
+    questions: [
+      {
+        id: "q4", num: "Q04",
+        q: "How does data classification drive storage tiering decisions, and what security controls apply at each tier?",
+        tags: ["PII","PCI","SOX"],
+        a: `<p>Classification is the governing input for both the tier a dataset lives in and the controls applied to it.</p>
+<h4>Hot Tier (active access — SSD-backed, in-memory cache)</h4>
+<ul>
+  <li>Houses operational PII/PCI data</li>
+  <li>AES-256 encryption at rest with customer-managed keys (CMK)</li>
+  <li>Column/row-level security enforced by query engine (BigQuery column-level security, Databricks Unity Catalog)</li>
+  <li>Access logged per-query with user attribution</li>
+</ul>
+<h4>Warm Tier (frequent analytical access — object storage standard)</h4>
+<ul>
+  <li>Aggregated/pseudonymized data, business-confidential datasets</li>
+  <li>Server-side encryption; less granular access control (role-based at table level)</li>
+  <li>DLP scans on periodic schedule</li>
+</ul>
+<h4>Cold Tier (infrequent access — Glacier, GCS Nearline)</h4>
+<ul>
+  <li>Historical records, archived PII subject to retention obligations</li>
+  <li>WORM enforcement — Object Lock in S3 or GCS retention policies — prevents tampering or premature deletion</li>
+  <li>Encryption key rotation scheduled; keys maintained in HSM-backed KMS</li>
+  <li>Access requires elevated approval (break-glass process)</li>
+</ul>
+<blockquote><strong>Key governance point:</strong> Tier transitions must be automated based on metadata policy (data age, last-access timestamp, classification label), not manual — manual tiering creates compliance gaps where high-sensitivity data drifts to under-controlled cold storage.</blockquote>`
+      },
+      {
+        id: "q5", num: "Q05",
+        q: "How do you implement WORM (Write Once Read Many) for regulatory compliance in cloud storage?",
+        tags: ["SOX","PCI"],
+        a: `<p>WORM is a regulatory requirement under SEC 17a-4, FINRA, and SOX for certain data categories. Cloud-native implementations are mature but require careful configuration.</p>
+<h4>AWS S3 Object Lock</h4>
+<ul>
+  <li><strong>Governance mode:</strong> locks objects for a set period but allows admins with <code>s3:BypassGovernanceRetention</code> to override — used for internal retention floors.</li>
+  <li><strong>Compliance mode:</strong> locks objects for the full retention period with NO override, even by root account — used for regulatory mandates.</li>
+  <li>Vault Lock on S3 Glacier mirrors this for archive tiers.</li>
+</ul>
+<h4>Azure Immutable Blob Storage</h4>
+<ul>
+  <li>Time-based retention policies + legal hold policies</li>
+  <li>Once locked, policies cannot be removed or shortened — even by subscription admins.</li>
+</ul>
+<h4>GCS Retention Policies + Bucket Lock</h4>
+<ul>
+  <li>Bucket Lock makes the retention policy permanent; Object Hold freezes individual objects.</li>
+</ul>
+<h4>Governance Layer on Top</h4>
+<ul>
+  <li>Catalog entries reference the WORM policy applied so auditors can verify at any time.</li>
+  <li>KMS keys used to encrypt WORM-protected data should have their own deletion protection enabled — deleting the key is equivalent to destroying the data.</li>
+  <li>Periodic compliance reports (automated via AWS Config, Azure Policy, or OPA/Rego) confirm all regulated datasets have active WORM policies.</li>
+</ul>
+<blockquote><strong>Critical gap to avoid:</strong> WORM prevents deletion but not unauthorized reads. Access controls on immutable data must be independently enforced.</blockquote>`
+      }
+    ]
+  },
+  {
+    id: "transformation", num: "03", title: "Transformation",
+    questions: [
+      {
+        id: "q6", num: "Q06",
+        q: "How do you maintain data lineage and security through complex multi-step transformation pipelines?",
+        tags: ["PII","GDPR"],
+        a: `<p>Lineage in transformation pipelines is both a governance requirement and a security control — you cannot respond to a data breach or compliance inquiry without knowing exactly where each field originated and what was done to it.</p>
+<h4>Lineage Capture Mechanisms</h4>
+<ul>
+  <li><strong>OpenLineage standard</strong> — emitted by Spark, dbt, Airflow, and Flink natively. Each job emits START and COMPLETE events with input/output datasets and custom facets (including classification labels).</li>
+  <li><strong>Column-level lineage</strong> — tools like Marquez, DataHub, or Collibra ingest OpenLineage events and build field-to-field graphs showing exactly which source column produced each target column.</li>
+  <li><strong>Transformation audit trail</strong> — every transformation step logs: who triggered it, which service account ran it, input dataset hash, output dataset hash, and the transformation code version (Git commit SHA).</li>
+</ul>
+<h4>Security Implications of Lineage</h4>
+<ul>
+  <li><strong>Derived sensitivity propagation</strong> — if a source column is classified PII, any derived column (even aggregated) inherits at minimum a "Derived PII" tag until explicitly reviewed and downgraded by a data steward.</li>
+  <li><strong>Toxic combination detection</strong> — lineage graphs can reveal when a transformation joins two low-sensitivity datasets in a way that produces a high-sensitivity output (re-identification risk). Automated policy can flag or block such joins.</li>
+  <li><strong>Regulatory traceability</strong> — for GDPR right-to-erasure, lineage lets you identify every derived dataset containing a subject's data, not just the source.</li>
+</ul>`
+      },
+      {
+        id: "q7", num: "Q07",
+        q: "What is the difference between data masking, pseudonymization, and anonymization? When do you apply each?",
+        tags: ["PII","GDPR"],
+        a: `<p>These are often conflated but have distinct regulatory and technical meanings:</p>
+<h4>Data Masking</h4>
+<ul>
+  <li>Replaces sensitive values with realistic but fictitious data (e.g., SSN 123-45-6789 → 987-65-4321).</li>
+  <li>Reversible or irreversible depending on implementation.</li>
+  <li><strong>Use case:</strong> non-production environments, developer access to sanitized datasets.</li>
+  <li><strong>GDPR status:</strong> masked data still contains personal data if the masking is reversible — does NOT remove GDPR obligations.</li>
+</ul>
+<h4>Pseudonymization</h4>
+<ul>
+  <li>Replaces direct identifiers with a pseudonym (token/hash), maintaining a separate mapping table held by a key custodian.</li>
+  <li>Reversible: given the mapping table and authorization, you can re-identify.</li>
+  <li><strong>Use case:</strong> analytics on PII datasets where downstream teams need statistical validity but not direct identifiers. Also used for GDPR-compliant data sharing.</li>
+  <li><strong>GDPR status:</strong> explicitly recognized under Article 4 — reduces risk but does NOT remove obligations.</li>
+</ul>
+<h4>Anonymization</h4>
+<ul>
+  <li>Irreversible transformation such that re-identification is not reasonably possible even with auxiliary data (k-anonymity, l-diversity, differential privacy).</li>
+  <li><strong>Use case:</strong> public data releases, AI/ML training datasets for external models, long-term analytical archives post-retention expiry.</li>
+  <li><strong>GDPR status:</strong> truly anonymized data falls outside GDPR scope — this is the only technique that removes regulatory obligations.</li>
+</ul>
+<blockquote><strong>Architecture decision:</strong> Apply pseudonymization at transformation time (Silver layer) for analytical use cases. Anonymization is applied at consumption boundary for external/public datasets. Masking is a dev/test environment concern, not a production data governance control.</blockquote>`
+      }
+    ]
+  },
+  {
+    id: "consumption-contracts", num: "04", title: "Consumption Contracts",
+    questions: [
+      {
+        id: "q8", num: "Q08",
+        q: "What is a data contract and how does it enforce governance at the consumer boundary?",
+        tags: ["PII","SOX"],
+        a: `<p>A data contract is a formal, machine-readable agreement between a data producer and its consumers specifying schema, semantics, SLAs, and governance obligations. Think of it as an API contract but for datasets.</p>
+<h4>Core Components of a Data Contract</h4>
+<pre>id: customer_profile_v2
+owner: customer-data-domain@company.com
+classification: PII-Restricted
+schema:
+  - field: customer_id   type: string  pii: false
+  - field: email         type: string  pii: true   mask_in_non_prod: true
+  - field: dob           type: date    pii: true
+sla:
+  freshness: 4h
+  availability: 99.9%
+consumers:
+  - team: fraud-analytics  approved_fields: [customer_id, dob]
+  - team: marketing        approved_fields: [customer_id]  requires_approval: true
+retention: 7y</pre>
+<h4>Enforcement Mechanisms</h4>
+<ul>
+  <li><strong>Schema enforcement</strong> — consumers attempting to read undeclared fields receive query errors (enforced via Databricks Unity Catalog column permissions or BigQuery authorized views).</li>
+  <li><strong>Consumer registry</strong> — no team can onboard to a dataset without a signed data contract entry in the catalog, creating an auditable consumer inventory.</li>
+  <li><strong>Breaking change detection</strong> — CI/CD pipelines (dbt, Great Expectations, Soda) validate that producer changes don't break contracted schema. Violations block deployment.</li>
+  <li><strong>Compliance propagation</strong> — the contract's classification label automatically governs what the consumer is obligated to do with data (encryption standards, retention floors, audit logging requirements).</li>
+</ul>
+<p>Data contracts solve the "dark data" problem — undocumented, ungoverned consumption paths that regulators find during audits.</p>`
+      },
+      {
+        id: "q9", num: "Q09",
+        q: "How do you handle data contract violations and breaking changes in a large enterprise platform?",
+        tags: ["SOX"],
+        a: `<p>Breaking changes in production data contracts are high-severity events — they can silently corrupt downstream models, dashboards, or compliance reports.</p>
+<h4>Categories of Breaking Changes</h4>
+<ul>
+  <li>Field removal or rename</li>
+  <li>Type narrowing (string → enum with fewer values)</li>
+  <li>Semantic change (field meaning changes without schema change — the most dangerous kind)</li>
+  <li>SLA degradation below contracted threshold</li>
+</ul>
+<h4>Technical Controls</h4>
+<ul>
+  <li><strong>Schema registry versioning</strong> — Confluent Schema Registry's compatibility rules (BACKWARD, FORWARD, FULL) enforce that new schema versions don't break existing consumers at the broker level.</li>
+  <li><strong>dbt contract enforcement</strong> — dbt's <code>contract: enforced: true</code> setting validates that model output schema exactly matches the declared contract on every run.</li>
+  <li><strong>Consumer impact analysis</strong> — catalog tools (DataHub, Collibra) maintain consumer graphs; a breaking change PR triggers automated impact analysis showing all downstream consumers affected.</li>
+</ul>
+<h4>Process Controls</h4>
+<ul>
+  <li><strong>Deprecation runway</strong> — minimum 30/60/90-day deprecation notice periods before field removal, depending on classification tier. Communicated via catalog notification + direct team outreach.</li>
+  <li><strong>Parallel publishing</strong> — during deprecation window, producer publishes both old and new schema simultaneously (v1 and v2 topics/tables).</li>
+  <li><strong>Emergency break-glass</strong> — for critical fixes requiring immediate schema change, a documented exception process with CISO approval and post-incident review.</li>
+</ul>
+<blockquote><strong>Audit requirement:</strong> Every contract version change is immutably logged — who proposed it, who approved it, when consumers were notified, and when the old version was retired.</blockquote>`
+      }
+    ]
+  },
+  {
+    id: "api-versioning", num: "05", title: "API & Data Versioning",
+    questions: [
+      {
+        id: "q10", num: "Q10",
+        q: "How do you manage API versioning in a data platform to maintain backward compatibility while enforcing security policy evolution?",
+        tags: ["SOX","GDPR"],
+        a: `<p>API versioning sits at the intersection of product management and security — you need to evolve security controls without breaking existing consumers.</p>
+<h4>Versioning Strategies</h4>
+<ul>
+  <li><strong>URI versioning</strong> (<code>/v1/datasets/customer</code>, <code>/v2/datasets/customer</code>) — explicit, highly visible, easy to deprecate. Preferred for significant security-model changes.</li>
+  <li><strong>Header versioning</strong> (<code>Accept: application/vnd.company.v2+json</code>) — cleaner URLs, but requires consumer discipline.</li>
+  <li><strong>Query parameter</strong> — avoid for security-sensitive APIs; too easy to accidentally expose in logs.</li>
+</ul>
+<h4>Security Policy Evolution Across Versions</h4>
+<table>
+  <tr><th>Scenario</th><th>Approach</th></tr>
+  <tr><td>Mandating mTLS on new API version</td><td>Run v1 (bearer token) and v2 (mTLS) in parallel; sunset v1 after migration window</td></tr>
+  <tr><td>Narrowing OAuth scopes</td><td>v2 issues tokens with reduced scope; v1 continues with broad scope through deprecation period</td></tr>
+  <tr><td>Adding field-level encryption</td><td>v2 returns encrypted field + encryption metadata; consumers must upgrade SDK to decrypt</td></tr>
+  <tr><td>New consent requirements (GDPR)</td><td>v2 enforces consent checks; v1 deprecated with compliance deadline</td></tr>
+</table>
+<h4>Governance Requirements</h4>
+<ul>
+  <li>API gateway (Kong, Apigee, AWS API GW) enforces version routing and logs version usage metrics — this tells you who is still on deprecated versions.</li>
+  <li>Automated sunset enforcement: after the deprecation date, v1 returns <code>410 Gone</code> with a migration guide link, not <code>404</code>.</li>
+  <li>SOX note: for financial reporting APIs, version changes require change management approval and regression testing evidence.</li>
+</ul>`
+      },
+      {
+        id: "q11", num: "Q11",
+        q: "What is semantic versioning for data schemas, and how does it interact with governance obligations?",
+        tags: ["SOX","PII"],
+        a: `<p>Semantic versioning (SemVer: MAJOR.MINOR.PATCH) applied to data schemas gives producers and consumers a shared vocabulary for communicating the impact of changes.</p>
+<h4>Schema SemVer Conventions</h4>
+<ul>
+  <li><strong>PATCH</strong> (1.0.0 → 1.0.1): Bug fix — correcting a field description, fixing a type error with no data change. No consumer action required.</li>
+  <li><strong>MINOR</strong> (1.0.0 → 1.1.0): Additive change — new optional field, new enum value. Backward compatible. Consumers should be notified but no action required immediately.</li>
+  <li><strong>MAJOR</strong> (1.0.0 → 2.0.0): Breaking change — field removal, type change, semantic change. Requires migration plan and deprecation window.</li>
+</ul>
+<h4>Governance Interactions</h4>
+<ul>
+  <li><strong>Catalog version history</strong> — every schema version is archived in the catalog with a timestamp and change author. This is the audit trail regulators require.</li>
+  <li><strong>Consumer impact by version</strong> — catalog tooling maps which consumers depend on which schema version, enabling targeted migration outreach.</li>
+  <li><strong>Compliance checkpoints on MAJOR bumps</strong> — a MAJOR version increment triggers a mandatory review: Does the new schema still satisfy data retention rules? Does the new field introduce PII that needs classification? Does the change affect SOX in-scope systems?</li>
+  <li><strong>Immutable past versions</strong> — past schema versions must remain accessible (read-only) for the duration of the data retention period, even if no active consumers remain. Regulators may need to validate historical data against the schema that was active at time of capture.</li>
+</ul>`
+      }
+    ]
+  },
+  {
+    id: "data-access", num: "06", title: "Data Access",
+    questions: [
+      {
+        id: "q12", num: "Q12",
+        q: "How do you implement and govern fine-grained access control (FGAC) in a modern data lakehouse?",
+        tags: ["PII","PCI","SOX"],
+        a: `<p>Fine-grained access control means enforcing access at the row, column, or cell level — not just at the table level. This is mandatory for PII, PCI, and confidential business data.</p>
+<h4>Databricks Unity Catalog</h4>
+<ul>
+  <li>Column masking: <code>ALTER TABLE customer SET MASKING POLICY ssn_mask ON (ssn)</code> — applies a masking function transparently based on the user's group membership.</li>
+  <li>Row filters: <code>ALTER TABLE transactions SET ROW FILTER region_filter ON (region)</code> — users only see rows matching their authorized region.</li>
+  <li>Dynamic views: centralized view definitions that embed access logic, published as the consumer-facing interface.</li>
+</ul>
+<h4>BigQuery</h4>
+<ul>
+  <li>Column-level security via policy tags (Data Catalog) + IAM bindings on those tags.</li>
+  <li>Row-level security via authorized row access policies.</li>
+  <li>Data masking rules via BigQuery masking policies tied to policy tags.</li>
+</ul>
+<h4>AWS Lake Formation</h4>
+<ul>
+  <li>Table, column, and row-level permissions as first-class Lake Formation grants.</li>
+  <li>Cell-level security with tag-based access control (TBAC).</li>
+</ul>
+<h4>Governance Architecture</h4>
+<ul>
+  <li>Permissions are managed centrally in the catalog/governance plane, not embedded in individual pipeline code.</li>
+  <li>Role definitions are sourced from the enterprise IAM (Okta, AD) via SCIM sync — no manual user management in the data platform.</li>
+  <li>Quarterly access reviews with automated reports showing who has access to PII columns, surfaced to data owners for certification.</li>
+  <li>Access requests go through an approval workflow (ServiceNow, Jira) with time-bound provisioning — no permanent elevated access to sensitive datasets.</li>
+</ul>`
+      },
+      {
+        id: "q13", num: "Q13",
+        q: "Explain the principle of least privilege applied to data platform service accounts and pipeline identities.",
+        tags: ["SOX","PCI"],
+        a: `<p>Service account hygiene is one of the most commonly cited findings in data platform security audits. Pipelines accumulate permissions over time and almost always have more access than they need.</p>
+<h4>Design Principles</h4>
+<ul>
+  <li><strong>Pipeline-per-identity</strong> — each pipeline job or transformation step runs under a unique service account, not a shared platform account. This enables precise audit attribution and scoped revocation.</li>
+  <li><strong>Minimum required permissions at deployment</strong> — before a pipeline goes to production, a permissions review validates that the service account has only the storage paths, tables, and secrets it needs for that specific job.</li>
+  <li><strong>Workload identity over key-based auth</strong> — cloud-native workload identity federation (GCP Workload Identity, AWS IAM Roles for Service Accounts, Azure Managed Identity) eliminates static credentials entirely. No service account key files in code or config.</li>
+  <li><strong>Time-scoped elevated access</strong> — when a pipeline temporarily needs elevated permissions (backfill, schema migration), it requests a short-lived token via the secrets management platform (Vault, AWS Secrets Manager) rather than having permanent elevated permissions.</li>
+</ul>
+<h4>Audit Controls</h4>
+<ul>
+  <li><strong>Unused permission detection</strong> — tools like IAM Access Analyzer (AWS), GCP Policy Analyzer, or third-party CSPM tools identify permissions granted but never exercised in 90 days. These are reviewed and revoked on a rolling basis.</li>
+  <li><strong>Credential rotation</strong> — where static credentials remain unavoidable (legacy sources), automated rotation on a 30/60-day cycle via Vault dynamic secrets or cloud-native rotation.</li>
+  <li><strong>Blast radius analysis</strong> — catalog maintains a service account → dataset access map; if a pipeline service account is compromised, this map drives the incident response scoping exercise immediately.</li>
+</ul>`
+      }
+    ]
+  },
+  {
+    id: "change-management", num: "07", title: "Change Management",
+    questions: [
+      {
+        id: "q14", num: "Q14",
+        q: "How do you apply change management controls to data platform infrastructure and pipeline changes in a SOX environment?",
+        tags: ["SOX"],
+        a: `<p>SOX IT General Controls (ITGC) require that changes to systems supporting financial reporting are authorized, tested, and documented. For data platforms, this covers: pipelines that feed financial dashboards, transformation logic producing reported metrics, and schema changes on in-scope tables.</p>
+<h4>Change Classification</h4>
+<ul>
+  <li><strong>Standard change</strong> (pre-approved): adding a non-PII, non-financial column; updating a dashboard not used for external reporting. Auto-approved via pipeline CI/CD with documented rollback.</li>
+  <li><strong>Normal change</strong>: schema change on an in-scope table, new pipeline feeding a financial metric. Requires change ticket, peer review, QA sign-off, CAB approval.</li>
+  <li><strong>Emergency change</strong>: production incident requiring immediate pipeline fix. Requires post-hoc documentation within 24h, CISO/CAB retrospective sign-off.</li>
+</ul>
+<h4>Technical Controls as SOX Evidence</h4>
+<ul>
+  <li><strong>GitOps for pipeline code</strong> — all transformation logic in version control. PR approval = documented peer review. Merge to main = change authorization record. Commit history = immutable change audit trail.</li>
+  <li><strong>Infrastructure as Code (Terraform, CDK)</strong> — infrastructure changes go through the same PR/approval process as application code. Drift detection (Terraform Cloud, AWS Config) alerts on out-of-band changes.</li>
+  <li><strong>Automated deployment gates</strong> — CI/CD pipeline enforces: no deployment without passing tests, no direct-to-production deployment (all changes through staging), deployment authorization checked against change ticket.</li>
+  <li><strong>Segregation of duties</strong> — the person who writes the pipeline code cannot be the sole approver of the change. Enforced via branch protection rules requiring approvers from a separate team.</li>
+</ul>
+<blockquote>SOX auditors will ask for evidence of these controls for every in-scope change. GitOps + IaC gives you that evidence automatically.</blockquote>`
+      },
+      {
+        id: "q15", num: "Q15",
+        q: "What is configuration drift in a data platform, and how do you detect and remediate it?",
+        tags: ["SOX","PCI"],
+        a: `<p>Configuration drift occurs when the actual state of infrastructure or data platform configuration diverges from the declared, approved state — often due to manual changes made outside the change management process.</p>
+<h4>Why It Matters for Governance</h4>
+<p>In a regulated environment, drift means you cannot prove to auditors that your controls are functioning as documented. It also creates security gaps: a manually widened firewall rule, a disabled audit log setting, or an accidentally public storage bucket.</p>
+<h4>Detection Strategies</h4>
+<ul>
+  <li><strong>Terraform/Pulumi plan on schedule</strong> — run <code>terraform plan</code> against production on a nightly schedule. Any diff between declared state and actual state is drift. Alert on non-empty plans.</li>
+  <li><strong>AWS Config Rules / GCP Org Policy / Azure Policy</strong> — native cloud policy engines continuously evaluate resources against declared configurations. Non-compliant resources trigger findings in a CSPM dashboard.</li>
+  <li><strong>Data catalog reconciliation</strong> — scheduled job compares the catalog's declared schema and access policy for each dataset against the actual state in the query engine (Unity Catalog, BigQuery metadata API). Discrepancies are flagged as governance drift.</li>
+  <li><strong>CSPM tools</strong> (Wiz, Prisma Cloud, Orca) — continuous security posture assessment across cloud resources with findings mapped to compliance frameworks (SOC2, PCI-DSS, NIST).</li>
+</ul>
+<h4>Remediation</h4>
+<ul>
+  <li><strong>Automated remediation</strong> for low-risk drift (e.g., auto-attach required tags, auto-enable audit logging on new buckets) via Lambda/Cloud Functions triggered by Config events.</li>
+  <li><strong>Manual remediation with SLA</strong> — medium/high severity drift creates a P2 ticket with a 48-hour remediation SLA.</li>
+  <li><strong>Root cause required for ITGC drift</strong> — if drift in a SOX in-scope system is detected, a root-cause analysis and process improvement are required as audit evidence.</li>
+</ul>`
+      }
+    ]
+  },
+  {
+    id: "encryption", num: "08", title: "Encryption",
+    questions: [
+      {
+        id: "q16", num: "Q16",
+        q: "Explain the key hierarchy in a cloud data platform — from KMS root keys to data encryption keys — and the governance implications of each layer.",
+        tags: ["PCI","SOX","GDPR"],
+        a: `<h4>Three-Tier Key Hierarchy</h4>
+<p><strong>Tier 1 — Root of Trust (Hardware Security Module / KMS)</strong></p>
+<ul>
+  <li>Cloud HSM or cloud KMS root keys (AWS KMS CMK, GCP Cloud KMS CryptoKey, Azure Key Vault key).</li>
+  <li>Never leave the HSM boundary. All operations using the root key happen inside the HSM.</li>
+  <li>Governance: key creation requires dual authorization (two-person integrity). Keys are tagged with owning team, data classification, and rotation schedule. Access to key management operations is logged and alert-monitored.</li>
+</ul>
+<p><strong>Tier 2 — Data Encryption Keys (DEKs)</strong></p>
+<ul>
+  <li>Symmetric AES-256 keys generated for each dataset or object. These actually encrypt the data.</li>
+  <li>DEKs are themselves encrypted by a KMS root key (envelope encryption). Stored encrypted alongside the data.</li>
+  <li>Governance: DEK metadata tracked in catalog. DEKs for different classification tiers should use different KMS root keys — PCI data DEKs protected by a PCI-scoped KMS key with stricter access controls.</li>
+</ul>
+<p><strong>Tier 3 — Key Encryption Keys (KEKs)</strong> — optional intermediate tier</p>
+<ul>
+  <li>Used in large organizations to create domain-level key boundaries (Finance KEK, HR KEK). Domain teams control their KEK; the platform team controls root keys.</li>
+  <li>Enables domain-level key rotation without platform team involvement.</li>
+</ul>
+<h4>Critical Governance Scenarios</h4>
+<ul>
+  <li><strong>Key rotation</strong> — automated annual rotation (mandatory for PCI). Key rotation re-encrypts DEKs; data is not re-encrypted (transparent to consumers).</li>
+  <li><strong>Key deletion = data destruction</strong> — this is how GDPR right-to-erasure is implemented at scale for cold archived data. Deleting the KMS key cryptographically destroys all data it protects. Requires a 7-30 day deletion pending window to prevent accidental data loss.</li>
+  <li><strong>Cross-account/cross-region keys</strong> — KMS key policies must explicitly authorize cross-account usage; default deny. Audit access grants quarterly.</li>
+</ul>`
+      },
+      {
+        id: "q17", num: "Q17",
+        q: "What is the difference between encryption in transit, at rest, and in use? How do you implement all three in a data platform?",
+        tags: ["PCI","SOX"],
+        a: `<h4>Encryption in Transit</h4>
+<ul>
+  <li><strong>Threat:</strong> network interception, man-in-the-middle attacks.</li>
+  <li><strong>Implementation:</strong> TLS 1.2+ enforced for all API calls, database connections, and inter-service communication. TLS 1.0/1.1 disabled at load balancer and service mesh level.</li>
+  <li>mTLS for service-to-service communication in sensitive data pathways (both parties present certificates).</li>
+  <li>For Kafka/streaming: SASL+TLS for broker connections. JKS/PKCS12 keystores managed via cert manager with automated rotation.</li>
+  <li>Audit check: periodic TLS configuration scans (testssl.sh, Qualys SSL Labs equivalent for internal endpoints) to detect weak cipher suites.</li>
+</ul>
+<h4>Encryption at Rest</h4>
+<ul>
+  <li><strong>Threat:</strong> physical media theft, unauthorized storage access, backup exposure.</li>
+  <li><strong>Implementation:</strong> AES-256 via cloud KMS on all storage (S3 SSE-KMS, GCS CMEK, Azure Storage Service Encryption). CMK (customer-managed keys) required for regulated data — allows key revocation independent of cloud provider.</li>
+  <li>Database-level TDE (Transparent Data Encryption) for RDBMS. Ensure backups and replicas inherit the same encryption — a common gap.</li>
+  <li>Laptop/endpoint full-disk encryption (BitLocker, FileVault) for local development environments handling sensitive data.</li>
+</ul>
+<h4>Encryption in Use (Confidential Computing)</h4>
+<ul>
+  <li><strong>Threat:</strong> privileged insider access to data while being processed; cloud provider access to computation.</li>
+  <li><strong>Implementation:</strong> Trusted Execution Environments (TEEs) — Intel SGX, AMD SEV, AWS Nitro Enclaves, Azure Confidential VMs. Data is decrypted only inside the enclave; even the hypervisor cannot read it.</li>
+  <li>Homomorphic encryption (HE) — allows computation on encrypted data without decryption. Still largely impractical for general workloads due to performance overhead, but viable for specific use cases (privacy-preserving ML inference, secure multi-party computation).</li>
+  <li>Use case today: confidential analytics on multi-party data (e.g., fraud detection across competing banks without sharing raw data).</li>
+</ul>`
+      }
+    ]
+  },
+  {
+    id: "tokenization", num: "09", title: "Tokenization",
+    questions: [
+      {
+        id: "q18", num: "Q18",
+        q: "How does tokenization differ from encryption, and when is tokenization the preferred approach for PCI compliance?",
+        tags: ["PCI"],
+        a: `<h4>Core Difference</h4>
+<ul>
+  <li><strong>Encryption</strong> is a mathematical transformation — the original data is transformed using a key and can be recovered given the key. The ciphertext travels through your systems.</li>
+  <li><strong>Tokenization</strong> replaces the sensitive value with a random, opaque token. The original value is stored in a secure token vault; the token itself has no mathematical relationship to the original data.</li>
+</ul>
+<h4>Why Tokenization Reduces PCI Scope</h4>
+<p>For PCI DSS, the goal is to minimize the systems that store, process, or transmit cardholder data (CHD) — this is your Cardholder Data Environment (CDE).</p>
+<ul>
+  <li>With tokenization: only the token vault and the tokenization service are in scope for PCI. Every other system — CRM, analytics platform, data lake, fraud model — stores only tokens.</li>
+  <li>With encryption: the ciphertext is considered CHD because it's reversible. Every system holding encrypted PANs is in-scope.</li>
+</ul>
+<h4>Implementation Considerations</h4>
+<ul>
+  <li><strong>Format-preserving tokenization (FPT)</strong> — generates tokens that match the format of the original value (16-digit token for a 16-digit PAN). Minimizes application changes since downstream systems don't know the schema changed.</li>
+  <li><strong>Token vault</strong> — must be an isolated, highly secured service (dedicated HSM-backed, minimal network exposure, rigorous access logging). A breach of the vault compromises all tokenized data.</li>
+  <li><strong>De-tokenization controls</strong> — only explicitly authorized services with specific purpose justification should have de-tokenization capability. This is enforced at the vault API level with per-consumer scope grants.</li>
+  <li><strong>Token lifecycle</strong> — tokens should be tied to the lifecycle of the underlying data. When a customer requests GDPR erasure, their data is deleted from the vault; existing tokens become permanently irreversible.</li>
+</ul>`
+      },
+      {
+        id: "q19", num: "Q19",
+        q: "How do you architect a centralized tokenization service for an enterprise with multiple data domains?",
+        tags: ["PCI","PII"],
+        a: `<p>A centralized tokenization service is the right pattern when multiple domains need to reference the same entity (customer, payment card, employee) consistently via token, without each domain independently storing sensitive data.</p>
+<h4>Token Vault</h4>
+<ul>
+  <li>Stores the token ↔ sensitive value mapping.</li>
+  <li>Backed by an HSM for key material protecting the vault data.</li>
+  <li>High-availability, multi-region active-passive (failing over must not result in token inconsistency).</li>
+  <li>Examples: Protegrity, Voltage SecureData, HashiCorp Vault with Transforms, AWS Payment Cryptography.</li>
+</ul>
+<h4>Tokenization API</h4>
+<ul>
+  <li>REST or gRPC service exposing: <code>tokenize(value, domain, purpose)</code> → token; <code>detokenize(token, domain, purpose)</code> → value.</li>
+  <li>The <code>purpose</code> parameter is logged and enforced — a domain requesting de-tokenization for <code>analytics</code> when only <code>payment-processing</code> is authorized is rejected.</li>
+  <li>mTLS + OAuth 2.0 client credentials for service-to-service authentication.</li>
+</ul>
+<h4>Domain Isolation</h4>
+<ul>
+  <li>Same underlying sensitive value produces different tokens per domain (domain-scoped tokenization) to prevent cross-domain correlation even if tokens are leaked.</li>
+  <li>Exception: explicit cross-domain reference tokens issued with documented business justification and data steward approval.</li>
+</ul>
+<h4>Operational Governance</h4>
+<ul>
+  <li>Token vault audit logs are immutable and sent to a separate SIEM — vault operators cannot delete or modify their own audit trail.</li>
+  <li>De-tokenization requests logged with: requesting service, purpose, timestamp, and requesting user identity (where applicable).</li>
+  <li>Quarterly review of de-tokenization access grants by data owners.</li>
+  <li>Disaster recovery test: annual vault restore drill to validate backup integrity and recovery time objective.</li>
+</ul>`
+      }
+    ]
+  },
+  {
+    id: "retention-disposal", num: "10", title: "Retention & Disposal",
+    questions: [
+      {
+        id: "q20", num: "Q20",
+        q: "How do you design an enterprise data retention framework that satisfies multiple conflicting regulatory obligations?",
+        tags: ["SOX","GDPR","PCI"],
+        a: `<p>Enterprise data is subject to multiple retention regimes simultaneously — GDPR's data minimization principle (keep only as long as necessary) can conflict with SOX's 7-year financial record requirement or FINRA's 6-year retention mandate.</p>
+<h4>Framework Design Principles</h4>
+<p><strong>Maximum retention wins — with justification:</strong> When multiple regulations apply to the same dataset, the longest retention obligation governs, but the reason for extended retention must be documented.</p>
+<h4>Retention Policy Metadata in the Catalog</h4>
+<p>Every dataset record carries:</p>
+<ul>
+  <li>Retention floor (minimum retention obligation + legal basis)</li>
+  <li>Retention ceiling (maximum permitted retention)</li>
+  <li>Legal hold flag (suspend disposal for litigation/regulatory hold)</li>
+  <li>Automated disposal date (calculated at ingestion, updated on legal hold events)</li>
+  <li>Disposal verification method (cryptographic deletion, certificate of destruction)</li>
+</ul>
+<h4>Automated Retention Enforcement</h4>
+<ul>
+  <li>Object lifecycle policies (S3 Lifecycle, GCS Object Lifecycle) trigger moves to cold tier and eventual deletion automatically based on the catalog-derived retention metadata.</li>
+  <li>Before deletion: automated scan confirms no active legal hold, no open audit, no dependent downstream datasets with longer retention obligations.</li>
+  <li>Disposal record: immutable record of what was deleted, when, the legal basis for deletion, and the verification method — retained for 3 years post-disposal for regulatory inquiry.</li>
+</ul>
+<h4>Legal Hold Process</h4>
+<ul>
+  <li>Legal or Compliance team triggers a hold in the catalog system, which propagates a <code>HOLD</code> flag to all storage lifecycle policies for matching datasets.</li>
+  <li>Lifecycle deletion is suspended — WORM policies extended if necessary.</li>
+  <li>Hold lifted only via documented approval from Legal, triggering resumption of the scheduled disposal process.</li>
+</ul>`
+      },
+      {
+        id: "q21", num: "Q21",
+        q: "How do you ensure cryptographic erasure is a valid and auditable method for GDPR data disposal?",
+        tags: ["GDPR"],
+        a: `<p>Cryptographic erasure (crypto-shredding) is the practice of deleting the encryption key(s) protecting a dataset rather than overwriting the data itself. For cloud storage where physical media overwrite is impractical, this is the standard GDPR-compliant disposal method.</p>
+<h4>How It Works</h4>
+<ol>
+  <li>At ingestion, subject-specific data is encrypted under a per-subject DEK (e.g., one KMS key per customer ID).</li>
+  <li>The DEK is stored in KMS, tagged with the customer ID.</li>
+  <li>On a GDPR erasure request: the DEK is deleted from KMS (with the mandatory pending-deletion window waived or minimized with appropriate approval).</li>
+  <li>Encrypted data in storage is now permanently inaccessible — computationally indistinguishable from random noise.</li>
+</ol>
+<h4>Why Per-Subject Keys?</h4>
+<p>If you use a single DEK for an entire dataset and delete it, you destroy everyone's data. Per-subject keys enable surgical erasure of one individual's data without impacting others. This requires key management infrastructure that can scale to millions of keys — use cloud KMS, which handles this natively.</p>
+<h4>Auditability Requirements</h4>
+<ul>
+  <li>KMS key deletion event logged: timestamp, key ARN/resource ID, requesting identity, and deletion confirmation.</li>
+  <li>Catalog entry updated: disposal date, method (<code>cryptographic erasure via KMS key deletion</code>), key identifier (not the key itself), and approving identity.</li>
+  <li>For GDPR Article 17 compliance: KMS CloudTrail logs + catalog disposal record constitutes the required evidence for supervisory authorities.</li>
+</ul>
+<h4>Limitations to Disclose</h4>
+<ul>
+  <li>Data in backups created before key deletion may persist encrypted but inaccessible — confirm backup lifecycle policies also expire within the retention window.</li>
+  <li>Data shared with third parties: crypto-shredding your copy does not affect their copy. Third-party data processing agreements must include erasure obligations with their own evidence requirements.</li>
+</ul>`
+      }
+    ]
+  },
+  {
+    id: "policy-enforcement", num: "11", title: "Policy Enforcement",
+    questions: [
+      {
+        id: "q22", num: "Q22",
+        q: "How does Policy-as-Code work in a data governance context, and what tools implement it?",
+        tags: ["SOX","PCI","GDPR"],
+        a: `<p>Policy-as-Code (PaC) treats governance rules as software artifacts — version-controlled, testable, and automatically enforced — rather than as documents that humans must manually follow. In data governance, this closes the gap between documented policy and actual enforcement.</p>
+<h4>Core Concept</h4>
+<p>Policies are written in a declarative language (Rego for OPA, Cedar for AWS, Sentinel for HashiCorp) and evaluated at decision points in the data platform:</p>
+<ul>
+  <li>Can this pipeline read from this sensitive table? → OPA evaluates the request against policy.</li>
+  <li>Is this infrastructure change compliant with security baselines? → Conftest runs OPA against Terraform plan.</li>
+  <li>Does this dbt model meet data contract requirements? → Custom checks enforce column presence, classification tags, and documentation completeness.</li>
+</ul>
+<h4>OPA/Rego Example for Data Access</h4>
+<pre>package data.access
+
+allow {
+  input.user.role == "analyst"
+  input.resource.classification != "PCI-Restricted"
+  input.resource.classification != "PII-Sensitive"
+}
+
+allow {
+  input.user.role == "data-steward"
+  input.resource.owner_domain == input.user.domain
+}</pre>
+<h4>Implementation Touchpoints</h4>
+<table>
+  <tr><th>Enforcement Point</th><th>Tool</th><th>Policy Examples</th></tr>
+  <tr><td>API Gateway</td><td>OPA sidecar</td><td>Scope validation, rate limiting by classification tier</td></tr>
+  <tr><td>CI/CD pipeline</td><td>Conftest + OPA</td><td>Terraform security baselines, dbt contract validation</td></tr>
+  <tr><td>Query engine</td><td>Unity Catalog, Lake Formation</td><td>Row/column access, masking rules</td></tr>
+  <tr><td>Infrastructure</td><td>AWS SCPs, GCP Org Policies</td><td>Prevent public storage buckets, enforce CMK encryption</td></tr>
+  <tr><td>Kubernetes</td><td>OPA Gatekeeper</td><td>Pod security, image provenance, secret injection</td></tr>
+</table>
+<h4>Governance of the Policies Themselves</h4>
+<p>PaC policies are code and require the same SDLC controls: PR review, unit tests (OPA has a built-in test framework), staging validation, and change management. Policy changes that affect SOX in-scope systems require CAB approval with the policy diff as the change artifact.</p>`
+      },
+      {
+        id: "q23", num: "Q23",
+        q: "How do you enforce data governance policies across a multi-cloud or hybrid data platform?",
+        tags: ["SOX","PCI","GDPR"],
+        a: `<p>Multi-cloud governance is one of the hardest problems in enterprise data architecture because each cloud has its own native policy model — AWS Lake Formation, GCP Dataplex/BigQuery column security, Azure Purview/Synapse — and they don't interoperate natively.</p>
+<h4>Option 1 — Federated with Reconciliation</h4>
+<p>Each cloud enforces policies natively; a central catalog (Collibra, Alation, DataHub) is the system of record. Policy changes flow from catalog → cloud-specific enforcement via automation (Terraform, cloud SDKs). Reconciliation jobs detect drift between catalog policy and actual cloud enforcement state.</p>
+<p><strong>Pros:</strong> leverages native performance of each cloud's enforcement.<br><strong>Cons:</strong> reconciliation lag, complexity of maintaining cloud-specific policy translation.</p>
+<h4>Option 2 — Centralized Authorization Service (OPA/Cedar)</h4>
+<p>All data access requests, regardless of cloud, are routed through a central authorization service (OPA cluster). Cloud-native controls are a backstop, not the primary enforcement mechanism.</p>
+<p><strong>Pros:</strong> single policy language, single audit log, consistent behavior across clouds.<br><strong>Cons:</strong> authorization service becomes a critical path dependency; latency implications for high-throughput query workloads.</p>
+<h4>Hybrid Reality — Practical Approach</h4>
+<ul>
+  <li>Use OPA for pipeline/API-level access decisions (not query-time — too high latency).</li>
+  <li>Use cloud-native for query-engine enforcement (column masking, row filters) because it's in the performance-critical path.</li>
+  <li>Use the central catalog as the policy source of truth; automation syncs to cloud-native.</li>
+  <li>Use a unified SIEM (Splunk, Microsoft Sentinel) to aggregate audit logs from all clouds into one place for cross-cloud access analysis.</li>
+</ul>
+<h4>Non-Negotiable Controls</h4>
+<ul>
+  <li>Encryption at rest with CMK in every cloud — no reliance on provider-managed keys for regulated data.</li>
+  <li>Unified identity: federated identity (Okta/Azure AD as IdP) with consistent group membership across clouds — no separate user management per cloud.</li>
+  <li>Cross-cloud data transfer logging: when data moves between clouds, it generates an audit event in both source and destination.</li>
+</ul>`
+      },
+      {
+        id: "q24", num: "Q24",
+        q: "How do you measure and report on data governance policy compliance to executive leadership and regulators?",
+        tags: ["SOX","GDPR","PCI"],
+        a: `<p>Governance reporting bridges the gap between technical controls and the business accountability that executives and regulators require. The goal is to show, with evidence, that policies are being enforced — not just documented.</p>
+<h4>Coverage Metrics</h4>
+<ul>
+  <li>% of datasets with active data contracts</li>
+  <li>% of datasets with classification labels in catalog</li>
+  <li>% of PII columns with access controls verified in last 30 days</li>
+  <li>% of pipelines with lineage captured end-to-end</li>
+</ul>
+<h4>Compliance Metrics</h4>
+<ul>
+  <li>Access recertification completion rate (quarterly access reviews)</li>
+  <li>Policy exception count, aging, and approval status</li>
+  <li>Encryption coverage: % of regulated datasets with CMK encryption</li>
+  <li>Retention compliance: % of datasets within their defined retention window</li>
+  <li>WORM policy coverage: % of SOX/regulatory datasets with compliant retention locks</li>
+</ul>
+<h4>Incident Metrics</h4>
+<ul>
+  <li>Policy violation detections: count by severity, time-to-remediation</li>
+  <li>Unauthorized access attempts (blocked by FGAC controls)</li>
+  <li>Data leakage incidents: count, data subjects affected, regulatory notifications issued</li>
+</ul>
+<h4>Regulator-Facing Evidence Packages (SOX Auditors)</h4>
+<ul>
+  <li>Change management evidence: PRs, approvals, deployment records for in-scope system changes</li>
+  <li>Access review evidence: recertification completion records with approver and date</li>
+  <li>Encryption key rotation evidence: KMS key rotation history</li>
+  <li>WORM compliance evidence: S3 Object Lock configuration reports per regulated bucket</li>
+</ul>
+<h4>Automation Approach</h4>
+<p>Build a governance metrics pipeline: catalog APIs + cloud config APIs + IAM audit data → data warehouse → executive dashboard (Tableau, Looker). This dashboard runs on the same data governance platform it measures — a useful demonstration of the platform's own data quality.</p>
+<blockquote>Senior leaders want to see trends, not just point-in-time snapshots. Month-over-month improvement in coverage metrics tells a better governance story than a static compliance score.</blockquote>`
+      }
+    ]
+  }
+];
+
+// ── STATE ──
+const done = new Set(JSON.parse(localStorage.getItem('doneQ') || '[]'));
+let activeFilter = 'all';
+
+function saveDone() { localStorage.setItem('doneQ', JSON.stringify([...done])); }
+
+// ── BUILD UI ──
+function buildNav() {
+  const nav = document.getElementById('navLinks');
+  nav.innerHTML = '';
+  DOMAINS.forEach(d => {
+    const sec = document.createElement('div');
+    sec.className = 'nav-section';
+    sec.innerHTML = `<div class="nav-domain">${d.num} · ${d.title}</div>`;
+    d.questions.forEach(q => {
+      const a = document.createElement('a');
+      a.className = 'nav-link' + (done.has(q.id) ? ' done' : '');
+      a.id = 'nav-' + q.id;
+      a.innerHTML = `<span class="q-num">${q.num}</span><span class="q-title">${q.q.substring(0, 42)}…</span>${done.has(q.id) ? '<span class="check-icon">✓</span>' : ''}`;
+      a.onclick = () => {
+        document.getElementById('card-' + q.id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        if (window.innerWidth <= 860) closeSidebar();
+      };
+      sec.appendChild(a);
+    });
+    nav.appendChild(sec);
+  });
+}
+
+function buildContent() {
+  const container = document.getElementById('content');
+  container.innerHTML = '';
+
+  let anyVisible = false;
+  const query = document.getElementById('searchBox').value.toLowerCase();
+
+  DOMAINS.forEach(d => {
+    const visibleQs = d.questions.filter(q => {
+      const matchSearch = !query || q.q.toLowerCase().includes(query) || q.a.toLowerCase().includes(query);
+      const matchFilter = activeFilter === 'all' ||
+        (activeFilter === 'done' && done.has(q.id)) ||
+        (activeFilter === 'todo' && !done.has(q.id));
+      return matchSearch && matchFilter;
+    });
+
+    if (!visibleQs.length) return;
+    anyVisible = true;
+
+    const sec = document.createElement('div');
+    sec.className = 'domain-section';
+    sec.id = 'domain-' + d.id;
+    sec.innerHTML = `
+      <div class="domain-header">
+        <span class="domain-num">${d.num}</span>
+        <span class="domain-title">${d.title}</span>
+        <span class="domain-count">${visibleQs.length} question${visibleQs.length !== 1 ? 's' : ''}</span>
+      </div>`;
+
+    visibleQs.forEach(q => {
+      const card = document.createElement('div');
+      card.className = 'q-card' + (done.has(q.id) ? ' marked-done' : '');
+      card.id = 'card-' + q.id;
+
+      const tagHTML = (q.tags || []).map(t => `<span class="tag tag-${t.toLowerCase()}">${t}</span>`).join('');
+
+      card.innerHTML = `
+        <div class="q-header" onclick="toggleCard('${q.id}')">
+          <span class="q-badge">${q.num}</span>
+          <span class="q-question">${q.q}</span>
+          <div class="q-controls" onclick="event.stopPropagation()">
+            ${tagHTML}
+            <button class="done-btn" onclick="toggleDone('${q.id}')">${done.has(q.id) ? '✓ Done' : 'Mark Done'}</button>
+          </div>
+          <span class="expand-arrow">▼</span>
+        </div>
+        <div class="q-body">
+          <div class="q-body-inner">${q.a}</div>
+        </div>`;
+
+      sec.appendChild(card);
+    });
+
+    container.appendChild(sec);
+  });
+
+  document.getElementById('noResult').style.display = anyVisible ? 'none' : 'block';
+  updateProgress();
+}
+
+function toggleCard(id) {
+  const card = document.getElementById('card-' + id);
+  const isExpanded = card.classList.contains('expanded');
+  // Close all first
+  document.querySelectorAll('.q-card.expanded').forEach(c => c.classList.remove('expanded'));
+  if (!isExpanded) {
+    card.classList.add('expanded');
+    // Update active nav
+    document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+    const navEl = document.getElementById('nav-' + id);
+    if (navEl) navEl.classList.add('active');
+  }
+}
+
+function toggleDone(id) {
+  if (done.has(id)) { done.delete(id); } else { done.add(id); }
+  saveDone();
+  buildNav();
+  buildContent();
+}
+
+function updateProgress() {
+  const total = DOMAINS.reduce((s, d) => s + d.questions.length, 0);
+  const count = done.size;
+  document.getElementById('progressText').textContent = `${count} / ${total}`;
+  document.getElementById('progressFill').style.width = (count / total * 100) + '%';
+}
+
+// ── SEARCH ──
+let searchTimer;
+document.getElementById('searchBox').addEventListener('input', () => {
+  clearTimeout(searchTimer);
+  searchTimer = setTimeout(buildContent, 180);
+});
+
+// ── FILTER ──
+document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    activeFilter = btn.dataset.filter;
+    buildContent();
+  });
+});
+
+// ── MOBILE SIDEBAR ──
+const sidebar = document.getElementById('sidebar');
+const overlay = document.getElementById('overlay');
+
+function closeSidebar() {
+  sidebar.classList.remove('open');
+  overlay.classList.remove('open');
+}
+
+document.getElementById('mobToggle').onclick = () => {
+  sidebar.classList.toggle('open');
+  overlay.classList.toggle('open');
+};
+
+overlay.onclick = closeSidebar;
+
+// ── SCROLL TOP ──
+const scrollTopBtn = document.getElementById('scrollTop');
+window.addEventListener('scroll', () => {
+  scrollTopBtn.classList.toggle('visible', window.scrollY > 400);
+});
+scrollTopBtn.onclick = () => window.scrollTo({ top: 0, behavior: 'smooth' });
+
+// ── INIT ──
+buildNav();
+buildContent();
+</script>
+</body>
+</html>

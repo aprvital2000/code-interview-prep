@@ -1,0 +1,1233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Amex Interview Questions</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Outfit:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f5f2ed;
+    --bg2: #ede9e2;
+    --surface: #ffffff;
+    --surface2: #faf8f5;
+    --border: #ddd8cf;
+    --border-strong: #c8c0b4;
+    --navy: #0d1f3c;
+    --navy2: #162b50;
+    --blue: #1a56a0;
+    --blue-dim: rgba(26,86,160,0.08);
+    --blue-mid: rgba(26,86,160,0.15);
+    --gold: #b8862a;
+    --gold-dim: rgba(184,134,42,0.1);
+    --text: #1a1610;
+    --text-muted: #6b6055;
+    --text-dim: #a8a098;
+    --red: #c0392b;
+    --red-dim: rgba(192,57,43,0.08);
+    --green: #1a7a4a;
+    --green-dim: rgba(26,122,74,0.08);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Outfit', sans-serif;
+    font-weight: 300;
+    line-height: 1.7;
+    min-height: 100vh;
+  }
+
+  /* Grain overlay */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 0.4;
+  }
+
+  /* ─── SIDEBAR NAV ─── */
+  .sidebar {
+    position: fixed;
+    left: 0; top: 0; bottom: 0;
+    width: 220px;
+    background: var(--navy);
+    padding: 32px 0 24px;
+    display: flex;
+    flex-direction: column;
+    z-index: 100;
+    overflow-y: auto;
+    border-right: 1px solid rgba(255,255,255,0.05);
+  }
+
+  .sidebar-brand {
+    padding: 0 20px 28px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    margin-bottom: 16px;
+  }
+
+  .sidebar-brand .company {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: #6a8bb5;
+    margin-bottom: 4px;
+  }
+
+  .sidebar-brand .role {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 16px;
+    font-weight: 600;
+    color: #e8e4dc;
+    line-height: 1.3;
+  }
+
+  .nav-section-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #3d5a7a;
+    padding: 12px 20px 6px;
+  }
+
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 20px;
+    cursor: pointer;
+    transition: background 0.15s;
+    text-decoration: none;
+    border-left: 2px solid transparent;
+  }
+
+  .nav-item:hover {
+    background: rgba(255,255,255,0.05);
+    border-left-color: #4a7ab5;
+  }
+
+  .nav-item.active {
+    background: rgba(26,86,160,0.2);
+    border-left-color: #5b9bd5;
+  }
+
+  .nav-icon { font-size: 13px; opacity: 0.8; }
+
+  .nav-label {
+    font-size: 12px;
+    font-weight: 400;
+    color: #9ab2cc;
+    line-height: 1.3;
+  }
+
+  .nav-item.active .nav-label { color: #c8daf0; }
+
+  .nav-count {
+    margin-left: auto;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: #3d5a7a;
+    background: rgba(255,255,255,0.05);
+    padding: 1px 6px;
+    border-radius: 10px;
+  }
+
+  .sidebar-footer {
+    margin-top: auto;
+    padding: 16px 20px 0;
+    border-top: 1px solid rgba(255,255,255,0.06);
+  }
+
+  .progress-ring-wrap {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .progress-ring-label {
+    font-size: 11px;
+    color: #4a6a8a;
+    line-height: 1.4;
+  }
+
+  .progress-ring-label strong {
+    display: block;
+    font-size: 18px;
+    font-weight: 600;
+    color: #7aafd4;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  /* ─── MAIN CONTENT ─── */
+  .main {
+    margin-left: 220px;
+    min-height: 100vh;
+  }
+
+  /* Header banner */
+  .header-banner {
+    background: var(--navy);
+    padding: 48px 56px 40px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .header-banner::before {
+    content: '';
+    position: absolute;
+    right: -80px; top: -80px;
+    width: 400px; height: 400px;
+    border-radius: 50%;
+    border: 1px solid rgba(255,255,255,0.03);
+  }
+
+  .header-banner::after {
+    content: '';
+    position: absolute;
+    right: 60px; top: 20px;
+    width: 200px; height: 200px;
+    border-radius: 50%;
+    border: 1px solid rgba(255,255,255,0.04);
+  }
+
+  .header-eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+
+  .eyebrow-chip {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #5b9bd5;
+    background: rgba(91,155,213,0.1);
+    border: 1px solid rgba(91,155,213,0.2);
+    padding: 3px 10px;
+    border-radius: 3px;
+  }
+
+  .eyebrow-divider { color: rgba(255,255,255,0.15); font-size: 12px; }
+
+  .header-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(32px, 4vw, 48px);
+    font-weight: 700;
+    color: #f0ede8;
+    line-height: 1.1;
+    margin-bottom: 8px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .header-title em {
+    font-style: italic;
+    color: #7abeeb;
+  }
+
+  .header-subtitle {
+    font-size: 14px;
+    color: #5a7a9a;
+    font-weight: 300;
+    position: relative;
+    z-index: 1;
+  }
+
+  .header-stats {
+    display: flex;
+    gap: 32px;
+    margin-top: 28px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .stat {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .stat-value {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 22px;
+    font-weight: 500;
+    color: #c8daf0;
+  }
+
+  .stat-label {
+    font-size: 11px;
+    color: #3d5a7a;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  /* Toolbar */
+  .toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 56px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 50;
+  }
+
+  .progress-track {
+    flex: 1;
+    max-width: 320px;
+    height: 4px;
+    background: var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--blue), #4a9fd4);
+    border-radius: 4px;
+    width: 0%;
+    transition: width 0.4s ease;
+  }
+
+  .progress-text {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--text-dim);
+    margin-right: 16px;
+    white-space: nowrap;
+  }
+
+  .btn-group { display: flex; gap: 8px; }
+
+  .btn {
+    font-family: 'Outfit', sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    padding: 6px 14px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.15s;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text-muted);
+    letter-spacing: 0.02em;
+  }
+
+  .btn:hover { background: var(--bg2); color: var(--text); border-color: var(--border-strong); }
+  .btn.primary { background: var(--navy); border-color: var(--navy); color: #c8daf0; }
+  .btn.primary:hover { background: var(--navy2); }
+
+  /* ─── CONTENT AREA ─── */
+  .content { padding: 40px 56px 80px; }
+
+  /* Section */
+  .section {
+    margin-bottom: 10px;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 18px 24px;
+    background: var(--surface);
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.15s;
+    border-bottom: 1px solid transparent;
+  }
+
+  .section-header:hover { background: var(--surface2); }
+  .section.open .section-header {
+    background: var(--surface2);
+    border-bottom-color: var(--border);
+  }
+
+  .section-icon-wrap {
+    width: 36px; height: 36px;
+    border-radius: 6px;
+    background: var(--blue-dim);
+    border: 1px solid rgba(26,86,160,0.12);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+
+  .section.open .section-icon-wrap {
+    background: var(--navy);
+  }
+
+  .section-meta { flex: 1; }
+
+  .section-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--blue);
+    margin-bottom: 2px;
+  }
+
+  .section-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--navy);
+  }
+
+  .section-badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--text-dim);
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    padding: 2px 8px;
+    border-radius: 12px;
+  }
+
+  .section-chevron {
+    font-size: 10px;
+    color: var(--text-dim);
+    transition: transform 0.25s;
+    margin-left: 6px;
+  }
+  .section.open .section-chevron { transform: rotate(180deg); color: var(--blue); }
+
+  .section-body {
+    display: none;
+    background: var(--surface);
+  }
+  .section.open .section-body { display: block; }
+
+  /* QA Card */
+  .qa-card { border-bottom: 1px solid var(--border); }
+  .qa-card:last-child { border-bottom: none; }
+
+  .qa-q {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 18px 24px 14px;
+    cursor: pointer;
+    transition: background 0.12s;
+  }
+  .qa-q:hover { background: var(--bg); }
+  .qa-card.open .qa-q { background: var(--bg); }
+
+  .q-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--blue);
+    background: var(--blue-dim);
+    border: 1px solid rgba(26,86,160,0.15);
+    padding: 2px 7px;
+    border-radius: 3px;
+    flex-shrink: 0;
+    margin-top: 2px;
+    letter-spacing: 0.04em;
+  }
+
+  .q-text {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--navy);
+    flex: 1;
+    line-height: 1.5;
+  }
+
+  .q-arrow {
+    color: var(--text-dim);
+    font-size: 10px;
+    transition: transform 0.2s, color 0.15s;
+    flex-shrink: 0;
+    margin-top: 4px;
+  }
+  .qa-card.open .q-arrow { transform: rotate(180deg); color: var(--blue); }
+
+  .qa-a {
+    display: none;
+    padding: 4px 24px 24px 52px;
+    background: var(--surface2);
+    border-top: 1px solid var(--border);
+  }
+  .qa-card.open .qa-a { display: block; }
+
+  .answer-body {
+    font-size: 13.5px;
+    color: #3a3028;
+    line-height: 1.85;
+    font-weight: 300;
+  }
+
+  .answer-body p { margin-bottom: 12px; }
+  .answer-body p:last-child { margin-bottom: 0; }
+
+  .answer-body strong {
+    color: var(--navy);
+    font-weight: 600;
+  }
+
+  .answer-body em {
+    color: var(--blue);
+    font-style: normal;
+    font-weight: 400;
+  }
+
+  .answer-body code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    padding: 1px 5px;
+    border-radius: 3px;
+    color: var(--navy2);
+  }
+
+  .callout {
+    display: flex;
+    gap: 10px;
+    padding: 12px 14px;
+    border-radius: 5px;
+    margin: 12px 0 4px;
+    font-size: 13px;
+    line-height: 1.6;
+  }
+
+  .callout.warn {
+    background: var(--red-dim);
+    border: 1px solid rgba(192,57,43,0.15);
+    color: #8b2c22;
+  }
+
+  .callout.tip {
+    background: var(--green-dim);
+    border: 1px solid rgba(26,122,74,0.15);
+    color: #1a4a2e;
+  }
+
+  .callout.info {
+    background: var(--blue-dim);
+    border: 1px solid rgba(26,86,160,0.15);
+    color: #1a3a6a;
+  }
+
+  /* Ask list */
+  .ask-list { list-style: none; padding: 20px 24px; }
+
+  .ask-list li {
+    display: flex;
+    gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 13.5px;
+    color: #3a3028;
+    align-items: flex-start;
+    font-weight: 300;
+  }
+  .ask-list li:last-child { border-bottom: none; }
+
+  .ask-bullet {
+    color: var(--blue);
+    font-size: 16px;
+    line-height: 1.3;
+    flex-shrink: 0;
+    font-weight: 600;
+  }
+
+  /* Pre-screen section styling */
+  .prescreen-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    background: var(--border);
+  }
+
+  /* Tag pills */
+  .tag-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 10px;
+  }
+
+  .tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 3px;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    letter-spacing: 0.04em;
+  }
+
+  .tag.blue { background: var(--blue-dim); border-color: rgba(26,86,160,0.2); color: var(--blue); }
+  .tag.gold { background: var(--gold-dim); border-color: rgba(184,134,42,0.2); color: var(--gold); }
+
+  /* Tip bar */
+  .tip-bar {
+    margin-top: 40px;
+    padding: 18px 24px;
+    background: var(--navy);
+    border-radius: 6px;
+    font-size: 13px;
+    color: #6a8aaa;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+  }
+
+  .tip-bar strong { color: #90b8d8; }
+  .tip-icon { font-size: 16px; flex-shrink: 0; }
+
+  @media (max-width: 900px) {
+    .sidebar { display: none; }
+    .main { margin-left: 0; }
+    .header-banner { padding: 32px 24px; }
+    .toolbar { padding: 12px 24px; }
+    .content { padding: 24px 24px 60px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ─── SIDEBAR ─── -->
+<nav class="sidebar">
+  <div class="sidebar-brand">
+    <div class="company">American Express</div>
+    <div class="role">Sr. Manager,<br>Software Engineering</div>
+  </div>
+
+  <div class="nav-section-label">Technical</div>
+  <a class="nav-item active" href="#s-reactive" onclick="setActive(this)">
+    <span class="nav-icon">⚛️</span>
+    <span class="nav-label">Java / Reactive</span>
+    <span class="nav-count">3</span>
+  </a>
+  <a class="nav-item" href="#s-platform" onclick="setActive(this)">
+    <span class="nav-icon">🏗️</span>
+    <span class="nav-label">Platform & Dev XP</span>
+    <span class="nav-count">2</span>
+  </a>
+  <a class="nav-item" href="#s-events" onclick="setActive(this)">
+    <span class="nav-icon">🔁</span>
+    <span class="nav-label">Event-Driven Arch</span>
+    <span class="nav-count">2</span>
+  </a>
+  <a class="nav-item" href="#s-postgres" onclick="setActive(this)">
+    <span class="nav-icon">🗃️</span>
+    <span class="nav-label">PostgreSQL & Data</span>
+    <span class="nav-count">1</span>
+  </a>
+  <a class="nav-item" href="#s-testing" onclick="setActive(this)">
+    <span class="nav-icon">🧪</span>
+    <span class="nav-label">Testing & Reliability</span>
+    <span class="nav-count">1</span>
+  </a>
+
+  <div class="nav-section-label" style="margin-top:8px">Leadership</div>
+  <a class="nav-item" href="#s-leadership" onclick="setActive(this)">
+    <span class="nav-icon">👥</span>
+    <span class="nav-label">Team & Mentoring</span>
+    <span class="nav-count">2</span>
+  </a>
+
+  <div class="nav-section-label" style="margin-top:8px">Screening</div>
+  <a class="nav-item" href="#s-prescreen" onclick="setActive(this)">
+    <span class="nav-icon">📋</span>
+    <span class="nav-label">Pre-Screen Q&A</span>
+    <span class="nav-count">7</span>
+  </a>
+  <a class="nav-item" href="#s-ask" onclick="setActive(this)">
+    <span class="nav-icon">💬</span>
+    <span class="nav-label">Ask Them</span>
+    <span class="nav-count">5</span>
+  </a>
+
+  <div class="sidebar-footer">
+    <div class="progress-ring-wrap">
+      <div>
+        <div class="progress-ring-label">
+          <strong id="sidebarCount">0%</strong>
+          reviewed
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- ─── MAIN ─── -->
+<div class="main">
+
+  <!-- Header -->
+  <div class="header-banner">
+    <div class="header-eyebrow">
+      <span class="eyebrow-chip">Interview Prep</span>
+      <span class="eyebrow-divider">·</span>
+      <span class="eyebrow-chip">Phoenix, AZ · On-site</span>
+    </div>
+    <h1 class="header-title">Sr. Manager, <em>Software Engineering</em><br>Enterprise Platforms</h1>
+    <p class="header-subtitle">American Express · Java · Spring WebFlux · Kafka · PostgreSQL · Platform Engineering</p>
+    <div class="header-stats">
+      <div class="stat">
+        <span class="stat-value" id="totalQ">19</span>
+        <span class="stat-label">Questions</span>
+      </div>
+      <div class="stat">
+        <span class="stat-value">8</span>
+        <span class="stat-label">Categories</span>
+      </div>
+      <div class="stat">
+        <span class="stat-value" id="reviewedCount">0</span>
+        <span class="stat-label">Reviewed</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toolbar -->
+  <div class="toolbar">
+    <div style="display:flex;align-items:center;gap:14px;flex:1">
+      <span class="progress-text" id="progressText">0 of 19 reviewed</span>
+      <div class="progress-track">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+    </div>
+    <div class="btn-group">
+      <button class="btn" onclick="collapseAll()">Collapse All</button>
+      <button class="btn primary" onclick="expandAll()">Expand All</button>
+    </div>
+  </div>
+
+  <!-- Content -->
+  <div class="content">
+
+    <!-- ─── SECTION: Java / Reactive ─── -->
+    <div class="section" id="s-reactive">
+      <div class="section-header" onclick="toggleSection(this)">
+        <div class="section-icon-wrap">⚛️</div>
+        <div class="section-meta">
+          <div class="section-tag">Technical · 01</div>
+          <div class="section-name">Java / Reactive Programming</div>
+        </div>
+        <div class="tag-row" style="margin:0;flex-wrap:nowrap">
+          <span class="tag blue">Java 17+</span>
+          <span class="tag blue">WebFlux</span>
+          <span class="tag blue">Kotlin</span>
+        </div>
+        <span class="section-badge" style="margin-left:12px">3 Q&A</span>
+        <span class="section-chevron">▼</span>
+      </div>
+      <div class="section-body">
+
+        <div class="qa-card">
+          <div class="qa-q" onclick="toggleCard(this)">
+            <span class="q-num">Q 01</span>
+            <span class="q-text">How do you approach building reactive microservices with Spring WebFlux, and when would you choose it over traditional Spring MVC?</span>
+            <span class="q-arrow">▼</span>
+          </div>
+          <div class="qa-a">
+            <div class="answer-body">
+              <p>The core decision is whether the service's workload is I/O-bound or compute-bound. <strong>WebFlux shines when a service spends most of its time waiting</strong> — waiting on database responses, downstream API calls, or message streams. In those cases, the non-blocking model lets a small thread pool handle far more concurrent requests than a thread-per-request model can sustain under load.</p>
+              <p>The trade-offs I communicate clearly to teams: reactive code is harder to reason about, harder to debug, and harder to write correctly — especially around error handling and backpressure. So I don't mandate WebFlux everywhere. My rule of thumb: if a service handles high concurrency with significant I/O latency — payment processing callbacks, real-time event streams, API gateway fanouts — WebFlux is the right tool. CRUD-heavy services with simple synchronous flows stay on MVC.</p>
+              <p>In practice, the most common mistake I see is teams mixing blocking calls into a reactive chain — a JDBC call inside a <code>Mono</code> pipeline, for example. That negates the entire benefit and can deadlock the scheduler. I enforce non-blocking discipline through code review standards and steer teams toward <strong>R2DBC</strong> for reactive database access rather than trying to wrap JDBC.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="qa-card">
+          <div class="qa-q" onclick="toggleCard(this)">
+            <span class="q-num">Q 02</span>
+            <span class="q-text">What are the key patterns you apply when designing reactive APIs with Spring WebFlux for a financial services platform?</span>
+            <span class="q-arrow">▼</span>
+          </div>
+          <div class="qa-a">
+            <div class="answer-body">
+              <p>Several patterns are non-negotiable in a financial context.</p>
+              <p><strong>Backpressure handling</strong> — consumers must be able to signal capacity limits upstream. I use <code>limitRate()</code> operators and bounded queues on Flux streams to prevent memory exhaustion under load spikes. This is especially important for event-driven endpoints that fan out to multiple downstream services.</p>
+              <p><strong>Error propagation and recovery</strong> — reactive chains need explicit error handling at every layer. I use <code>onErrorResume()</code> for graceful fallbacks and <code>retry()</code> with exponential backoff and jitter for transient failures. In financial flows, I'm explicit about which errors are retryable and which are terminal — a duplicate transaction error should never be retried.</p>
+              <p><strong>Timeout contracts</strong> — every external call in a reactive chain has an explicit <code>timeout()</code> operator. I don't rely on downstream services honoring SLAs; I enforce the timeout on my side and handle it as a defined failure mode.</p>
+              <p><strong>Context propagation</strong> — trace IDs, correlation IDs, and security context need to travel through the reactive chain. Spring's <code>ReactorContext</code> handles this, but it requires deliberate design — I enforce context propagation standards so that distributed traces are complete and audit logs are attributable to the originating request.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="qa-card">
+          <div class="qa-q" onclick="toggleCard(this)">
+            <span class="q-num">Q 03</span>
+            <span class="q-text">Walk me through how you would handle exactly-once semantics in a Kafka-based financial transaction pipeline.</span>
+            <span class="q-arrow">▼</span>
+          </div>
+          <div class="qa-a">
+            <div class="answer-body">
+              <p>Exactly-once in Kafka requires careful design at both the producer and consumer layers. The right framing is: exactly-once <em>delivery</em> is achievable within the Kafka ecosystem, but exactly-once <em>processing</em> requires application-level guarantees as well.</p>
+              <p>On the <strong>producer side</strong>, I enable idempotent producers (<code>enable.idempotence=true</code>) and use Kafka transactions when a single business operation needs to write to multiple topics atomically. The transaction API ensures either all writes commit or none do — critical when a payment event needs to be written to both an audit topic and a processing topic simultaneously.</p>
+              <p>On the <strong>consumer side</strong>, I use <code>read_committed</code> isolation to only consume committed transactional messages, preventing processing of in-flight or aborted transactions. For processing guarantees, I implement idempotent consumers — every message carries a unique business key, and the consumer checks a deduplication store (typically a Redis or PostgreSQL-backed idempotency table) before processing.</p>
+              <p>The <strong>offset commit strategy</strong> matters too. I commit offsets only after successful processing and downstream persistence — never pre-commit. That means a consumer failure reprocesses the last batch, but idempotency at the application layer makes that safe.</p>
+              <p>In practice I always discuss the performance cost with stakeholders — exactly-once semantics add latency and reduce throughput compared to at-least-once. For high-volume non-financial events I'll often use at-least-once with idempotent consumers, reserving full transactional semantics for payment and settlement flows where the cost of a duplicate is unacceptable.</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ─── SECTION: Platform & Dev XP ─── -->
+    <div class="section" id="s-platform">
+      <div class="section-header" onclick="toggleSection(this)">
+        <div class="section-icon-wrap">🏗️</div>
+        <div class="section-meta">
+          <div class="section-tag">Technical · 02</div>
+          <div class="section-name">Platform Engineering &amp; Developer Experience</div>
+        </div>
+        <div class="tag-row" style="margin:0;flex-wrap:nowrap">
+          <span class="tag blue">APIs</span>
+          <span class="tag blue">Developer Portal</span>
+          <span class="tag blue">SDKs</span>
+        </div>
+        <span class="section-badge" style="margin-left:12px">2 Q&A</span>
+        <span class="section-chevron">▼</span>
+      </div>
+      <div class="section-body">
+
+        <div class="qa-card">
+          <div class="qa-q" onclick="toggleCard(this)">
+            <span class="q-num">Q 04</span>
+            <span class="q-text">What does a great internal developer platform look like, and how do you build one that engineers actually adopt?</span>
+            <span class="q-arrow">▼</span>
+          </div>
+          <div class="qa-a">
+            <div class="answer-body">
+              <p>Adoption is the only metric that matters — the most technically elegant platform that engineers route around is a failure. The adoption question has to be answered before the architecture question.</p>
+              <p>The platforms engineers adopt have three properties: they make the right thing the easy thing, they don't impose ceremony for simple use cases, and they have first-class documentation that respects the engineer's time.</p>
+              <p>I approach platform builds in three layers. The <strong>API layer</strong> — well-designed, consistent, versioned REST or event-driven APIs with clear contracts. I invest in OpenAPI spec-first design so the documentation and SDK generation are downstream artifacts of the contract, not afterthoughts. The <strong>developer portal</strong> — a single place where engineers can discover APIs, access interactive docs, generate client code, and monitor their integration health. I treat this as a product with a product owner, not an infrastructure artifact. The <strong>SDK and tooling layer</strong> — idiomatic client libraries in the languages teams actually use, with sensible defaults and meaningful error messages.</p>
+              <p>The adoption flywheel: start with a high-value, high-visibility use case that a prominent internal team actually needs. Build it properly. Let the experience speak. <em>Early adopters become internal advocates, and the platform grows through pull rather than mandate.</em></p>
+            </div>
+          </div>
+        </div>
+
+        <div class="qa-card">
+          <div class="qa-q" onclick="toggleCard(this)">
+            <span class="q-num">Q 05</span>
+            <span class="q-text">How do you design APIs for a platform that serves both internal engineers and external partners?</span>
+            <span class="q-arrow">▼</span>
+          </div>
+          <div class="qa-a">
+            <div class="answer-body">
+              <p>The internal/external distinction drives several key design decisions.</p>
+              <p><strong>Versioning strategy</strong> — external APIs need conservative versioning with long deprecation windows. I use URI versioning (<code>/v1/</code>, <code>/v2/</code>) for external-facing APIs because it's explicit and tooling-friendly. Internally I can use header-based versioning or move faster on breaking changes because I control the consumer teams.</p>
+              <p><strong>Contract fidelity</strong> — external API contracts are commitments. I design external APIs with the most conservative interface possible — minimal required fields, optional extensions, no undocumented behavior. Internal APIs can expose richer, more opinionated contracts because I can coordinate changes across the org.</p>
+              <p><strong>Authentication and authorization</strong> — external APIs use OAuth 2.0 with scoped tokens; the authorization model is explicit and documented. Internal APIs in a zero-trust architecture also use strong auth, but the scope model can be coarser.</p>
+              <p><strong>Observability asymmetry</strong> — external API consumers need visibility into their own usage: rate limit headers, request IDs for support escalation, clear error codes. I expose per-consumer dashboards in the developer portal. At Amex scale specifically, I'd invest early in a unified API gateway handling cross-cutting concerns — auth, rate limiting, logging, routing — so individual microservices don't each implement their own inconsistently.</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ─── SECTION: Event-Driven Arch ─── -->
+    <div class="section" id="s-events">
+      <div class="section-header" onclick="toggleSection(this)">
+        <div class="section-icon-wrap">🔁</div>
+        <div class="section-meta">
+          <div class="section-tag">Technical · 03</div>
+          <div class="section-name">Event-Driven Architecture</div>
+        </div>
+        <div class="tag-row" style="margin:0;flex-wrap:nowrap">
+          <span class="tag blue">Kafka</span>
+          <span class="tag blue">Webhooks</span>
+          <span class="tag blue">Async APIs</span>
+        </div>
+        <span class="section-badge" style="margin-left:12px">2 Q&A</span>
+        <span class="section-chevron">▼</span>
+      </div>
+      <div class="section-body">
+
+        <div class="qa-card">
+          <div class="qa-q" onclick="toggleCard(this)">
+            <span class="q-num">Q 06</span>
+            <span class="q-text">How do you design asynchronous APIs and what are the key trade-offs compared to synchronous REST?</span>
+            <span class="q-arrow">▼</span>
+          </div>
+          <div class="qa-a">
+            <div class="answer-body">
+              <p>Asynchronous API design is fundamentally about decoupling — the caller doesn't wait for the result, which means the two systems can scale, fail, and evolve independently. That's powerful but it introduces complexity that synchronous APIs hide.</p>
+              <p>The key design decisions I make explicit upfront: <strong>delivery semantics</strong> (at-least-once is usually the right default with idempotent consumers), <strong>ordering guarantees</strong> (Kafka partitioning gives ordering within a partition — I design partition keys to guarantee ordering where it matters, e.g., all events for a given account on the same partition), and <strong>schema evolution</strong> (I use Avro or Protobuf with a schema registry to enforce backward-compatible schema evolution).</p>
+              <p>For webhooks specifically, I design for consumer unreliability — the receiver will be unavailable sometimes. I implement exponential backoff retry with a dead-letter queue for events that exhaust retries, and I expose a replay API so consumers can recover missed events without requiring the producer to re-emit them.</p>
+              <p>The trade-off I'm honest about with product stakeholders: async systems are harder to debug and harder to reason about end-to-end. I always pair an async architecture with a strong observability investment — <em>correlated trace IDs in event payloads, end-to-end latency metrics that span both producer and consumer, and dead-letter queue monitoring.</em></p>
+            </div>
+          </div>
+        </div>
+
+        <div class="qa-card">
+          <div class="qa-q" onclick="toggleCard(this)">
+            <span class="q-num">Q 07</span>
+            <span class="q-text">How do you handle schema evolution in a Kafka-based event-driven platform at scale?</span>
+            <span class="q-arrow">▼</span>
+          </div>
+          <div class="qa-a">
+            <div class="answer-body">
+              <p>Schema evolution is one of the most operationally dangerous problems in event-driven systems, because a breaking schema change can silently corrupt consumers at runtime — sometimes hours or days after the producer deployed.</p>
+              <p>My non-negotiable: every Kafka topic has a registered schema in a schema registry (Confluent Schema Registry is the standard). Producers validate messages against the registered schema at publish time. Consumers validate on consumption. This gives you a hard enforcement gate on both sides.</p>
+              <p>For evolution rules, I enforce <strong>backward and forward compatibility</strong> as the standard mode: new fields must have defaults, fields can't be removed without a deprecation cycle, and types can't change. That means any existing consumer binary can read new messages, and new consumer binaries can read old messages — you can deploy producers and consumers independently without coordination windows.</p>
+              <p>For truly breaking changes I use a <strong>dual-write migration</strong>: the producer writes to both the old and new schema topics in parallel during a migration window, consumers migrate to the new topic, and the old topic is retired once all consumers are confirmed migrated.</p>
+              <p>I also enforce schema ownership in the CI pipeline: schema changes require a schema registry compatibility check as a mandatory CI step. <em>A PR that introduces an incompatible schema change fails the build before it can be merged, let alone deployed.</em></p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ─── SECTION: PostgreSQL ─── -->
+    <div class="section" id="s-postgres">
+      <div class="section-header" onclick="toggleSection(this)">
+        <div class="section-icon-wrap">🗃️</div>
+        <div class="section-meta">
+          <div class="section-tag">Technical · 04</div>
+          <div class="section-name">PostgreSQL &amp; Data</div>
+        </div>
+        <div class="tag-row" style="margin:0;flex-wrap:nowrap">
+          <span class="tag blue">PostgreSQL</span>
+          <span class="tag blue">R2DBC</span>
+          <span class="tag blue">PgBouncer</span>
+        </div>
+        <span class="section-badge" style="margin-left:12px">1 Q&A</span>
+        <span class="section-chevron">▼</span>
+      </div>
+      <div class="section-body">
+
+        <div class="qa-card">
+          <div class="qa-q" onclick="toggleCard(this)">
+            <span class="q-num">Q 08</span>
+            <span class="q-text">How do you design PostgreSQL schemas and query patterns for high-throughput, mission-critical financial platforms?</span>
+            <span class="q-arrow">▼</span>
+          </div>
+          <div class="qa-a">
+            <div class="answer-body">
+              <p><strong>Write path optimization</strong> — financial platforms are write-heavy. I design schemas with insert patterns in mind: append-only event tables where possible, UUIDs as primary keys generated client-side (avoiding sequence contention under high concurrency), and partial indexes on high-selectivity filter columns rather than broad composite indexes that bloat write overhead.</p>
+              <p><strong>Read/write separation</strong> — read replicas for reporting and non-transactional queries, with explicit connection routing in the application layer. I never let ad-hoc analytical queries compete with transactional workloads on the primary.</p>
+              <p><strong>Transaction scope discipline</strong> — I keep transactions as short as possible. Long-running transactions hold row locks and bloat the WAL, which kills throughput at scale. In Spring WebFlux with R2DBC, this means explicit transaction boundaries scoped tightly around the critical mutation, not the entire service method.</p>
+              <p><strong>Partitioning strategy</strong> — for high-volume event or transaction tables, range partitioning on timestamp is my default. It keeps hot data in recently active partitions, makes archival clean (drop old partitions instead of bulk deletes), and keeps index sizes manageable.</p>
+              <p><strong>Connection pool sizing</strong> — PostgreSQL is not designed for thousands of direct connections. I use <code>PgBouncer</code> in transaction mode between the application and the database, with pool sizes tuned to the database's <code>max_connections</code> and the application's actual concurrency profile.</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ─── SECTION: Testing ─── -->
+    <div class="section" id="s-testing">
+      <div class="section-header" onclick="toggleSection(this)">
+        <div class="section-icon-wrap">🧪</div>
+        <div class="section-meta">
+          <div class="section-tag">Technical · 05</div>
+          <div class="section-name">Testing &amp; Reliability</div>
+        </div>
+        <div class="tag-row" style="margin:0;flex-wrap:nowrap">
+          <span class="tag blue">StepVerifier</span>
+          <span class="tag blue">Testcontainers</span>
+          <span class="tag blue">Pact</span>
+        </div>
+        <span class="section-badge" style="margin-left:12px">1 Q&A</span>
+        <span class="section-chevron">▼</span>
+      </div>
+      <div class="section-body">
+
+        <div class="qa-card">
+          <div class="qa-q" onclick="toggleCard(this)">
+            <span class="q-num">Q 09</span>
+            <span class="q-text">What's your testing strategy for reactive microservices, and how do you ensure test coverage is meaningful rather than just high?</span>
+            <span class="q-arrow">▼</span>
+          </div>
+          <div class="qa-a">
+            <div class="answer-body">
+              <p>High coverage percentage is a vanity metric if the tests aren't testing the right things. My testing philosophy for reactive services has three layers.</p>
+              <p><strong>Unit tests</strong> cover pure logic — transformations, business rules, validation. I use <code>StepVerifier</code> from Project Reactor for reactive unit tests — it lets you assert the exact sequence of emissions, errors, and completions on a <code>Flux</code> or <code>Mono</code> without needing a running application context. These run fast and I expect high coverage here.</p>
+              <p><strong>Integration tests</strong> cover the contract between the service and its dependencies: database interactions, external API calls, Kafka produce/consume behavior. I use <code>Testcontainers</code> to spin up real PostgreSQL and Kafka instances in CI — not mocks. Mocking a database in an integration test gives you confidence in the mock, not in your actual query behavior.</p>
+              <p><strong>Contract tests</strong> — using consumer-driven contracts with Pact or Spring Cloud Contract — are the layer most teams skip and most regret skipping. In a microservices platform, an API contract test verifies that a producer's response structure actually matches what the consumer expects. Without it, a producer can ship a breaking change that passes all its own tests and silently breaks a consumer in production.</p>
+              <p>The "meaningful coverage" standard I apply: <em>can this test catch a regression in a realistic failure mode?</em> If the only way a test fails is if someone deletes the entire method, it's not useful coverage.</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ─── SECTION: Leadership ─── -->
+    <div class="section" id="s-leadership">
+      <div class="section-header" onclick="toggleSection(this)">
+        <div class="section-icon-wrap">👥</div>
+        <div class="section-meta">
+          <div class="section-tag">Leadership · 06</div>
+          <div class="section-name">Team Leadership &amp; Mentoring</div>
+        </div>
+        <div class="tag-row" style="margin:0;flex-wrap:nowrap">
+          <span class="tag gold">Mentoring</span>
+          <span class="tag gold">Agile</span>
+          <span class="tag gold">Refinement</span>
+        </div>
+        <span class="section-badge" style="margin-left:12px">2 Q&A</span>
+        <span class="section-chevron">▼</span>
+      </div>
+      <div class="section-body">
+
+        <div class="qa-card">
+          <div class="qa-q" onclick="toggleCard(this)">
+            <span class="q-num">Q 10</span>
+            <span class="q-text">How do you balance your role as a hands-on technical contributor with the leadership responsibilities of mentoring and driving architecture?</span>
+            <span class="q-arrow">▼</span>
+          </div>
+          <div class="qa-a">
+            <div class="answer-body">
+              <p>The tension is real and I've had to be deliberate about it. My default is to stay technically engaged enough to have credibility and context — I participate in design reviews, I write code on complex components where I can model the standards I expect, and I do meaningful code reviews rather than rubber-stamp approvals.</p>
+              <p>But I've learned the hard way that if I'm the one writing critical path code, I've created a bottleneck and I'm not developing my team. So I apply a rule: <strong>I design and review, but I don't own delivery on components where a senior engineer can do it.</strong> My job is to make them capable of doing it well, not to do it for them.</p>
+              <p>For mentoring specifically, I use two mechanisms. First, design-level pairing — I involve senior engineers in architecture decisions early, ask them to draft the design doc, and review it with them rather than producing the design myself. Second, structured code review — I use reviews as teaching moments, not just quality gates. A comment that explains <em>why</em> a pattern is preferred is worth ten times a comment that just says "change this."</p>
+              <p>The metric I use to evaluate myself: <em>is the team making better architectural decisions without me in the room over time?</em> If yes, the leadership approach is working. If they're always waiting for my input before they move, I'm a bottleneck, not a leader.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="qa-card">
+          <div class="qa-q" onclick="toggleCard(this)">
+            <span class="q-num">Q 11</span>
+            <span class="q-text">How do you collaborate with product owners to ensure work coming into sprints is well-refined and technically sound?</span>
+            <span class="q-arrow">▼</span>
+          </div>
+          <div class="qa-a">
+            <div class="answer-body">
+              <p>The failure mode I've seen most often is engineers treating refinement as a passive activity — showing up to backlog grooming, listening to requirements, and nodding along. By the time a story hits the sprint, there are unresolved technical assumptions baked in that surface mid-sprint as blockers.</p>
+              <p>My approach is to make engineering a first-class participant in the refinement process <em>upstream</em> of grooming. I assign a senior engineer to each in-progress epic as a technical liaison — their job is to be in the product conversations early, raise technical constraints and edge cases before they become story-level surprises, and own the technical acceptance criteria in the story.</p>
+              <p>In grooming sessions specifically, I use a <strong>readiness checklist</strong>: is the API contract defined? Are edge cases and error paths documented? Is the data model impact understood? Are external dependencies identified and confirmed available? A story doesn't get a sprint commitment until those are answered.</p>
+              <p>I also invest in building product owners' technical intuition over time — not to make them engineers, but so they understand why certain requests have architectural implications that need lead time. That relationship investment makes refinement conversations much more productive because we're speaking a common language about trade-offs.</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ─── SECTION: Pre-Screen ─── -->
+    <div class="section" id="s-prescreen">
+      <div class="section-header" onclick="toggleSection(this)">
+        <div class="section-icon-wrap">📋</div>
+        <div class="section-meta">
+          <div class="section-tag">Pre-Screening · 07</div>
+          <div class="section-name">Pre-Screen Questions</div>
+        </div>
+        <span class="section-badge" style="margin-left:auto">7 Q&A</span>
+        <span class="section-chevron">▼</span>
+      </div>
+      <div class="section-body">
+
+        <div class="qa-card">
+          <div class="qa-q" onclick="toggleCard(this)">
+            <span class="q-num">Q 12</span>
+            <span class="q-text">Why are you interested in American Express and why this role specifically?</span>
+            <span class="q-arrow">▼</span>
+          </div>
+          <div class="qa-a">
+            <div class="answer-body">
+              <p>American Express has a reputation that's rare in financial services — a brand built on trust, premium experience, and long-term customer relationships. That alignment between product quality and engineering discipline genuinely appeals to me. I'm not just looking for a large company; I'm looking for one where the engineering investment is taken seriously because the product depends on it.</p>
+              <p>This role specifically resonates because it sits at the intersection of things I care deeply about: <strong>building resilient, event-driven platforms, mentoring engineers to do their best work, and collaborating closely with product to shape what gets built</strong> — not just how. The focus on developer experience through APIs, SDKs, and portals is particularly compelling; I believe the quality of internal platforms directly determines the velocity and quality of everything built on top of them.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="qa-card">
+          <div class="qa-q" onclick="toggleCard(this)">
+            <span class="q-num">Q 13</span>
+            <span class="q-text">Do you require sponsorship now or in the future?</span>
+            <span class="q-arrow">▼</span>
+          </div>
+          <div class="qa-a">
+            <div class="answer-body">
+              <div class="callout warn">⚠️ Fill in based on your situation — e.g. "No, I am a U.S. citizen / permanent resident and do not require sponsorship now or in the future." Or specify visa type if applicable.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="qa-card">
+          <div class="qa-q" onclick="toggleCard(this)">
+            <span class="q-num">Q 14</span>
+            <span class="q-text">What are your compensation expectations?</span>
+            <span class="q-arrow">▼</span>
+          </div>
+          <div class="qa-a">
+            <div class="answer-body">
+              <p>I'm targeting total compensation in line with market rate for a Sr. Manager, Software Engineering at Amex in Phoenix — which I understand to be in the range of <strong>$160K–$210K base</strong> depending on level, plus bonus and any equity components.</p>
+              <p>I'm open to a broader conversation once I better understand the full package structure. My priority is the right fit and scope — compensation is important but it's not the deciding factor.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="qa-card">
+          <div class="qa-q" onclick="toggleCard(this)">
+            <span class="q-num">Q 15</span>
+            <span class="q-text">Please explain a time where you received constructive feedback and how you adjusted your approach.</span>
+            <span class="q-arrow">▼</span>
+          </div>
+          <div class="qa-a">
+            <div class="answer-body">
+              <p>Early in my career leading cross-functional technical initiatives, I received feedback from a product stakeholder that my technical explanations — while thorough — weren't landing well in planning sessions. The feedback was that I was going too deep too fast, and it was creating friction rather than alignment.</p>
+              <p>I took that seriously. I started structuring my contributions differently: <strong>leading with the business impact or risk, then offering to go deeper only if the audience wanted it.</strong> I also started using more visual artifacts — simple architecture diagrams and decision matrices — to anchor conversations before diving into implementation detail.</p>
+              <p>The shift was noticeable. Refinement sessions became more collaborative, stakeholders felt more confident asking questions, and the work coming into sprints was better scoped as a result. It fundamentally changed how I think about technical communication — <em>clarity for the audience matters more than completeness for myself.</em></p>
+            </div>
+          </div>
+        </div>
+
+        <div class="qa-card">
+          <div class="qa-q" onclick="toggleCard(this)">
+            <span class="q-num">Q 16</span>
+            <span class="q-text">Tell me about a time you had to take responsibility to drive a project to a successful outcome.</span>
+            <span class="q-arrow">▼</span>
+          </div>
+          <div class="qa-a">
+            <div class="answer-body">
+              <p>An observability initiative for a distributed platform that had been deprioritized multiple times due to competing roadmap pressure. The system had grown to the point where diagnosing production incidents was taking hours, and the team was losing confidence in deployments.</p>
+              <p>I took ownership without waiting for formal assignment. I built the case — tied to concrete incident data and SLA risk — and got alignment from leadership to carve out engineering capacity. I structured the rollout in phases: starting with structured logging and tracing at service boundaries, then layering in SLI/SLO dashboards, and finally establishing alerting thresholds the team actually trusted.</p>
+              <p>The outcome was a measurable reduction in mean time to resolution and, more importantly, a shift in team confidence around production deployments. <em>It also set a pattern for how we approached operational readiness on subsequent projects.</em></p>
+            </div>
+          </div>
+        </div>
+
+        <div class="qa-card">
+          <div class="qa-q" onclick="toggleCard(this)">
+            <span class="q-num">Q 17</span>
+            <span class="q-text">Please share some highlights or milestones that relate to this role.</span>
+            <span class="q-arrow">▼</span>
+          </div>
+          <div class="qa-a">
+            <div class="answer-body">
+              <p>A few that feel directly relevant:</p>
+              <p>I have hands-on experience building and operating <strong>event-driven, microservices-based platforms</strong> — including designing asynchronous API contracts and managing the operational complexity that comes with distributed, reactive systems.</p>
+              <p>I've led engineering teams through a mix of greenfield development and legacy modernization, with a consistent focus on platform reliability, developer experience, and sustainable architecture — driving API design standards, improving CI/CD pipelines, and building internal tooling that made engineers more productive.</p>
+              <p>I've also worked in <strong>compliance-sensitive environments</strong> including SOX-relevant data platforms — where the bar for reliability, auditability, and change management is high. That experience gives me a strong appreciation for the discipline that mission-critical financial platforms like Amex's require.</p>
+              <p>And practically: I'm actively deepening my Java expertise including reactive patterns with Spring WebFlux, which aligns directly with your stack.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="qa-card">
+          <div class="qa-q" onclick="toggleCard(this)">
+            <span class="q-num">Q 18</span>
+            <span class="q-text">Can you confirm you are able to work out of the American Express office in Phoenix, Arizona?</span>
+            <span class="q-arrow">▼</span>
+          </div>
+          <div class="qa-a">
+            <div class="answer-body">
+              <div class="callout tip">✅ Yes, absolutely. I'm based in the Phoenix metro area and have no constraints working from the Amex Phoenix office.</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ─── SECTION: Ask Them ─── -->
+    <div class="section" id="s-ask">
+      <div class="section-header" onclick="toggleSection(this)">
+        <div class="section-icon-wrap">💬</div>
+        <div class="section-meta">
+          <div class="section-tag">Closing · 08</div>
+          <div class="section-name">Questions to Ask the Interviewer</div>
+        </div>
+        <span class="section-badge" style="margin-left:auto">5 questions</span>
+        <span class="section-chevron">▼</span>
+      </div>
+      <div class="section-body">
+        <ul class="ask-list">
+          <li><span class="ask-bullet">›</span>How is the Enterprise Platforms team structured — what's the split between platform-building work and supporting internal engineering teams?</li>
+          <li><span class="ask-bullet">›</span>What does the current API and developer portal landscape look like — is there an existing internal developer platform, or is this largely greenfield?</li>
+          <li><span class="ask-bullet">›</span>How does the team balance feature velocity with platform stability and backwards compatibility for internal consumers?</li>
+          <li><span class="ask-bullet">›</span>What's the observability and on-call model for platform services — do engineers own production support for what they build?</li>
+          <li><span class="ask-bullet">›</span>What does the technology modernization roadmap look like — are there legacy systems the team is actively migrating away from?</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="tip-bar">
+      <span class="tip-icon">💡</span>
+      <span><strong>Pro tip:</strong> Questions marked ⚠️ need your personal details before the interview. For behavioral questions, anchor your answer to a specific, named project — vague answers lose points at Sr. Manager level. Amex interviewers value concise, structured responses: situation → action → outcome in under 90 seconds.</span>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /main -->
+
+<script>
+  const TOTAL_Q = document.querySelectorAll('.qa-card').length;
+  document.getElementById('totalQ').textContent = TOTAL_Q;
+
+  function toggleSection(headerEl) {
+    const section = headerEl.closest('.section');
+    section.classList.toggle('open');
+  }
+
+  function toggleCard(qEl) {
+    const card = qEl.closest('.qa-card');
+    card.classList.toggle('open');
+    updateProgress();
+  }
+
+  function expandAll() {
+    document.querySelectorAll('.section').forEach(s => s.classList.add('open'));
+    document.querySelectorAll('.qa-card').forEach(c => c.classList.add('open'));
+    updateProgress();
+  }
+
+  function collapseAll() {
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('open'));
+    document.querySelectorAll('.qa-card').forEach(c => c.classList.remove('open'));
+    updateProgress();
+  }
+
+  function setActive(el) {
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    el.classList.add('active');
+  }
+
+  function updateProgress() {
+    const reviewed = document.querySelectorAll('.qa-card.open').length;
+    const pct = Math.round((reviewed / TOTAL_Q) * 100);
+    document.getElementById('progressFill').style.width = pct + '%';
+    document.getElementById('progressText').textContent = `${reviewed} of ${TOTAL_Q} reviewed`;
+    document.getElementById('reviewedCount').textContent = reviewed;
+    document.getElementById('sidebarCount').textContent = pct + '%';
+  }
+
+  // Highlight active nav on scroll
+  const sections = document.querySelectorAll('.section[id]');
+  window.addEventListener('scroll', () => {
+    let current = '';
+    sections.forEach(sec => {
+      const top = sec.getBoundingClientRect().top;
+      if (top <= 120) current = sec.id;
+    });
+    if (current) {
+      document.querySelectorAll('.nav-item').forEach(n => {
+        n.classList.toggle('active', n.getAttribute('href') === '#' + current);
+      });
+    }
+  });
+
+  updateProgress();
+</script>
+</body>
+</html>

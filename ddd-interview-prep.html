@@ -1,0 +1,1609 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DDD, Event Storming & Microservices Interview Guide</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f5f5;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        nav {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 20px;
+            z-index: 100;
+        }
+
+        nav h3 {
+            margin-bottom: 15px;
+            color: #667eea;
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        nav a {
+            display: inline-block;
+            padding: 8px 16px;
+            background: #f0f0f0;
+            color: #667eea;
+            text-decoration: none;
+            border-radius: 4px;
+            transition: all 0.3s;
+            font-size: 0.9em;
+        }
+
+        nav a:hover {
+            background: #667eea;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .section {
+            background: white;
+            margin: 20px 0;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .section h2 {
+            color: #667eea;
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #667eea;
+        }
+
+        .qa-item {
+            margin-bottom: 40px;
+            border-left: 4px solid #667eea;
+            padding-left: 20px;
+        }
+
+        .question {
+            font-size: 1.3em;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            user-select: none;
+        }
+
+        .question::before {
+            content: "Q:";
+            color: #667eea;
+            font-weight: 700;
+            min-width: 30px;
+        }
+
+        .question::after {
+            content: "▼";
+            margin-left: auto;
+            color: #667eea;
+            font-size: 0.8em;
+            transition: transform 0.3s ease;
+        }
+
+        .question.collapsed::after {
+            transform: rotate(-90deg);
+        }
+
+        .question:hover {
+            color: #667eea;
+            background: #e8ebfd;
+        }
+
+        .answer {
+            color: #555;
+            line-height: 1.8;
+            max-height: 5000px;
+            overflow: hidden;
+            transition: max-height 0.5s ease, opacity 0.3s ease, margin-top 0.3s ease;
+            opacity: 1;
+            margin-top: 15px;
+        }
+
+        .answer.collapsed {
+            max-height: 0;
+            opacity: 0;
+            margin-top: 0;
+        }
+
+        .answer p {
+            margin-bottom: 15px;
+        }
+
+        .answer strong {
+            color: #2c3e50;
+        }
+
+        .answer ul, .answer ol {
+            margin: 15px 0 15px 30px;
+        }
+
+        .answer li {
+            margin-bottom: 8px;
+        }
+
+        .code-block {
+            background: #f8f8f8;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+
+        .example {
+            background: #f0f7ff;
+            border-left: 4px solid #4a90e2;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
+
+        .example strong {
+            color: #4a90e2;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            margin: 20px 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+
+        table th, table td {
+            padding: 12px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+
+        table th {
+            background: #667eea;
+            color: white;
+            font-weight: 600;
+        }
+
+        table tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+
+        .highlight {
+            background: #fff3cd;
+            padding: 2px 6px;
+            border-radius: 3px;
+        }
+
+        .subsection {
+            margin: 25px 0;
+        }
+
+        .subsection h3 {
+            color: #764ba2;
+            font-size: 1.3em;
+            margin-bottom: 10px;
+        }
+
+        .subsection h4 {
+            color: #555;
+            font-size: 1.1em;
+            margin: 15px 0 10px 0;
+        }
+
+        footer {
+            text-align: center;
+            padding: 30px;
+            color: #888;
+            font-size: 0.9em;
+        }
+
+        .back-to-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: #667eea;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 50px;
+            text-decoration: none;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            transition: all 0.3s;
+        }
+
+        .back-to-top:hover {
+            background: #764ba2;
+            transform: translateY(-3px);
+        }
+
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 1.8em;
+            }
+
+            nav ul {
+                flex-direction: column;
+            }
+
+            .section {
+                padding: 20px;
+            }
+
+            .question {
+                font-size: 1.1em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>DDD, Event Storming & Microservices</h1>
+        <p>Comprehensive Interview Questions & Answers</p>
+    </header>
+
+    <div class="container">
+        <nav id="top">
+            <h3>Quick Navigation</h3>
+            <ul>
+                <li><a href="#ddd-fundamentals">DDD Fundamentals</a></li>
+                <li><a href="#event-storming">Event Storming</a></li>
+                <li><a href="#microservices">Microservices Decomposition</a></li>
+                <li><a href="#data-sharing">Data Sharing</a></li>
+            </ul>
+        </nav>
+
+        <!-- DDD FUNDAMENTALS SECTION -->
+        <section class="section" id="ddd-fundamentals">
+            <h2>Domain-Driven Design Fundamentals</h2>
+
+            <div class="qa-item">
+                <div class="question">What's the difference between an Entity and a Value Object? Give practical examples.</div>
+                <div class="answer">
+                    <p><strong>Entities</strong> have identity that persists over time and through changes. Two entities with the same attributes are still distinct if they have different identities. <strong>Value Objects</strong> have no identity - they're defined entirely by their attributes, and two value objects with identical attributes are interchangeable.</p>
+                    
+                    <div class="subsection">
+                        <h4>Examples:</h4>
+                        <ul>
+                            <li><strong>Entity:</strong> A Person with ID 12345. If they change their name from "John Smith" to "John Brown," they're still the same person. Identity matters.</li>
+                            <li><strong>Value Object:</strong> An Address like "123 Main St, Springfield." If two orders ship to identical addresses, those Address objects are equivalent and interchangeable. A Money object of "$50 USD" - any $50 USD is the same as any other.</li>
+                        </ul>
+                    </div>
+
+                    <p><strong>Practically:</strong> Entities need tracking, versioning, and persistence strategies that maintain identity. Value Objects should be immutable - if you need to change an address, you create a new Address object. This simplifies reasoning and enables safe sharing.</p>
+                </div>
+            </div>
+
+            <div class="qa-item">
+                <div class="question">Explain Aggregates and why they matter. How do you identify aggregate boundaries?</div>
+                <div class="answer">
+                    <p>An <strong>Aggregate</strong> is a cluster of entities and value objects treated as a single unit for data changes. It has a root Entity (the Aggregate Root) that's the only entry point for modifications and the only object others can hold references to.</p>
+
+                    <div class="subsection">
+                        <h3>Why they matter:</h3>
+                        <ul>
+                            <li><strong>Consistency boundaries:</strong> Invariants are enforced within the aggregate, not across aggregates</li>
+                            <li><strong>Transaction boundaries:</strong> Changes to an aggregate happen in a single transaction</li>
+                            <li><strong>Concurrency control:</strong> You lock at the aggregate level</li>
+                            <li><strong>Simplify design:</strong> External objects can't reach in and corrupt internal state</li>
+                        </ul>
+                    </div>
+
+                    <div class="subsection">
+                        <h3>Identifying boundaries:</h3>
+                        <p><strong>Start with invariants:</strong> What business rules must always be true? If "total order amount must equal sum of line items," Order and OrderLineItems belong in the same aggregate.</p>
+                        
+                        <p><strong>Consider lifecycle:</strong> Things created, modified, and deleted together likely belong together. An Order and its LineItems have coupled lifecycles.</p>
+                        
+                        <p><strong>Keep aggregates small:</strong> Only include what's absolutely necessary for consistency. Don't include Customer in the Order aggregate just because they're related - reference by ID instead.</p>
+                        
+                        <p><strong>Think transactional:</strong> What actually needs to change atomically? Order status and line items, yes. Customer loyalty points, no - that can be eventually consistent.</p>
+                    </div>
+
+                    <div class="example">
+                        <strong>Example:</strong>
+                        <div class="code-block">
+// Order Aggregate
+class Order { // Aggregate Root
+  OrderId id;
+  CustomerId customerId; // Reference, not embedded
+  List&lt;OrderLineItem&gt; lineItems; // Internal entities
+  OrderStatus status;
+  Money totalAmount;
+  
+  void addLineItem(Product product, Quantity qty) {
+    // Enforce invariant: recalculate total
+    lineItems.add(new OrderLineItem(product, qty));
+    recalculateTotal();
+  }
+  
+  // Only Order can modify its line items
+}
+                        </div>
+                    </div>
+
+                    <p><strong>Common mistakes:</strong> Making aggregates too large (including everything related), allowing external modification of internal entities, trying to maintain cross-aggregate invariants in a single transaction.</p>
+                </div>
+            </div>
+
+            <div class="qa-item">
+                <div class="question">What is the Ubiquitous Language and how do you maintain it?</div>
+                <div class="answer">
+                    <p><strong>Ubiquitous Language</strong> is the shared vocabulary between domain experts and developers that's used consistently in code, conversations, documentation, and tests. It's not developer jargon translated to business terms or vice versa - it's a single language everyone uses.</p>
+
+                    <div class="subsection">
+                        <h3>How to establish it:</h3>
+                        <p><strong>Discovery through conversation:</strong> Pay attention when domain experts explain concepts. If they say "underwriting" don't translate it to "risk assessment" in your code - use "underwriting."</p>
+                        
+                        <p><strong>Model it explicitly:</strong> Create a glossary that's actively maintained. When terms are ambiguous, clarify and document the decision.</p>
+                        
+                        <p><strong>Enforce in code:</strong> Class names, method names, variable names should use domain terms exactly. Not <code>processRequest()</code> but <code>underwritePolicy()</code>.</p>
+                        
+                        <p><strong>Use in tests:</strong> Test names should read like business scenarios: <code>when_policy_expires_coverage_ends()</code> not <code>test_case_47()</code>.</p>
+                    </div>
+
+                    <div class="subsection">
+                        <h3>Maintaining it:</h3>
+                        <p>Regular modeling sessions where language evolves as understanding deepens. Refactor code when you discover better terms. Call out violations in code reviews when technical jargon creeps in. Update documentation immediately when terms change.</p>
+                    </div>
+
+                    <div class="example">
+                        <strong>Example of language evolution:</strong><br>
+                        Initially: "Users can submit claims"<br>
+                        After learning: "Policyholders file claims, Adjusters assess claims, Claims Managers approve settlements"<br><br>
+                        The code should reflect this precision - not a generic User class but Policyholder, Adjuster, ClaimsManager each with appropriate behaviors.
+                    </div>
+                </div>
+            </div>
+
+            <div class="qa-item">
+                <div class="question">Explain Bounded Contexts and Context Mapping patterns.</div>
+                <div class="answer">
+                    <p>A <strong>Bounded Context</strong> is an explicit boundary within which a particular domain model is defined and applicable. Same terms can mean different things in different contexts, and that's okay - each context has its own model optimized for its needs.</p>
+
+                    <div class="subsection">
+                        <h3>Context Mapping Patterns:</h3>
+
+                        <h4>Shared Kernel</h4>
+                        <p>Two contexts share a subset of the domain model. They must coordinate changes. Use sparingly - creates coupling.</p>
+                        <p><em>Example:</em> Order and Billing contexts share a core set of Customer data structures</p>
+
+                        <h4>Customer-Supplier</h4>
+                        <p>Downstream context (customer) depends on upstream (supplier), but supplier has some obligation to support customer needs.</p>
+                        <p><em>Example:</em> Reporting context (customer) depends on Sales context (supplier) - sales team considers reporting needs but owns the model</p>
+
+                        <h4>Conformist</h4>
+                        <p>Downstream fully conforms to upstream's model with no negotiation power.</p>
+                        <p><em>Example:</em> Your system consuming a third-party payment API - you adapt to their model</p>
+
+                        <h4>Anticorruption Layer (ACL)</h4>
+                        <p>Downstream creates a translation layer to protect its model from upstream's influence.</p>
+                        <p><em>Example:</em> Modern microservice wrapping a legacy system, translating its outdated concepts to clean domain model</p>
+
+                        <h4>Open Host Service</h4>
+                        <p>Upstream defines a protocol/API designed to serve multiple downstream consumers.</p>
+                        <p><em>Example:</em> Product Catalog service exposing a well-documented REST API for multiple consuming contexts</p>
+
+                        <h4>Published Language</h4>
+                        <p>A well-documented shared language for integration, often using industry standards.</p>
+                        <p><em>Example:</em> Using FHIR standard for healthcare data exchange between contexts</p>
+
+                        <h4>Separate Ways</h4>
+                        <p>Contexts have no connection - explicitly deciding integration isn't worth it.</p>
+                        <p><em>Example:</em> Internal HR system and customer-facing e-commerce have no shared concepts</p>
+
+                        <h4>Partnership</h4>
+                        <p>Two contexts succeed or fail together, requiring coordinated evolution.</p>
+                        <p><em>Example:</em> Frontend and Backend teams collaborating closely on a new feature</p>
+                    </div>
+
+                    <div class="example">
+                        <strong>Practical example:</strong>
+                        <div class="code-block">
+Sales Context -> (Customer-Supplier) -> Fulfillment Context
+                                              ↓ (ACL)
+                                        Legacy Warehouse System
+                        </div>
+                        <p>Sales defines Customer with sales attributes, Fulfillment has its own Customer focused on shipping details, and an ACL translates to the legacy warehouse's antiquated data format.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="qa-item">
+                <div class="question">What are Domain Events and how do they differ from regular events?</div>
+                <div class="answer">
+                    <p><strong>Domain Events</strong> represent something significant that happened in the domain, expressed in past tense using ubiquitous language. They're first-class domain concepts that domain experts care about, not technical infrastructure events.</p>
+
+                    <div class="subsection">
+                        <h3>Characteristics:</h3>
+                        <ul>
+                            <li><strong>Business significance:</strong> "OrderPlaced", "PaymentReceived", "PolicyExpired" - things the business tracks and cares about</li>
+                            <li><strong>Immutable:</strong> They represent historical facts that can't be changed</li>
+                            <li><strong>Self-contained:</strong> Include all relevant information someone would need to react to the event</li>
+                            <li><strong>Named in past tense:</strong> "CustomerRelocated" not "CustomerRelocating" or "RelocateCustomer"</li>
+                        </ul>
+                    </div>
+
+                    <div class="subsection">
+                        <h3>Difference from regular events:</h3>
+                        <p>Domain Events are part of your domain model and appear in conversations with domain experts. Technical events like "DatabaseConnectionLost" or "CacheInvalidated" are infrastructure concerns.</p>
+                        <p>Domain Events often trigger business processes. "PaymentReceived" might trigger "SendReceipt" and "UpdateInventory" - these are domain policies. Technical events trigger technical responses.</p>
+                    </div>
+
+                    <div class="subsection">
+                        <h3>Usage patterns:</h3>
+                        
+                        <h4>Within a bounded context:</h4>
+                        <p>Coordinate between aggregates without tight coupling</p>
+                        <div class="code-block">
+class Order {
+  void complete() {
+    this.status = COMPLETED;
+    raiseEvent(new OrderCompleted(orderId, customerId, totalAmount));
+  }
+}
+
+// Elsewhere in same context
+on(OrderCompleted event) {
+  loyaltyService.awardPoints(event.customerId, event.totalAmount);
+}
+                        </div>
+
+                        <h4>Between bounded contexts:</h4>
+                        <p>Integrate loosely via event-driven architecture</p>
+                        <ul>
+                            <li>Order context publishes "OrderPlaced"</li>
+                            <li>Inventory context subscribes and reserves stock</li>
+                            <li>Shipping context subscribes and creates shipment</li>
+                        </ul>
+
+                        <h4>Event Sourcing:</h4>
+                        <p>Store domain events as source of truth instead of current state</p>
+                    </div>
+
+                    <p><strong>Benefits:</strong> Decoupling, auditability, temporal queries ("what was the state last Tuesday?"), business process visibility, enabling reactive architectures.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- EVENT STORMING SECTION -->
+        <section class="section" id="event-storming">
+            <h2>Event Storming</h2>
+
+            <div class="qa-item">
+                <div class="question">Walk me through facilitating an Event Storming session for a new feature. What are the steps?</div>
+                <div class="answer">
+                    <p>Here's how I'd run a Process-Level Event Storming for a new feature:</p>
+
+                    <div class="subsection">
+                        <h3>Pre-session (30 mins):</h3>
+                        <ul>
+                            <li>Book a room with a very long wall (8+ meters) or large table space</li>
+                            <li>Get unlimited orange, blue, yellow, purple, pink sticky notes and thick markers</li>
+                            <li>Invite domain experts, developers, QA, product owner - 6-12 people max</li>
+                            <li>Prepare a simple scope statement: "We're exploring the returns process from customer initiation to refund completion"</li>
+                        </ul>
+                    </div>
+
+                    <div class="subsection">
+                        <h3>Session Opening (15 mins):</h3>
+                        <ul>
+                            <li>Explain the color coding briefly - don't overwhelm with theory</li>
+                            <li>Emphasize: no idea is wrong, we're discovering together, park technical solutions for now</li>
+                            <li>State the scope clearly: "Start when customer clicks 'Return Item', end when money is back in their account"</li>
+                        </ul>
+                    </div>
+
+                    <div class="subsection">
+                        <h3>Phase 1: Event Storm (30-45 mins)</h3>
+                        <ul>
+                            <li>Everyone silently writes domain events (orange stickies) in past tense</li>
+                            <li>Place them on the wall in rough chronological order</li>
+                            <li>No discussion yet - just rapid brain dump</li>
+                            <li>I participate but don't dominate - let domain experts lead</li>
+                            <li>Call time when flow slows</li>
+                        </ul>
+                    </div>
+
+                    <div class="subsection">
+                        <h3>Phase 2: Timeline Enforcement (30-45 mins)</h3>
+                        <ul>
+                            <li>Walk the timeline left to right as a group</li>
+                            <li>Reorganize events into correct sequence</li>
+                            <li>This is where conflicting mental models surface - "Wait, we check inventory before or after payment?"</li>
+                            <li>Mark hot spots (pink) for unresolved questions</li>
+                            <li>Note duplicates or different words for same event</li>
+                        </ul>
+                    </div>
+
+                    <div class="subsection">
+                        <h3>Phase 3: Add Commands (20-30 mins)</h3>
+                        <ul>
+                            <li>For each event, ask "What triggered this?"</li>
+                            <li>Add blue stickies above the events: "Submit Return Request", "Approve Return"</li>
+                            <li>Identify who performs each command (small yellow stickies for actors)</li>
+                        </ul>
+                    </div>
+
+                    <div class="subsection">
+                        <h3>Phase 4: Identify Policies (15-20 mins)</h3>
+                        <ul>
+                            <li>Look for "whenever X happens, then Y" patterns</li>
+                            <li>Purple stickies: "Whenever Return Approved, then Notify Warehouse"</li>
+                            <li>These often reveal automation opportunities</li>
+                        </ul>
+                    </div>
+
+                    <div class="subsection">
+                        <h3>Phase 5: Find Aggregates (20-30 mins)</h3>
+                        <ul>
+                            <li>Group related commands and events</li>
+                            <li>Yellow stickies for key concepts: "Return Request", "Refund", "Inventory Adjustment"</li>
+                            <li>Ask: what enforces the rules? What changes together?</li>
+                        </ul>
+                    </div>
+
+                    <div class="subsection">
+                        <h3>Phase 6: Spot Boundaries (15-20 mins)</h3>
+                        <ul>
+                            <li>Look for natural breaks in the flow</li>
+                            <li>Where do we "hand off" to another team/system?</li>
+                            <li>Different terminology emerging? Different experts becoming relevant?</li>
+                            <li>These suggest bounded context boundaries</li>
+                        </ul>
+                    </div>
+
+                    <div class="subsection">
+                        <h3>Wrap-up (15 mins)</h3>
+                        <ul>
+                            <li>Summarize key discoveries and unresolved questions</li>
+                            <li>Take photos of the wall from multiple angles</li>
+                            <li>Assign owners to pink sticky hot spots</li>
+                            <li>Schedule follow-up if needed</li>
+                        </ul>
+                    </div>
+
+                    <div class="subsection">
+                        <h3>Post-session:</h3>
+                        <ul>
+                            <li>Document insights, not every sticky</li>
+                            <li>Create a simple diagram of discovered bounded contexts</li>
+                            <li>Share with team and stakeholders</li>
+                            <li>Use output to guide architectural decisions</li>
+                        </ul>
+                    </div>
+
+                    <div class="subsection">
+                        <h3>Facilitation tips:</h3>
+                        <ul>
+                            <li>Keep energy high - stand, move around</li>
+                            <li>Redirect technical rabbit holes: "Great point, let's capture that but stay on the domain for now"</li>
+                            <li>Draw out quiet participants: "Sarah, you handle returns daily - what are we missing?"</li>
+                            <li>When conflict arises, mark it as a hot spot and keep moving</li>
+                            <li>Watch for fatigue after 90 mins - take breaks</li>
+                        </ul>
+                    </div>
+
+                    <div class="subsection">
+                        <h3>Red flags during session:</h3>
+                        <ul>
+                            <li>Domain experts are silent - you invited the wrong people</li>
+                            <li>Everything is a hot spot - scope is too broad, narrow it down</li>
+                            <li>No disagreements - people aren't engaged or one person is dominating</li>
+                            <li>Too many technical terms - refocus on business events</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="qa-item">
+                <div class="question">How do you handle conflicting views during Event Storming?</div>
+                <div class="answer">
+                    <p>Conflicts are actually a feature, not a bug - they surface hidden assumptions that would have become bugs later. Here's how I handle them:</p>
+
+                    <div class="subsection">
+                        <h3>Acknowledge the value immediately:</h3>
+                        <p>"This is exactly the kind of thing we need to discover now, not in production. Let's dig in."</p>
+                    </div>
+
+                    <div class="subsection">
+                        <h3>Make it visible:</h3>
+                        <ul>
+                            <li>Put both viewpoints on the wall with pink hot spot stickies</li>
+                            <li>Don't try to resolve immediately if it's blocking flow</li>
+                            <li>Note the people involved so we can dive deeper later</li>
+                        </ul>
+                    </div>
+
+                    <div class="subsection">
+                        <h3>Investigate the source:</h3>
+
+                        <h4>Different parts of the business?</h4>
+                        <p>"Sarah, you work in the Chicago warehouse. Tom, you're in Atlanta. Are returns actually handled differently between locations?"</p>
+                        <p>→ Might reveal process variance that needs harmonizing or legitimate context boundaries</p>
+
+                        <h4>Different time periods?</h4>
+                        <p>"Is this how we do it today, or how we used to do it? Or how we want to do it?"</p>
+                        <p>→ Distinguish current state, legacy process, and future vision</p>
+
+                        <h4>Different edge cases?</h4>
+                        <p>"Are we talking about in-store returns vs online returns?"</p>
+                        <p>→ Might need separate flows or conditional logic</p>
+
+                        <h4>Different roles' perspectives?</h4>
+                        <p>"Customer service sees it this way, but warehouse sees it differently - what actually happens?"</p>
+                        <p>→ Need to trace the actual process, not assumed process</p>
+                    </div>
+
+                    <div class="subsection">
+                        <h3>Resolution techniques:</h3>
+
+                        <h4>Check the receipts:</h4>
+                        <p>"Can we pull up the system and see what actually happens?" or "Let's look at the last few returns in the logs"</p>
+                        <p>Real data beats opinions</p>
+
+                        <h4>Follow the money/inventory/paper trail:</h4>
+                        <p>"Walk me through: physical item arrives at warehouse, then what? And what updates in the system?"</p>
+
+                        <h4>Timebox investigation:</h4>
+                        <p>"Let's spend 10 minutes on this now. If we can't resolve it, we'll schedule a deep dive with operations."</p>
+
+                        <h4>Create parallel flows:</h4>
+                        <p>If it's genuinely two different processes, map both flows and note where they diverge</p>
+
+                        <h4>Escalate if needed:</h4>
+                        <p>"This seems like a policy decision above our level. Let's document both options and get a ruling from [stakeholder]."</p>
+                    </div>
+
+                    <div class="example">
+                        <strong>Example from real session:</strong><br><br>
+                        <strong>Conflict:</strong> Half the team said "Refund Issued" happens immediately after "Return Approved." Other half said it happens after "Item Inspected."<br><br>
+                        
+                        <strong>Investigation:</strong>
+                        <ul>
+                            <li>Asked warehouse rep to describe physical process</li>
+                            <li>Discovered: Policy says refund after approval, but warehouse often finds damaged items during inspection</li>
+                            <li>This meant refunds were being issued then reversed - causing customer service issues</li>
+                        </ul>
+
+                        <strong>Resolution:</strong>
+                        <ul>
+                            <li>Mapped the actual flow: Return Approved → Item Inspected → Inspection Passed/Failed → Refund Issued or Return Rejected</li>
+                            <li>Added policy: "Whenever Inspection Failed, then Notify Customer Service"</li>
+                            <li>Revealed a bounded context boundary: Returns Processing vs Refund Management</li>
+                            <li>Led to decision: Change policy to refund only after inspection</li>
+                        </ul>
+                    </div>
+
+                    <div class="subsection">
+                        <h3>What NOT to do:</h3>
+                        <ul>
+                            <li>Let the loudest voice win without investigation</li>
+                            <li>Steamroll to keep moving - conflicts signal important complexity</li>
+                            <li>Defer everything - some questions need answers now</li>
+                            <li>Let it devolve into technical solution debates - stay at the domain level</li>
+                        </ul>
+                    </div>
+
+                    <p><strong>Documentation:</strong> Capture both the conflict and resolution: "Initially we thought X, but discovered Y, so the actual flow is Z." This context is valuable for future team members.</p>
+                </div>
+            </div>
+
+            <div class="qa-item">
+                <div class="question">What anti-patterns have you seen in Event Storming sessions?</div>
+                <div class="answer">
+                    <p>Here are the most common ways Event Storming goes wrong:</p>
+
+                    <div class="subsection">
+                        <h3>1. CRUD-Storming</h3>
+                        <p><strong>What it looks like:</strong> Events named "Customer Created", "Customer Updated", "Customer Deleted", "Order Created", "Order Updated"...</p>
+                        <p><strong>Why it's wrong:</strong> These aren't domain events, they're database operations. You learn nothing about the actual business.</p>
+                        <p><strong>Fix:</strong> Ask "Why was it created? What happened in the business?" Get to "Customer Registered", "Customer Relocated", "Order Placed", "Order Cancelled"</p>
+                    </div>
+
+                    <div class="subsection">
+                        <h3>2. Solution Storming</h3>
+                        <p><strong>What it looks like:</strong> 30 minutes in, people are debating microservices architecture, database schemas, message queues</p>
+                        <p><strong>Why it's wrong:</strong> You're designing solutions before understanding the problem. Technical concerns derail domain exploration.</p>
+                        <p><strong>Fix:</strong> "Great technical point - let's capture it and come back after we understand the domain. Right now, what happens in the business?"</p>
+                    </div>
+
+                    <div class="subsection">
+                        <h3>3. Waterfall Event Storming</h3>
+                        <p><strong>What it looks like:</strong> Facilitator at the board, calling on people one by one to contribute events while others watch</p>
+                        <p><strong>Why it's wrong:</strong> You lose the parallel exploration and emergent patterns. It becomes sequential requirements gathering.</p>
+                        <p><strong>Fix:</strong> Enforce the chaotic storm phase. Everyone posts simultaneously. No discussion during initial brain dump.</p>
+                    </div>
+
+                    <div class="subsection">
+                        <h3>4. The Academic Abstract</h3>
+                        <p><strong>What it looks like:</strong> Events are generic and philosophical: "State Changed", "Business Process Initiated", "Validation Occurred"</p>
+                        <p><strong>Why it's wrong:</strong> Too abstract to be useful. Domain experts check out because they don't recognize their world.</p>
+                        <p><strong>Fix:</strong> Push for concrete, specific events in domain language. Not "Transaction Processed" but "Payment Authorized" or "Wire Transfer Completed"</p>
+                    </div>
+
+                    <div class="subsection">
+                        <h3>5. Analysis Paralysis on Colors</h3>
+                        <p><strong>What it looks like:</strong> "Is this an aggregate or a read model? Should this be purple or lilac? Is this a command or a domain event?"</p>
+                        <p><strong>Why it's wrong:</strong> Theoretical purity blocks progress. The taxonomy matters less than capturing the knowledge.</p>
+                        <p><strong>Fix:</strong> "Close enough - let's keep moving. We can refine later if needed."</p>
+                    </div>
+
+                    <div class="subsection">
+                        <h3>6. Missing the Domain Experts</h3>
+                        <p><strong>What it looks like:</strong> Room full of developers, architects, maybe a product manager. No one who actually does the work daily.</p>
+                        <p><strong>Why it's wrong:</strong> You get speculative events based on assumptions, not reality. Critical edge cases and nuances are missed.</p>
+                        <p><strong>Fix:</strong> Don't schedule until you have the right people. One expert who processes returns daily is worth five developers guessing.</p>
+                    </div>
+
+                    <div class="subsection">
+                        <h3>7. Scope Explosion</h3>
+                        <p><strong>What it looks like:</strong> Started with "new returns feature", now mapping the entire e-commerce platform history</p>
+                        <p><strong>Why it's wrong:</strong> Takes too long, creates fatigue, loses detail where it matters</p>
+                        <p><strong>Fix:</strong> Ruthlessly enforce boundaries. "That's important but out of scope - let's note it for a different session."</p>
+                    </div>
+
+                    <div class="subsection">
+                        <h3>8. Hot Spot Hoarding</h3>
+                        <p><strong>What it looks like:</strong> Every third sticky is pink. Everything is a question or problem.</p>
+                        <p><strong>Why it's wrong:</strong> Suggests scope is too ambitious or wrong people in room. Too many open questions paralyzes next steps.</p>
+                        <p><strong>Fix:</strong> Narrow scope or get more knowledgeable participants. Some hot spots are normal; majority hot spots means you're not ready.</p>
+                    </div>
+
+                    <div class="subsection">
+                        <h3>9. Silent Documentation</h3>
+                        <p><strong>What it looks like:</strong> Facilitator says they'll "write this up" after. Nothing gets captured in real-time.</p>
+                        <p><strong>Why it's wrong:</strong> Context and nuance get lost. Decisions made and alternatives considered disappear.</p>
+                        <p><strong>Fix:</strong> Assign someone to photograph the wall every 20-30 minutes. Capture key decisions and conflicts immediately in a shared doc.</p>
+                    </div>
+
+                    <div class="subsection">
+                        <h3>10. No Follow-Through</h3>
+                        <p><strong>What it looks like:</strong> Great session, lots of energy, photos taken... then nothing happens. No decisions made, no code changes, no process improvements.</p>
+                        <p><strong>Why it's wrong:</strong> Wastes everyone's time. Domain experts won't participate again.</p>
+                        <p><strong>Fix:</strong> End session with clear actions and owners. Schedule follow-up. Show results - "We implemented bounded contexts based on our session."</p>
+                    </div>
+
+                    <div class="subsection">
+                        <h3>11. The Monologue</h3>
+                        <p><strong>What it looks like:</strong> One person (often senior dev or architect) explaining their mental model while others add sticky notes dutifully</p>
+                        <p><strong>Why it's wrong:</strong> You get one perspective, not emergent shared understanding. Group wisdom is lost.</p>
+                        <p><strong>Fix:</strong> "Thanks for that insight - let's capture it. Now, does anyone see it differently?" Actively solicit dissent.</p>
+                    </div>
+
+                    <div class="subsection">
+                        <h3>12. Tool Fetishism</h3>
+                        <p><strong>What it looks like:</strong> "Can we do this in Miro/Figma/specialized Event Storming software?"</p>
+                        <p><strong>Why it's wrong:</strong> Digital tools slow things down, create barriers to spontaneous contribution, and reduce spatial awareness</p>
+                        <p><strong>Fix:</strong> Physical wall with sticky notes for the main session. Digitize afterward if needed, but don't sacrifice the dynamic energy of physical collaboration.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- MICROSERVICES DECOMPOSITION SECTION -->
+        <section class="section" id="microservices">
+            <h2>Microservices Decomposition</h2>
+
+            <div class="qa-item">
+                <div class="question">What principles guide your microservice decomposition strategy?</div>
+                <div class="answer">
+                    <p>I use multiple complementary principles, not just one approach:</p>
+
+                    <div class="subsection">
+                        <h3>1. Business Capability Alignment</h3>
+                        <p>Decompose around what the business does, not how software is structured. Each service owns a complete capability.</p>
+                        <p><strong>Examples:</strong></p>
+                        <ul>
+                            <li>Product Catalog (manage products, categories, attributes)</li>
+                            <li>Order Management (place, track, modify orders)</li>
+                            <li>Inventory (stock levels, reservations, replenishment)</li>
+                            <li>Pricing (calculate prices, manage promotions, discounts)</li>
+                        </ul>
+                        <p><em>Not:</em> DatabaseService, UIService, LogicService - these are technical layers, not capabilities.</p>
+                    </div>
+
+                    <div class="subsection">
+                        <h3>2. Bounded Context Boundaries</h3>
+                        <p>Services should align with DDD bounded contexts. Each service has its own domain model and ubiquitous language.</p>
+                        <p>The "Customer" in Sales service is different from "Customer" in Support service - distinct models, distinct databases, distinct teams.</p>
+                    </div>
+
+                    <div class="subsection">
+                        <h3>3. Single Responsibility Principle</h3>
+                        <p>A service should have one reason to change. If promotions rules change, only the Pricing service updates. If shipping logic changes, only the Fulfillment service updates.</p>
+                    </div>
+
+                    <div class="subsection">
+                        <h3>4. Independent Deployability</h3>
+                        <p>You should be able to deploy a service without coordinating with other teams. This implies:</p>
+                        <ul>
+                            <li>No shared databases</li>
+                            <li>Versioned APIs</li>
+                            <li>Backward compatibility or consumer-driven contracts</li>
+                        </ul>
+                    </div>
+
+                    <div class="subsection">
+                        <h3>5. Data Ownership</h3>
+                        <p>Each service exclusively owns its data. No other service writes directly to another's database. If Service A needs data from Service B, it calls B's API or subscribes to B's events.</p>
+                    </div>
+
+                    <div class="subsection">
+                        <h3>6. Team Autonomy</h3>
+                        <p>Conway's Law: System design mirrors communication structure. Design services around team boundaries - a service should be fully owned by one team (though a team might own multiple services).</p>
+                    </div>
+
+                    <div class="subsection">
+                        <h3>7. Change Frequency Alignment</h3>
+                        <p>Group things that change together. Separate things that change at different rates. Pricing algorithms change weekly; product catalog structure changes quarterly; customer contact info changes constantly - these belong in different services.</p>
+                    </div>
+
+                    <div class="subsection">
+                        <h3>8. Scale Independently</h3>
+                        <p>Parts of the system with different scaling needs should be separate services. Product browsing might need 100x more capacity than checkout.</p>
+                    </div>
+
+                    <div class="subsection">
+                        <h3>9. Technology Diversity Where It Adds Value</h3>
+                        <p>Allow different tech stacks when there's a genuine benefit. Search might use Elasticsearch, recommendations might use Python/ML, order processing might use Java/Spring. But don't create diversity for its own sake.</p>
+                    </div>
+
+                    <div class="subsection">
+                        <h3>10. Resilience Boundaries</h3>
+                        <p>Failures should be isolated. Critical path (checkout) separate from nice-to-have (recommendations). If recommendations crash, checkout keeps working.</p>
+                    </div>
+
+                    <div class="example">
+                        <strong>Practical Example - E-commerce decomposition:</strong>
+                        <div class="code-block">
+Product Catalog Service
+- Owns: products, categories, attributes, images
+- Why: Catalog structure changes separately from pricing
+- Team: Content Management
+
+Pricing Service  
+- Owns: base prices, promotions, discount rules
+- Why: Pricing logic changes frequently, needs different expertise
+- Team: Revenue Optimization
+
+Inventory Service
+- Owns: stock levels, reservations, warehouses
+- Why: Real-time stock is high-contention; needs specialized scaling
+- Team: Operations
+
+Order Service
+- Owns: orders, order items, order status
+- Why: Core transaction boundary; different lifecycle from fulfillment
+- Team: Order Management
+
+Payment Service
+- Owns: payment methods, transactions, refunds
+- Why: Security isolation, PCI compliance, specialized team
+- Team: Payments/Compliance
+
+Fulfillment Service
+- Owns: shipments, tracking, carriers
+- Why: Integrates with shipping partners, changes independently
+- Team: Logistics
+                        </div>
+                    </div>
+
+                    <div class="subsection">
+                        <h3>Anti-patterns to avoid:</h3>
+                        <ul>
+                            <li><strong>Anemic services:</strong> CRUD wrappers around database tables with no business logic</li>
+                            <li><strong>Distributed monolith:</strong> Services so tightly coupled they can't deploy independently - you've just made your monolith slower</li>
+                            <li><strong>Data-driven decomposition:</strong> Splitting by database tables rather than business capabilities</li>
+                            <li><strong>Too fine-grained:</strong> 100 nano-services that do almost nothing - coordination overhead kills you</li>
+                        </ul>
+                    </div>
+
+                    <div class="subsection">
+                        <h3>How I validate decomposition:</h3>
+                        <ul>
+                            <li>Can you explain each service to a business person in one sentence using their language?</li>
+                            <li>Can services deploy independently?</li>
+                            <li>Does each service have a clear team owner?</li>
+                            <li>Do most business changes affect only 1-2 services?</li>
+                            <li>Are cross-service transactions rare?</li>
+                        </ul>
+                        <p>If yes to these, decomposition is probably sound.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="qa-item">
+                <div class="question">How do you decide whether to split a service or keep it together?</div>
+                <div class="answer">
+                    <p>This is the million-dollar question because both extremes are bad - monoliths become unmaintainable, but too many services create operational chaos. Here's my decision framework:</p>
+
+                    <div class="subsection">
+                        <h3>Signals to SPLIT:</h3>
+
+                        <h4>1. Different change velocities</h4>
+                        <p>Service A's functionality changes weekly, Service B's changes quarterly → Split them so B's stability isn't threatened by A's churn.</p>
+                        <p><em>Example:</em> Product recommendations (constant ML model updates) vs Product catalog structure (stable) - even though related, split them.</p>
+
+                        <h4>2. Different scalability needs</h4>
+                        <p>One part needs 10x more instances than another.</p>
+                        <p><em>Example:</em> Read-heavy product browsing vs write-heavy checkout - browse might need 50 instances while checkout needs 5.</p>
+
+                        <h4>3. Different availability requirements</h4>
+                        <p>Core functionality needs 99.99% uptime, peripheral features can tolerate 99.9%.</p>
+                        <p><em>Example:</em> Payment processing (critical) vs Product reviews (nice-to-have) - isolate so reviews outage doesn't risk payments.</p>
+
+                        <h4>4. Team boundaries and cognitive load</h4>
+                        <p>One team can't effectively maintain both areas because they require different expertise.</p>
+                        <p><em>Example:</em> Fraud detection (ML/data science expertise) vs Order management (business logic expertise) - different mental models, different specialists.</p>
+
+                        <h4>5. Different data access patterns</h4>
+                        <p>One needs strong consistency, another prefers eventual consistency.</p>
+                        <p><em>Example:</em> Inventory (real-time strong consistency to prevent oversells) vs Search index (eventual consistency acceptable) - different database needs.</p>
+
+                        <h4>6. Security/compliance isolation</h4>
+                        <p>PCI, HIPAA, GDPR might require strong isolation.</p>
+                        <p><em>Example:</em> Payment data needs strict PCI compliance, separate it from less-sensitive product data to minimize compliance scope.</p>
+
+                        <h4>7. Bounded context boundaries are clear</h4>
+                        <p>Distinct ubiquitous languages emerging, concepts mean different things in each area.</p>
+                        <p><em>Example:</em> "Return" in customer-facing service (return request) vs warehouse service (physical item receipt) - different models, split them.</p>
+                    </div>
+
+                    <div class="subsection">
+                        <h3>Signals to KEEP TOGETHER:</h3>
+
+                        <h4>1. Constantly changing together</h4>
+                        <p>Every feature touches both areas - they're coupled by business logic.</p>
+                        <p><em>Example:</em> Shopping cart and cart promotions - almost every cart change affects promotion calculations. Splitting creates chatty integration.</p>
+
+                        <h4>2. Same transaction boundary</h4>
+                        <p>Strong consistency requirements across both areas.</p>
+                        <p><em>Example:</em> Order and Order Items must stay consistent - if you split them, you'll need distributed transactions or complex saga patterns. Not worth it.</p>
+
+                        <h4>3. Low complexity, small codebase</h4>
+                        <p>Both areas combined are <10K lines of code, single team maintains easily.</p>
+                        <p><em>Example:</em> Product tagging and product search might seem different, but if they're both simple and managed by catalog team, splitting adds overhead without benefit.</p>
+
+                        <h4>4. Shared domain model</h4>
+                        <p>Same entities, same lifecycle, same invariants.</p>
+                        <p><em>Example:</em> Invoice and Invoice Line Items - these are parts of one aggregate, don't split aggregates across services.</p>
+
+                        <h4>5. Operational overhead not justified</h4>
+                        <p>Each service adds: deployment pipeline, monitoring, logging, alerting, documentation, versioning burden.</p>
+                        <p>If you'd create 5 services each doing trivial work, consolidate. The rule of thumb: is the service complex enough to justify its operational overhead?</p>
+
+                        <h4>6. Team is already overwhelmed</h4>
+                        <p>Adding more services when team is struggling with existing ones makes things worse.</p>
+                        <p>Start with fewer, well-defined services. Split later when capacity exists.</p>
+
+                        <h4>7. Uncertain boundaries</h4>
+                        <p>Still figuring out the domain model - premature decomposition commits you to interfaces that will churn.</p>
+                        <p>Build modularly in a monolith first, extract services when boundaries are clear.</p>
+                    </div>
+
+                    <div class="subsection">
+                        <h3>Decision Process - Scorecard approach:</h3>
+                        <div class="code-block">
+Reasons to Split:
+[ ] Different change rates (weight: 3)
+[ ] Different scale needs (weight: 3)  
+[ ] Different teams/expertise (weight: 2)
+[ ] Clear bounded context (weight: 3)
+[ ] Different SLAs (weight: 2)
+[ ] Compliance isolation (weight: 2)
+
+Reasons to Keep Together:
+[ ] Change together frequently (weight: -4)
+[ ] Same transaction needs (weight: -4)
+[ ] Low complexity (weight: -2)
+[ ] Shared lifecycle (weight: -3)
+[ ] Team bandwidth (weight: -2)
+[ ] Unclear boundaries (weight: -3)
+                        </div>
+                        <p>If score > 5, consider splitting. If score < 0, keep together.</p>
+                    </div>
+
+                    <div class="example">
+                        <strong>Real example decision:</strong><br><br>
+                        <strong>Question:</strong> Split "User Profile Service" into "Authentication Service" + "Profile Management Service"?<br><br>
+                        
+                        <strong>Analysis:</strong>
+                        <ul>
+                            <li>Different change rates: Auth is stable, profiles add fields frequently (+3)</li>
+                            <li>Different expertise: Security team owns auth, product team owns profiles (+2)</li>
+                            <li>Different SLAs: Auth is critical path, profiles less so (+2)</li>
+                            <li>But: Auth often needs profile data for authorization (-2)</li>
+                            <li>Operational overhead: Two services, two deployments (-1)</li>
+                        </ul>
+                        
+                        <strong>Score:</strong> +4 → Borderline. <strong>Decision:</strong> Start together, revisit when profile complexity grows.
+                    </div>
+
+                    <div class="subsection">
+                        <h3>Pragmatic advice:</h3>
+                        <ul>
+                            <li>Start with fewer, larger services. It's easier to split later than to merge services once you've built separate teams, schemas, and contracts around them.</li>
+                            <li>When in doubt, keep together but maintain clean module boundaries internally so future extraction is easier.</li>
+                            <li>Use feature flags to test logical separation before physical separation.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="qa-item">
+                <div class="question">How do you handle cross-service transactions? What patterns do you use?</div>
+                <div class="answer">
+                    <p>Cross-service transactions are one of the hardest microservices problems because you lose ACID guarantees. Here's how I approach it:</p>
+
+                    <div class="subsection">
+                        <h3>First Principle: Avoid Them</h3>
+                        <p>Seriously. If you're constantly needing distributed transactions, your service boundaries are probably wrong. Redesign toward better-aligned bounded contexts or aggregates that keep transactional consistency within a service.</p>
+                    </div>
+
+                    <div class="subsection">
+                        <h3>When You Can't Avoid Them:</h3>
+
+                        <h3>Pattern 1: Saga Pattern</h3>
+                        <p>A saga is a sequence of local transactions coordinated across services. If any step fails, compensating transactions undo completed steps.</p>
+
+                        <h4>Choreography-based Saga (event-driven):</h4>
+                        <div class="code-block">
+Order Service: Creates order → publishes OrderCreated
+  ↓
+Inventory Service: Reserves stock → publishes StockReserved
+  ↓
+Payment Service: Charges card → publishes PaymentCompleted
+  ↓
+Shipping Service: Creates shipment → publishes ShipmentCreated
+
+If payment fails:
+Payment Service publishes PaymentFailed
+  ↓
+Inventory Service compensates: releases reserved stock
+  ↓
+Order Service compensates: cancels order
+                        </div>
+                        <p><strong>Pros:</strong> Loose coupling, each service autonomous</p>
+                        <p><strong>Cons:</strong> Hard to reason about, distributed debugging nightmare, no isolation (partial states visible)</p>
+
+                        <h4>Orchestration-based Saga:</h4>
+                        <div class="code-block">
+Order Orchestrator:
+  1. Call Inventory.reserve()
+  2. If success, call Payment.charge()
+  3. If success, call Shipping.create()
+  4. If any fail, call compensations in reverse
+                        </div>
+                        <p><strong>Pros:</strong> Centralized logic easier to understand, explicit state machine</p>
+                        <p><strong>Cons:</strong> Orchestrator becomes coupling point, orchestrator itself is stateful and needs HA</p>
+
+                        <h3>Pattern 2: Two-Phase Commit (2PC)</h3>
+                        <p>Coordinator asks all services to prepare (phase 1). If all agree, coordinator tells them to commit (phase 2). If any can't prepare, coordinator tells all to abort.</p>
+                        <p><strong>When I use it:</strong> Almost never in distributed systems. It's blocking, scales poorly, and coordinator is single point of failure. Only for rare cases with very few participants in trusted network.</p>
+
+                        <h3>Pattern 3: Event Sourcing + Event-Driven Eventual Consistency</h3>
+                        <p>Instead of coordinating synchronously, publish events and let services react asynchronously.</p>
+                        <div class="code-block">
+Order placed → Order Service saves and publishes OrderPlaced
+Inventory Service subscribes:
+  - Receives OrderPlaced
+  - Reserves stock
+  - Publishes StockReserved
+
+Payment Service subscribes:
+  - Receives StockReserved
+  - Processes payment
+  - Publishes PaymentSucceeded or PaymentFailed
+
+Order Service subscribes:
+  - Receives PaymentSucceeded → marks order confirmed
+  - OR receives PaymentFailed → cancels order
+
+Inventory Service subscribes:
+  - Receives PaymentFailed → releases reservation
+                        </div>
+                        <p><strong>Pros:</strong> Services fully decoupled, natural audit trail, scales well</p>
+                        <p><strong>Cons:</strong> Eventual consistency (order is "pending" state briefly), requires idempotency, message ordering challenges</p>
+                    </div>
+
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Requirement</th>
+                                    <th>Pattern</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Strong consistency required</td>
+                                    <td>Reconsider boundaries OR 2PC (rarely)</td>
+                                </tr>
+                                <tr>
+                                    <td>Eventual consistency acceptable</td>
+                                    <td>Event-driven sagas (choreography)</td>
+                                </tr>
+                                <tr>
+                                    <td>Complex workflow logic</td>
+                                    <td>Orchestrated saga</td>
+                                </tr>
+                                <tr>
+                                    <td>High throughput, loosely coupled</td>
+                                    <td>Event sourcing + eventual consistency</td>
+                                </tr>
+                                <tr>
+                                    <td>Compensation always possible</td>
+                                    <td>Saga with compensating transactions</td>
+                                </tr>
+                                <tr>
+                                    <td>Read-heavy cross-service queries</td>
+                                    <td>CQRS with read replicas</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="subsection">
+                        <h3>Monitoring & Observability:</h3>
+                        <p>Essential for distributed transactions:</p>
+                        <ul>
+                            <li>Correlation IDs across all services</li>
+                            <li>Saga state machine tracking (what step failed, how many compensations)</li>
+                            <li>Timeout handling (what if Payment service never responds?)</li>
+                            <li>Dead letter queues for failed compensations</li>
+                            <li>Metrics: saga success rate, compensation rate, average completion time</li>
+                        </ul>
+                    </div>
+
+                    <div class="subsection">
+                        <h3>What NOT to do:</h3>
+                        <ul>
+                            <li>Don't use distributed transactions for every operation</li>
+                            <li>Don't ignore partial failure states</li>
+                            <li>Don't forget timeouts (saga could hang forever)</li>
+                            <li>Don't skip idempotency - retries will corrupt data</li>
+                            <li>Don't hide eventual consistency from users - show "processing" states in UI</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- DATA SHARING SECTION -->
+        <section class="section" id="data-sharing">
+            <h2>Data Sharing Between Microservices</h2>
+
+            <div class="qa-item">
+                <div class="question">What are the different patterns for sharing data between microservices? When do you use each?</div>
+                <div class="answer">
+                    <p>Data sharing is the core challenge in microservices. Each pattern has trade-offs. Here's my framework:</p>
+
+                    <div class="subsection">
+                        <h3>Pattern 1: API Calls (Synchronous Request-Response)</h3>
+                        <p>Service A calls Service B's REST/gRPC API to get data.</p>
+                        
+                        <h4>When to use:</h4>
+                        <ul>
+                            <li>Need current, authoritative data</li>
+                            <li>Low latency acceptable (services in same datacenter)</li>
+                            <li>Infrequent access (not on every request)</li>
+                            <li>Simple data structures</li>
+                        </ul>
+                        
+                        <p><strong>Pros:</strong> Always fresh data, simple to understand, strong consistency</p>
+                        <p><strong>Cons:</strong> Creates runtime dependency, latency accumulates, can't serve requests if network partitions</p>
+                        <p><strong>Anti-pattern:</strong> Calling 5 services to render one page - that's a distributed monolith</p>
+                    </div>
+
+                    <div class="subsection">
+                        <h3>Pattern 2: Data Replication (Event-Driven)</h3>
+                        <p>Source service publishes change events; consuming services maintain local read replicas.</p>
+                        
+                        <h4>When to use:</h4>
+                        <ul>
+                            <li>High read volume (every order needs customer info)</li>
+                            <li>Service needs to function autonomously even if source is down</li>
+                            <li>Eventual consistency acceptable</li>
+                            <li>Relatively stable data (not changing every second)</li>
+                        </ul>
+                        
+                        <p><strong>Pros:</strong> Fast reads (local data), no runtime dependency, service autonomy</p>
+                        <p><strong>Cons:</strong> Eventual consistency (replica might lag), storage duplication, schema evolution challenges, complexity of sync logic</p>
+                    </div>
+
+                    <div class="subsection">
+                        <h3>Pattern 3: Shared Database (Anti-pattern... mostly)</h3>
+                        <p>Multiple services read/write the same database tables.</p>
+                        
+                        <h4>When to use:</h4>
+                        <p>Almost never in true microservices. Only acceptable when:</p>
+                        <ul>
+                            <li>Transitioning from monolith (temporary state)</li>
+                            <li>Two services are actually one service that should be merged</li>
+                            <li>Read-only shared reference data (lookup tables)</li>
+                        </ul>
+                        
+                        <p><strong>Cons:</strong> Defeats entire purpose of microservices - tight coupling, no independent deployment, schema changes affect everyone</p>
+                    </div>
+
+                    <div class="subsection">
+                        <h3>Pattern 4: API Composition / Backend for Frontend</h3>
+                        <p>An API Gateway or BFF aggregates data from multiple services before responding.</p>
+                        
+                        <h4>When to use:</h4>
+                        <ul>
+                            <li>Frontend needs combined view from multiple services</li>
+                            <li>Don't want chatty frontend ↔ backend calls</li>
+                            <li>Can tolerate latency of parallel fan-out</li>
+                        </ul>
+                        
+                        <p><strong>Pros:</strong> Frontend gets exactly what it needs in one call, encapsulates complexity</p>
+                        <p><strong>Cons:</strong> BFF becomes coupling point, increased latency, orchestration complexity</p>
+                    </div>
+
+                    <div class="subsection">
+                        <h3>Pattern 5: CQRS with Materialized Views</h3>
+                        <p>Separate read models optimized for queries, populated asynchronously from source events.</p>
+                        
+                        <h4>When to use:</h4>
+                        <ul>
+                            <li>Complex queries spanning multiple services</li>
+                            <li>Read-heavy workloads</li>
+                            <li>Reporting/analytics</li>
+                            <li>Query patterns very different from command patterns</li>
+                        </ul>
+                        
+                        <p><strong>Pros:</strong> Optimized for reads, no cross-service joins, eventual consistency acceptable for queries</p>
+                        <p><strong>Cons:</strong> Complexity of dual models, eventual consistency lag, storage overhead</p>
+                    </div>
+
+                    <div class="subsection">
+                        <h3>Pattern 6: Data Ownership with References</h3>
+                        <p>Services own their data, reference others by ID only.</p>
+                        
+                        <h4>When to use:</h4>
+                        <p>Default pattern - always own data, reference others by ID</p>
+                        
+                        <p><strong>Pros:</strong> Clear ownership, loose coupling, independent schemas</p>
+                        <p><strong>Cons:</strong> Requires composition or replication for full details</p>
+                    </div>
+
+                    <div class="subsection">
+                        <h3>Pattern 7: Event Sourcing for Audit/Replayability</h3>
+                        <p>Store all events that change state; services can rebuild state by replaying events.</p>
+                        
+                        <h4>When to use:</h4>
+                        <ul>
+                            <li>Audit trail required</li>
+                            <li>Temporal queries ("what was state on Jan 1?")</li>
+                            <li>New services need historical data</li>
+                            <li>Analytics on event streams</li>
+                        </ul>
+                        
+                        <p><strong>Pros:</strong> Complete history, replayable, enables new consumers later</p>
+                        <p><strong>Cons:</strong> Complexity, event schema evolution, storage growth</p>
+                    </div>
+
+                    <div class="table-container">
+                        <h3>Decision Matrix:</h3>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Need</th>
+                                    <th>Pattern</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Always current data, low volume</td>
+                                    <td>API Calls (Pattern 1)</td>
+                                </tr>
+                                <tr>
+                                    <td>Fast reads, autonomous service</td>
+                                    <td>Data Replication (Pattern 2)</td>
+                                </tr>
+                                <tr>
+                                    <td>Aggregated view for frontend</td>
+                                    <td>API Composition (Pattern 4)</td>
+                                </tr>
+                                <tr>
+                                    <td>Complex queries across services</td>
+                                    <td>CQRS Read Models (Pattern 5)</td>
+                                </tr>
+                                <tr>
+                                    <td>Audit trail, temporal queries</td>
+                                    <td>Event Sourcing (Pattern 7)</td>
+                                </tr>
+                                <tr>
+                                    <td>Clear ownership, loose coupling</td>
+                                    <td>Reference by ID (Pattern 6)</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="qa-item">
+                <div class="question">How do you handle data consistency across services?</div>
+                <div class="answer">
+                    <p>Data consistency in microservices is about trade-offs. You can't have strong consistency everywhere without sacrificing availability and partition tolerance (CAP theorem). Here's how I think about it:</p>
+
+                    <div class="subsection">
+                        <h3>Types of Consistency:</h3>
+                        <ul>
+                            <li><strong>Strong Consistency:</strong> All nodes see the same data at the same time. Read after write returns latest write.</li>
+                            <li><strong>Eventual Consistency:</strong> All nodes will eventually converge to same state, but might temporarily diverge.</li>
+                            <li><strong>Causal Consistency:</strong> Causally related operations seen in correct order; unrelated operations might be out of order.</li>
+                        </ul>
+                    </div>
+
+                    <div class="subsection">
+                        <h3>My Framework:</h3>
+
+                        <h4>Step 1: Identify Consistency Requirements per Business Operation</h4>
+                        <p><strong>Strong consistency required:</strong></p>
+                        <ul>
+                            <li>Financial transactions (payments, refunds)</li>
+                            <li>Inventory reservation (can't oversell)</li>
+                            <li>Account balance operations</li>
+                            <li>Authentication/authorization</li>
+                        </ul>
+
+                        <p><strong>Eventual consistency acceptable:</strong></p>
+                        <ul>
+                            <li>Product catalog updates</li>
+                            <li>Customer profile changes</li>
+                            <li>Search index updates</li>
+                            <li>Analytics/reporting</li>
+                            <li>Recommendations</li>
+                        </ul>
+                    </div>
+
+                    <div class="subsection">
+                        <h3>Step 2: Choose Pattern Based on Requirement</h3>
+
+                        <h4>For Strong Consistency:</h4>
+                        <p><strong>Approach A: Keep it in one service</strong></p>
+                        <p>If two things need strong consistency, maybe they belong in same service/aggregate.</p>
+                        <p><em>Example:</em> Order and OrderLineItems must be consistent → same aggregate, same service, same DB transaction.</p>
+
+                        <p><strong>Approach B: Distributed Transaction (rarely)</strong></p>
+                        <p>Two-phase commit for critical operations when data must span services.</p>
+                        <p><em>Example:</em> Transfer money between accounts in different banking services - might justify 2PC despite overhead.</p>
+
+                        <p><strong>Approach C: Synchronous saga with compensations</strong></p>
+                        <p>Orchestrate calls synchronously, compensate on failure.</p>
+                        <p><em>Example:</em> Reserve inventory + charge payment in sequence, rollback if either fails.</p>
+
+                        <h4>For Eventual Consistency:</h4>
+                        <p><strong>Approach D: Event-driven updates</strong></p>
+                        <p>Publish events, subscribers update asynchronously.</p>
+
+                        <p><strong>Monitoring:</strong> Track replication lag - alert if replica is >1 minute behind.</p>
+                    </div>
+
+                    <div class="subsection">
+                        <h3>Step 3: Handle Inconsistency Windows</h3>
+                        <p>Even with eventual consistency, design for the gap:</p>
+
+                        <h4>Make inconsistency visible to users:</h4>
+                        <div class="code-block">
+{
+  "orderId": 123,
+  "status": "payment_processing", // Not "completed"
+  "message": "We're processing your payment. You'll receive confirmation shortly."
+}
+                        </div>
+
+                        <h4>Idempotency to handle retries:</h4>
+                        <div class="code-block">
+async function processPayment(orderId, idempotencyKey) {
+  const existing = await paymentRepo.findByIdempotencyKey(idempotencyKey);
+  if (existing) return existing; // Already processed
+  
+  const payment = await chargeCard(...);
+  await paymentRepo.save(payment, idempotencyKey);
+  return payment;
+}
+                        </div>
+                    </div>
+
+                    <div class="subsection">
+                        <h3>Step 4: Monitoring & Alerting</h3>
+                        <p><strong>Track consistency metrics:</strong></p>
+                        <ul>
+                            <li>Replication lag (event published → replica updated)</li>
+                            <li>Compensation rate (% of sagas that needed rollback)</li>
+                            <li>Data divergence (how often replicas differ from source)</li>
+                        </ul>
+
+                        <p><strong>Alert on anomalies:</strong></p>
+                        <ul>
+                            <li>Lag > SLA (e.g., >5 seconds for critical paths)</li>
+                            <li>Compensation rate spike (suggests system issues)</li>
+                            <li>Failed event processing (events stuck in DLQ)</li>
+                        </ul>
+                    </div>
+
+                    <div class="example">
+                        <strong>Real-World Example: E-commerce Inventory</strong><br><br>
+                        <strong>Problem:</strong> Prevent overselling while maintaining performance.<br>
+                        <strong>Constraint:</strong> Hundreds of customers trying to buy same popular item simultaneously.<br><br>
+                        
+                        <strong>My approach:</strong><br><br>
+                        
+                        <strong>Strong consistency where it matters:</strong>
+                        <div class="code-block">
+// Inventory Service - authoritative, strong consistency
+class InventoryService {
+  async reserve(productId, quantity, orderId) {
+    return await db.transaction(async tx => {
+      const stock = await tx.inventory.findOne(
+        { productId }, 
+        { lock: true }
+      );
+      
+      if (stock.available < quantity) {
+        throw new InsufficientStockError();
+      }
+      
+      stock.available -= quantity;
+      stock.reserved += quantity;
+      
+      await tx.inventory.update(stock);
+      await tx.reservations.create({ 
+        orderId, productId, quantity 
+      });
+      
+      return { reservationId: ... };
+    });
+  }
+}
+                        </div>
+
+                        <strong>Eventual consistency for display:</strong>
+                        <div class="code-block">
+// Product Service maintains denormalized stock counts
+// Updated via events for fast reads
+on('inventory.changed', async event => {
+  await productDb.update(
+    { id: event.productId }, 
+    { stockCount: event.available }
+  );
+});
+
+// UI shows approximate stock
+&lt;ProductCard stock={product.stockCount} label="~{stock} available" /&gt;
+                        </div>
+
+                        <strong>Result:</strong>
+                        <ul>
+                            <li>Writes go to single authoritative Inventory Service with ACID transactions (no overselling)</li>
+                            <li>Reads use eventually-consistent replicas (fast, scalable)</li>
+                            <li>UI sets expectations with approximate counts</li>
+                            <li>When user clicks "Buy," we call authoritative service which might reject if stale data misled them</li>
+                        </ul>
+                    </div>
+
+                    <div class="subsection">
+                        <h3>The Pragmatic Reality:</h3>
+                        <p>Perfect consistency across microservices is impossible without sacrificing everything else. The art is:</p>
+                        <ol>
+                            <li>Identify what truly needs strong consistency (usually less than you think)</li>
+                            <li>Keep strongly-consistent things in same service/transaction</li>
+                            <li>Accept eventual consistency elsewhere with monitoring and graceful handling</li>
+                            <li>Make inconsistency windows as small and visible as possible</li>
+                        </ol>
+                        <p>Most consistency "problems" are actually UX problems - users tolerate eventual consistency if you set expectations properly.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <footer>
+        <p>© 2026 DDD & Microservices Interview Guide | Comprehensive resource for technical interviews</p>
+    </footer>
+
+    <a href="#top" class="back-to-top">↑ Top</a>
+
+    <script>
+        // Toggle individual questions
+        document.addEventListener('DOMContentLoaded', function() {
+            const questions = document.querySelectorAll('.question');
+            
+            questions.forEach(question => {
+                question.addEventListener('click', function() {
+                    const answer = this.nextElementSibling;
+                    
+                    // Toggle collapsed class
+                    this.classList.toggle('collapsed');
+                    answer.classList.toggle('collapsed');
+                });
+            });
+
+            // Add expand/collapse all buttons to navigation
+            const nav = document.querySelector('nav ul');
+            const controlsLi = document.createElement('li');
+            controlsLi.style.marginLeft = 'auto';
+            controlsLi.innerHTML = `
+                <a href="#" id="expandAll" style="background: #4caf50;">Expand All</a>
+                <a href="#" id="collapseAll" style="background: #f44336; margin-left: 10px;">Collapse All</a>
+            `;
+            nav.appendChild(controlsLi);
+
+            // Expand all functionality
+            document.getElementById('expandAll').addEventListener('click', function(e) {
+                e.preventDefault();
+                document.querySelectorAll('.question').forEach(q => q.classList.remove('collapsed'));
+                document.querySelectorAll('.answer').forEach(a => a.classList.remove('collapsed'));
+            });
+
+            // Collapse all functionality
+            document.getElementById('collapseAll').addEventListener('click', function(e) {
+                e.preventDefault();
+                document.querySelectorAll('.question').forEach(q => q.classList.add('collapsed'));
+                document.querySelectorAll('.answer').forEach(a => a.classList.add('collapsed'));
+            });
+        });
+    </script>
+</body>
+</html>

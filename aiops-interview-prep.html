@@ -1,0 +1,1194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AIOps ServiceNow Questions</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0c0f1a;
+    --surface: #111828;
+    --surface2: #172035;
+    --border: #1e2d47;
+    --gold: #c9a96e;
+    --gold-light: #e8cc99;
+    --gold-dim: rgba(201,169,110,0.15);
+    --text: #e8eaf0;
+    --text-muted: #7a8aaa;
+    --text-dim: #4a5870;
+    --teal: #4ecdc4;
+    --teal-dim: rgba(78,205,196,0.12);
+    --red: #e05c6b;
+    --tag-bg: rgba(201,169,110,0.08);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    line-height: 1.7;
+    min-height: 100vh;
+  }
+
+  /* Background texture */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 80% 50% at 20% 0%, rgba(78,205,196,0.04) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 40% at 80% 100%, rgba(201,169,110,0.06) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    position: relative;
+    z-index: 1;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 48px 32px 80px;
+  }
+
+  /* Header */
+  header {
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 40px;
+    margin-bottom: 48px;
+  }
+
+  .header-meta {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 18px;
+  }
+
+  .header-meta span {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--gold);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .header-meta .dot {
+    width: 3px; height: 3px;
+    border-radius: 50%;
+    background: var(--text-dim);
+  }
+
+  h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(26px, 4vw, 38px);
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1.2;
+    margin-bottom: 12px;
+  }
+
+  h1 em {
+    font-style: italic;
+    color: var(--gold);
+  }
+
+  .subtitle {
+    color: var(--text-muted);
+    font-size: 15px;
+    font-weight: 400;
+  }
+
+  .progress-bar {
+    margin-top: 28px;
+    height: 2px;
+    background: var(--border);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--teal), var(--gold));
+    border-radius: 2px;
+    width: 0%;
+    transition: width 0.4s ease;
+  }
+
+  .progress-label {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 8px;
+    font-size: 11px;
+    color: var(--text-dim);
+    font-family: 'DM Mono', monospace;
+  }
+
+  /* Section headers */
+  .section {
+    margin-bottom: 12px;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 20px 24px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px 10px 0 0;
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.2s, border-color 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .section-header::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    background: var(--gold);
+    border-radius: 3px 0 0 0;
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+
+  .section-header:hover { background: var(--surface2); }
+  .section-header:hover::before { opacity: 1; }
+  .section.open .section-header { border-radius: 10px 10px 0 0; border-bottom-color: transparent; background: var(--surface2); }
+  .section.open .section-header::before { opacity: 1; }
+
+  .section-icon {
+    width: 34px; height: 34px;
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+    background: var(--gold-dim);
+  }
+
+  .section-title-group { flex: 1; }
+
+  .section-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--gold);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 2px;
+  }
+
+  .section-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .section-count {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--text-dim);
+    background: var(--bg);
+    border: 1px solid var(--border);
+    padding: 3px 8px;
+    border-radius: 20px;
+  }
+
+  .chevron {
+    color: var(--text-dim);
+    font-size: 12px;
+    transition: transform 0.3s;
+    margin-left: 4px;
+  }
+  .section.open .chevron { transform: rotate(180deg); }
+
+  /* Questions body */
+  .section-body {
+    display: none;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-top: none;
+    border-radius: 0 0 10px 10px;
+    overflow: hidden;
+  }
+  .section.open .section-body { display: block; }
+
+  /* QA card */
+  .qa-card {
+    border-bottom: 1px solid var(--border);
+  }
+  .qa-card:last-child { border-bottom: none; }
+
+  .qa-question {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 20px 24px 16px;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .qa-question:hover { background: rgba(255,255,255,0.02); }
+
+  .q-marker {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--gold);
+    background: var(--gold-dim);
+    border: 1px solid rgba(201,169,110,0.2);
+    padding: 3px 7px;
+    border-radius: 4px;
+    flex-shrink: 0;
+    margin-top: 2px;
+    letter-spacing: 0.05em;
+  }
+
+  .q-text {
+    font-size: 14.5px;
+    font-weight: 500;
+    color: var(--text);
+    flex: 1;
+    line-height: 1.5;
+  }
+
+  .q-toggle {
+    color: var(--text-dim);
+    font-size: 11px;
+    transition: transform 0.25s, color 0.2s;
+    flex-shrink: 0;
+    margin-top: 3px;
+  }
+  .qa-card.open .q-toggle { transform: rotate(180deg); color: var(--gold); }
+
+  .qa-answer {
+    display: none;
+    padding: 0 24px 24px 56px;
+  }
+  .qa-card.open .qa-answer { display: block; }
+
+  .answer-text {
+    font-size: 14px;
+    color: #b8c4d8;
+    line-height: 1.8;
+    font-weight: 300;
+  }
+
+  .answer-text p { margin-bottom: 12px; }
+  .answer-text p:last-child { margin-bottom: 0; }
+
+  .answer-text strong {
+    color: var(--text);
+    font-weight: 500;
+  }
+
+  .answer-text em {
+    color: var(--teal);
+    font-style: normal;
+    font-weight: 400;
+  }
+
+  .answer-note {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(224, 92, 107, 0.08);
+    border: 1px solid rgba(224, 92, 107, 0.2);
+    border-radius: 6px;
+    padding: 10px 14px;
+    margin-top: 8px;
+    font-size: 13px;
+    color: #e89aa3;
+    line-height: 1.5;
+  }
+
+  /* Status chip */
+  .status-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    font-family: 'DM Mono', monospace;
+    color: var(--teal);
+    background: var(--teal-dim);
+    border: 1px solid rgba(78,205,196,0.2);
+    padding: 3px 10px;
+    border-radius: 20px;
+    margin-top: 4px;
+  }
+
+  /* Questions to ask section */
+  .ask-list {
+    list-style: none;
+    padding: 0;
+  }
+  .ask-list li {
+    display: flex;
+    gap: 14px;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 14px;
+    color: #b8c4d8;
+    align-items: flex-start;
+  }
+  .ask-list li:last-child { border-bottom: none; }
+  .ask-bullet {
+    color: var(--gold);
+    font-size: 18px;
+    line-height: 1.2;
+    flex-shrink: 0;
+  }
+
+  /* Tips bar */
+  .tip-bar {
+    margin-top: 48px;
+    padding: 20px 24px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--teal);
+    border-radius: 0 10px 10px 0;
+    font-size: 13.5px;
+    color: var(--text-muted);
+  }
+  .tip-bar strong { color: var(--teal); }
+
+  /* Keyboard hint */
+  .kbd {
+    display: inline-block;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    padding: 1px 5px;
+    color: var(--text-dim);
+  }
+
+  /* Expand all button */
+  .toolbar {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+
+  .btn {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    padding: 7px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text-muted);
+    letter-spacing: 0.02em;
+  }
+  .btn:hover { background: var(--surface2); color: var(--text); border-color: var(--gold); }
+  .btn.primary { background: var(--gold-dim); border-color: rgba(201,169,110,0.3); color: var(--gold-light); }
+  .btn.primary:hover { background: rgba(201,169,110,0.2); }
+
+  @media (max-width: 600px) {
+    .container { padding: 28px 16px 60px; }
+    .qa-answer { padding-left: 24px; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <header>
+    <div class="header-meta">
+      <span>Western Alliance Bank</span>
+      <div class="dot"></div>
+      <span>Interview Prep</span>
+      <div class="dot"></div>
+      <span>AIOps · ServiceNow</span>
+    </div>
+    <h1>Principal Engineer I<br><em>AIOps ServiceNow</em></h1>
+    <p class="subtitle">Structured Q&A guide across technical, architecture, leadership, and behavioral domains.</p>
+    <div class="progress-bar">
+      <div class="progress-fill" id="progressFill"></div>
+    </div>
+    <div class="progress-label">
+      <span id="progressText">0 of 15 questions reviewed</span>
+      <span>Click any question to expand</span>
+    </div>
+  </header>
+
+  <div class="toolbar">
+    <button class="btn" onclick="collapseAll()">Collapse All</button>
+    <button class="btn primary" onclick="expandAll()">Expand All</button>
+  </div>
+
+  <!-- SECTION 1: Technical -->
+  <div class="section" id="s1">
+    <div class="section-header" onclick="toggleSection('s1')">
+      <div class="section-icon">🔧</div>
+      <div class="section-title-group">
+        <div class="section-label">Category 01</div>
+        <div class="section-title">Technical — ServiceNow ITOM / AIOps</div>
+      </div>
+      <span class="section-count">4 Q&amp;A</span>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="section-body">
+
+      <div class="qa-card">
+        <div class="qa-question" onclick="toggleCard(this)">
+          <span class="q-marker">Q 01</span>
+          <span class="q-text">Walk me through how you would architect an end-to-end AIOps solution in ServiceNow for a large financial institution.</span>
+          <span class="q-toggle">▼</span>
+        </div>
+        <div class="qa-answer">
+          <div class="answer-text">
+            <p>I'd approach it in layers. First, establish the data foundation — a well-governed CMDB with Discovery and Service Graph providing accurate, auto-maintained CIs and dependency maps. Without that, event correlation and impact analysis fall apart quickly.</p>
+            <p>On top of that, I'd build the event ingestion and processing pipeline: integrating monitoring tools like Dynatrace or Datadog via IntegrationHub connectors, normalizing alert payloads through MID Server, and applying classifier rules and deduplication logic to reduce noise before alerts reach an operator.</p>
+            <p>The intelligence layer sits above that — Event Management correlating related alerts into meaningful situations, Predictive AIOps surfacing anomaly patterns before they breach SLAs, and Health Log Analytics doing log-based root cause analysis. Finally, automated enrichment and remediation via Flow Designer and Orchestration closes the loop — routing to the right team with full context or triggering self-healing runbooks for known failure patterns.</p>
+            <p>In a banking context specifically, I'd layer in governance controls at each stage — ensuring CIs are tied to regulatory classification, and that automated remediation actions have appropriate approval gates for change compliance.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="qa-card">
+        <div class="qa-question" onclick="toggleCard(this)">
+          <span class="q-marker">Q 02</span>
+          <span class="q-text">How do you approach noise reduction and event correlation at scale?</span>
+          <span class="q-toggle">▼</span>
+        </div>
+        <div class="qa-answer">
+          <div class="answer-text">
+            <p>The biggest lever is upstream normalization — getting consistent, structured alert payloads before they hit Event Management. That means building robust classifier rules that tag severity, source system, and affected CI accurately on ingestion.</p>
+            <p>From there, correlation rules group related events by time window, topology proximity in the CMDB, and alert signature similarity. The goal is compressing hundreds of raw alerts into a handful of meaningful situations that map to actual business impact.</p>
+            <p>I also lean heavily on deduplication at the MID Server and IntegrationHub layer — suppressing repeat alerts within a rolling window before they enter the pipeline. For known patterns, I define suppression windows during planned maintenance and tune thresholds based on historical false positive rates.</p>
+            <p>The metric I track is <strong>operator-to-situation ratio</strong> — how many situations an on-call engineer is triaging versus the raw alert volume. That tells you whether your correlation model is working or just shifting noise downstream.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="qa-card">
+        <div class="qa-question" onclick="toggleCard(this)">
+          <span class="q-marker">Q 03</span>
+          <span class="q-text">How have you integrated external observability tools like Dynatrace or Datadog with ServiceNow?</span>
+          <span class="q-toggle">▼</span>
+        </div>
+        <div class="qa-answer">
+          <div class="answer-text">
+            <p>The standard path is IntegrationHub spokes — both Dynatrace and Datadog have certified spokes that handle bidirectional event flow. On the inbound side, I configure the monitoring tool's webhook or API to push alerts to ServiceNow's Event API endpoint, normalized through a MID Server for on-prem or hybrid traffic.</p>
+            <p>The more interesting work is <strong>outbound enrichment</strong> — when ServiceNow creates an incident or situation, triggering a Flow Designer action that calls back to Dynatrace to pull the relevant topology snapshot or trace data and attach it to the record. That dramatically reduces MTTR because the engineer gets context without switching tools.</p>
+            <p>I've also built custom IntegrationHub actions where the out-of-box spoke didn't cover a specific field mapping or auth pattern — particularly when working with internal monitoring platforms that don't have native spokes.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="qa-card">
+        <div class="qa-question" onclick="toggleCard(this)">
+          <span class="q-marker">Q 04</span>
+          <span class="q-text">Describe your experience with CMDB governance and Service Mapping.</span>
+          <span class="q-toggle">▼</span>
+        </div>
+        <div class="qa-answer">
+          <div class="answer-text">
+            <p>CMDB quality is foundational — everything else in AIOps depends on it. My approach is to treat CMDB governance as an ongoing operational discipline, not a one-time project. That means defining clear CI ownership, establishing reconciliation rules for Discovery vs. manual data, and building dashboards that surface staleness and coverage gaps continuously.</p>
+            <p>For Service Mapping, I use a top-down approach: start with the business services that matter most to SLAs, define the entry points, and let the discovery engine trace dependencies. The key governance question is always — what's the <em>authoritative source</em> for each CI class? Service Graph Connectors help when you have strong source-of-truth systems like a CMDB federation layer or a cloud asset management tool.</p>
+            <p>In a regulated banking environment, CI classification also has compliance implications — you need to know which CIs support SOX-relevant processes, which are in scope for PCI. I've built tagging models that carry that classification through to incident and change records automatically.</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- SECTION 2: Architecture -->
+  <div class="section" id="s2">
+    <div class="section-header" onclick="toggleSection('s2')">
+      <div class="section-icon">🏗️</div>
+      <div class="section-title-group">
+        <div class="section-label">Category 02</div>
+        <div class="section-title">Architecture &amp; Design</div>
+      </div>
+      <span class="section-count">2 Q&amp;A</span>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="section-body">
+
+      <div class="qa-card">
+        <div class="qa-question" onclick="toggleCard(this)">
+          <span class="q-marker">Q 05</span>
+          <span class="q-text">How do you design for "self-healing" automation in an ITSM-governed environment?</span>
+          <span class="q-toggle">▼</span>
+        </div>
+        <div class="qa-answer">
+          <div class="answer-text">
+            <p>Self-healing in financial services has to be bounded — you can't have runbooks making infrastructure changes without change governance. My design pattern is a <strong>tiered remediation model</strong>:</p>
+            <p><strong>Tier 1 — Fully autonomous:</strong> Safe, reversible, low-blast-radius actions — clearing a disk threshold, restarting a known flapping service, purging a cache. These execute via Orchestration with no human gate.</p>
+            <p><strong>Tier 2 — Soft approval:</strong> The runbook stages the change and sends a notification with a short auto-approve window. If no one intervenes, it proceeds. Covers scaling adjustments or config resets.</p>
+            <p><strong>Tier 3 — Pre-populated change request:</strong> Auto-creates a change and routes to the appropriate approver. The automation does the diagnostic work; the human makes the call.</p>
+            <p>The key design principle is that every automated action writes a complete audit trail back to the originating alert and incident — critical for both post-incident review and regulatory audit readiness.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="qa-card">
+        <div class="qa-question" onclick="toggleCard(this)">
+          <span class="q-marker">Q 06</span>
+          <span class="q-text">How do you approach multi-year roadmap planning for an AIOps platform?</span>
+          <span class="q-toggle">▼</span>
+        </div>
+        <div class="qa-answer">
+          <div class="answer-text">
+            <p>I anchor it to three things: <em>current pain</em> (what's causing the most operational friction today), <em>SLA risk</em> (what failure modes could breach regulatory or business commitments), and <em>platform maturity model</em> (where are we on the crawl/walk/run curve for each capability).</p>
+            <p><strong>Year 1 — Foundation:</strong> CMDB health, Discovery coverage, basic event correlation, and getting monitoring integrations in place.</p>
+            <p><strong>Year 2 — Intelligence:</strong> Predictive AIOps, Health Log Analytics, service mapping completeness.</p>
+            <p><strong>Year 3 — Optimization:</strong> Automated remediation at scale, ML-tuned correlation, and operational metrics tied directly to SRE objectives.</p>
+            <p>I also build in quarterly review gates — the roadmap should respond to platform changes from ServiceNow and shifting business priorities. In banking, regulatory timelines can also force roadmap adjustments, so governance integration is always on the plan.</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- SECTION 3: Leadership -->
+  <div class="section" id="s3">
+    <div class="section-header" onclick="toggleSection('s3')">
+      <div class="section-icon">👥</div>
+      <div class="section-title-group">
+        <div class="section-label">Category 03</div>
+        <div class="section-title">Leadership &amp; Communication</div>
+      </div>
+      <span class="section-count">2 Q&amp;A</span>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="section-body">
+
+      <div class="qa-card">
+        <div class="qa-question" onclick="toggleCard(this)">
+          <span class="q-marker">Q 07</span>
+          <span class="q-text">How do you develop junior engineers in a highly specialized domain like ServiceNow AIOps?</span>
+          <span class="q-toggle">▼</span>
+        </div>
+        <div class="qa-answer">
+          <div class="answer-text">
+            <p>I use a deliberate scaffolding approach. I start by giving junior engineers ownership of bounded, well-defined components — a specific classifier rule set, a Flow Designer subflow, a CMDB reconciliation task — with clear acceptance criteria and a review checkpoint.</p>
+            <p>I pair that with structured knowledge transfer: documented design patterns they can reference and reuse, not just verbal walkthroughs. In ServiceNow specifically, engineers learn fastest when they can see a well-designed example and modify it rather than starting from scratch.</p>
+            <p>I also make a point of including them in architecture review conversations — not to present, but to observe how design decisions get made and the trade-offs that get weighed. Over time I shift them toward presenting their own component designs in those sessions. That's usually the <em>inflection point</em> where they start operating more independently.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="qa-card">
+        <div class="qa-question" onclick="toggleCard(this)">
+          <span class="q-marker">Q 08</span>
+          <span class="q-text">How do you communicate complex AIOps architecture to non-technical IT sponsors?</span>
+          <span class="q-toggle">▼</span>
+        </div>
+        <div class="qa-answer">
+          <div class="answer-text">
+            <p>I lead with outcomes, not components. A business sponsor doesn't need to know how Health Log Analytics parses a log pattern — they need to know that when a critical application degrades, the team will know within 90 seconds instead of 15 minutes, and what that means for SLA risk and customer impact.</p>
+            <p>I use a <strong>layered presentation structure</strong>: executive summary with business metrics first, then a simplified architecture diagram that shows the flow from "alert fires" to "incident resolved," then an appendix with technical detail for the IT audience.</p>
+            <p>I've found that <em>operational dashboards</em> are the most effective ongoing communication tool — giving stakeholders live visibility into MTTD, MTTR, and situation volume trends makes the platform's value tangible and reduces the need for status meetings.</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- SECTION 4: Compliance -->
+  <div class="section" id="s4">
+    <div class="section-header" onclick="toggleSection('s4')">
+      <div class="section-icon">🏦</div>
+      <div class="section-title-group">
+        <div class="section-label">Category 04</div>
+        <div class="section-title">Compliance &amp; Governance</div>
+      </div>
+      <span class="section-count">1 Q&amp;A</span>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="section-body">
+
+      <div class="qa-card">
+        <div class="qa-question" onclick="toggleCard(this)">
+          <span class="q-marker">Q 09</span>
+          <span class="q-text">How do you ensure AIOps implementations meet regulatory and audit requirements in a banking context?</span>
+          <span class="q-toggle">▼</span>
+        </div>
+        <div class="qa-answer">
+          <div class="answer-text">
+            <p><strong>Full audit trail</strong> — every automated action, alert suppression, and remediation step needs to be traceable back to its triggering condition and the system that executed it. In ServiceNow this means disciplined use of work notes, audit fields, and workflow execution logs.</p>
+            <p><strong>Change governance integration</strong> — automated remediations that touch production infrastructure need to be either pre-approved via standard change or operating within a defined scope reviewed by change management. I build that boundary into the runbook design, not as an afterthought.</p>
+            <p><strong>CI classification propagation</strong> — if an incident involves a SOX-relevant application or a PCI-scoped system, that classification needs to be visible on the incident record so it gets handled with appropriate controls. I build that through CMDB tagging that flows downstream automatically.</p>
+            <p>I've worked directly with audit and compliance teams to document control narratives for AIOps processes — walking through how the platform ensures no unauthorized change can be made and how every action is attributable.</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- SECTION 5: Behavioral -->
+  <div class="section" id="s5">
+    <div class="section-header" onclick="toggleSection('s5')">
+      <div class="section-icon">🧠</div>
+      <div class="section-title-group">
+        <div class="section-label">Category 05</div>
+        <div class="section-title">Behavioral</div>
+      </div>
+      <span class="section-count">2 Q&amp;A</span>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="section-body">
+
+      <div class="qa-card">
+        <div class="qa-question" onclick="toggleCard(this)">
+          <span class="q-marker">Q 10</span>
+          <span class="q-text">Tell me about a time you drove a large, complex technical initiative to completion with significant organizational ambiguity.</span>
+          <span class="q-toggle">▼</span>
+        </div>
+        <div class="qa-answer">
+          <div class="answer-text">
+            <p>An observability initiative for a distributed platform that had been deprioritized multiple times due to competing roadmap pressure. The system had grown to the point where diagnosing production incidents was taking hours, and the team was losing confidence in deployments.</p>
+            <p>I took ownership without waiting for formal assignment. I built the case — tied to concrete incident data and SLA risk — and got alignment from leadership to carve out engineering capacity. I structured the rollout in phases: starting with structured logging and tracing at service boundaries, then layering in SLI/SLO dashboards, and finally establishing alerting thresholds the team actually trusted.</p>
+            <p>The outcome was a measurable reduction in mean time to resolution and, more importantly, a shift in team confidence around production deployments. It also set a pattern for how we approached operational readiness on subsequent projects.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="qa-card">
+        <div class="qa-question" onclick="toggleCard(this)">
+          <span class="q-marker">Q 11</span>
+          <span class="q-text">Describe a time you had to push back on a design or approach from a senior stakeholder.</span>
+          <span class="q-toggle">▼</span>
+        </div>
+        <div class="qa-answer">
+          <div class="answer-text">
+            <div class="answer-note">⚠️ Use this structure: (1) context, (2) specific risk or flaw identified, (3) how you framed the pushback constructively with data or alternatives rather than just objection, (4) outcome. The JD explicitly values "constructive dissent" — mirror that language.</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- SECTION 6: Pre-screen -->
+  <div class="section" id="s6">
+    <div class="section-header" onclick="toggleSection('s6')">
+      <div class="section-icon">📋</div>
+      <div class="section-title-group">
+        <div class="section-label">Category 06</div>
+        <div class="section-title">Pre-Screening Questions</div>
+      </div>
+      <span class="section-count">4 Q&amp;A</span>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="section-body">
+
+      <div class="qa-card">
+        <div class="qa-question" onclick="toggleCard(this)">
+          <span class="q-marker">Q 12</span>
+          <span class="q-text">Why are you interested in Western Alliance Bank and this role specifically?</span>
+          <span class="q-toggle">▼</span>
+        </div>
+        <div class="qa-answer">
+          <div class="answer-text">
+            <p>Western Alliance stands out in banking for operating at significant scale while still being in a growth phase — that's an unusual combination that tends to produce genuinely interesting architectural challenges. The platform isn't fully mature yet, which means this role is actually shaping what gets built, not just maintaining what already exists.</p>
+            <p>This role specifically appeals to me because it requires both deep technical hands-on expertise and the ability to translate that into roadmap strategy and stakeholder communication. That's the kind of scope where I do my best work — where architecture decisions, operational discipline, and business outcome are all connected.</p>
+            <p>The AIOps domain in financial services is also particularly interesting because the compliance overlay adds a layer of design constraint that forces more rigorous thinking around automation governance and auditability. I've operated in that space and find it more intellectually rewarding than greenfield environments without those constraints.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="qa-card">
+        <div class="qa-question" onclick="toggleCard(this)">
+          <span class="q-marker">Q 13</span>
+          <span class="q-text">Do you require visa sponsorship now or in the future?</span>
+          <span class="q-toggle">▼</span>
+        </div>
+        <div class="qa-answer">
+          <div class="answer-text">
+            <div class="answer-note">⚠️ Fill in based on your situation — e.g. "No, I am a U.S. citizen / permanent resident and do not require sponsorship now or in the future." Or specify visa type if applicable.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="qa-card">
+        <div class="qa-question" onclick="toggleCard(this)">
+          <span class="q-marker">Q 14</span>
+          <span class="q-text">What are your compensation expectations?</span>
+          <span class="q-toggle">▼</span>
+        </div>
+        <div class="qa-answer">
+          <div class="answer-text">
+            <p>I'm targeting total compensation in line with market rate for a Principal Engineer in enterprise AIOps / platform architecture, which I understand to be in the range of <strong>$160K–$200K base</strong> depending on level and scope, plus bonus.</p>
+            <p>I'm open to a broader conversation once I better understand the full package structure, including any equity or long-term incentive components. My priority is finding the right fit — compensation is important but it's not the deciding factor.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="qa-card">
+        <div class="qa-question" onclick="toggleCard(this)">
+          <span class="q-marker">Q 15</span>
+          <span class="q-text">Share highlights or milestones that relate to this role.</span>
+          <span class="q-toggle">▼</span>
+        </div>
+        <div class="qa-answer">
+          <div class="answer-text">
+            <p>A few that feel directly relevant: I have hands-on experience building and operating event-driven, distributed observability platforms — including designing asynchronous instrumentation strategies and managing the operational complexity that comes with large-scale alert processing pipelines.</p>
+            <p>I've worked in compliance-sensitive environments — including SOX-relevant data platforms — where the bar for reliability, auditability, and change management is high. I've documented control narratives and worked directly with audit functions, which maps closely to the regulatory expectations in this role.</p>
+            <p>I've also led cross-functional technical initiatives from ambiguous starting points through to delivered outcomes — including building the business case, phasing delivery, and mentoring engineers along the way. That combination of technical depth and organizational navigation is what I'd bring to this Principal Engineer role.</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- SECTION 8: CMDB Deep Dive -->
+  <div class="section" id="s8">
+    <div class="section-header" onclick="toggleSection('s8')">
+      <div class="section-icon">🗄️</div>
+      <div class="section-title-group">
+        <div class="section-label">Deep Dive 01</div>
+        <div class="section-title">CMDB — Governance &amp; Data Quality</div>
+      </div>
+      <span class="section-count">3 Q&amp;A</span>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="section-body">
+
+      <div class="qa-card">
+        <div class="qa-question" onclick="toggleCard(this)">
+          <span class="q-marker">Q 16</span>
+          <span class="q-text">How do you establish and maintain CMDB data quality in a large enterprise?</span>
+          <span class="q-toggle">▼</span>
+        </div>
+        <div class="qa-answer">
+          <div class="answer-text">
+            <p>CMDB quality degrades the moment you stop treating it as a live system. My approach starts with defining a <strong>data quality scorecard</strong> with four dimensions: completeness (are all expected CI attributes populated?), accuracy (does the data reflect reality?), timeliness (how stale is the record?), and relationship fidelity (are dependencies correctly mapped?).</p>
+            <p>I set those as measured SLAs on the CMDB itself — not aspirational targets but dashboarded metrics with owners. Each CI class has a designated owner, and staleness thresholds trigger automated notifications or reconciliation workflows before the data becomes operationally misleading.</p>
+            <p>The hardest part isn't initial population — it's preventing drift. Discovery runs catch infrastructure changes, but they don't catch everything: manual provisioning, shadow IT, cloud resources spun up outside the approved pipeline. I address that with a <strong>multi-source reconciliation model</strong>: ServiceNow Discovery as the baseline, supplemented by Service Graph Connectors pulling from authoritative sources like AWS Config, Azure Resource Manager, or an internal asset management system. Reconciliation rules define which source wins for each CI class and attribute, rather than letting last-write-wins corrupt clean data.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="qa-card">
+        <div class="qa-question" onclick="toggleCard(this)">
+          <span class="q-marker">Q 17</span>
+          <span class="q-text">How do you model CI relationships in the CMDB to support AIOps impact analysis?</span>
+          <span class="q-toggle">▼</span>
+        </div>
+        <div class="qa-answer">
+          <div class="answer-text">
+            <p>The relationship model is what separates a useful CMDB from an inventory spreadsheet. The foundation is the <strong>service model hierarchy</strong>: Business Service → Technical Service → Application → Infrastructure CI. Every layer needs to be traversable so that when an alert fires on a database server, ServiceNow can walk the graph and surface which business services are at risk.</p>
+            <p>I define relationship types precisely — "Hosted On," "Depends On," "Connects To," "Virtualized By" — and enforce them through relationship type governance. Vague or catch-all relationship types make impact analysis unreliable.</p>
+            <p>For financial services specifically, I extend the model with compliance classification attributes: SOX in-scope flag, PCI tier, data classification. Those propagate to incidents and change requests automatically so that a P1 on a SOX-relevant application gets handled with the right escalation path without relying on an engineer knowing the classification from memory.</p>
+            <p>The operational test I use: can I start from a raw infrastructure alert, trace it to a business service, and determine regulatory scope — all through CMDB relationships — in under 30 seconds? If not, the model has gaps.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="qa-card">
+        <div class="qa-question" onclick="toggleCard(this)">
+          <span class="q-marker">Q 18</span>
+          <span class="q-text">What's your strategy when CMDB data is known to be unreliable but AIOps is already live?</span>
+          <span class="q-toggle">▼</span>
+        </div>
+        <div class="qa-answer">
+          <div class="answer-text">
+            <p>You can't pause AIOps operations while you clean the CMDB, so the strategy is <strong>parallel trust-building</strong>. I classify CIs into three confidence tiers based on data quality signals: high-confidence (recently discovered, relationship-verified), medium (discovered but relationship gaps), and low (manually entered, stale, or unverified).</p>
+            <p>AIOps correlation and impact analysis then applies confidence weighting — situations involving low-confidence CIs get a flag indicating the impact scope may be incomplete, rather than presenting false certainty. Operators know to treat those differently.</p>
+            <p>Simultaneously, I run a targeted remediation program: not a boil-the-ocean CMDB cleanup, but CI-class-by-CI-class, starting with the classes that matter most to active monitoring coverage. Server and container CIs first because they're directly tied to alert correlation. Application CIs next because they determine business service impact. Network CIs last because they're typically the most complex to keep current.</p>
+            <p>The key is making CMDB quality improvement <em>visible as a metric</em> on the same dashboard as AIOps performance — so leadership can see the correlation between CMDB confidence scores going up and false positive rates going down.</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- SECTION 9: Discovery Deep Dive -->
+  <div class="section" id="s9">
+    <div class="section-header" onclick="toggleSection('s9')">
+      <div class="section-icon">🔍</div>
+      <div class="section-title-group">
+        <div class="section-label">Deep Dive 02</div>
+        <div class="section-title">Discovery — Architecture &amp; Coverage</div>
+      </div>
+      <span class="section-count">3 Q&amp;A</span>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="section-body">
+
+      <div class="qa-card">
+        <div class="qa-question" onclick="toggleCard(this)">
+          <span class="q-marker">Q 19</span>
+          <span class="q-text">Walk me through how ServiceNow Discovery works and how you architect it for a hybrid enterprise.</span>
+          <span class="q-toggle">▼</span>
+        </div>
+        <div class="qa-answer">
+          <div class="answer-text">
+            <p>Discovery works through <strong>MID Servers</strong> — lightweight Java agents deployed in the network segments you want to scan. The MID Server receives discovery schedules from the ServiceNow instance, executes probes against target IP ranges or cloud APIs, and returns payload data that populates or updates CI records.</p>
+            <p>For a hybrid enterprise, the architecture has to match the network topology. I typically deploy MID Servers in each major network segment — on-prem data centers, DMZ, and cloud VPCs — with careful attention to firewall rules and credential management. The credential store in ServiceNow needs to cover WMI for Windows, SSH for Linux, SNMP for network devices, and cloud API keys for each provider.</p>
+            <p>The discovery schedule strategy matters a lot. I don't run a single universal scan — I segment by <strong>CI class volatility</strong>. Static infrastructure (physical servers, network devices) might scan every 24 hours. Virtualized and cloud infrastructure scans every 4–6 hours. Container environments need near-real-time approaches — typically a Service Graph Connector pulling from Kubernetes rather than traditional IP-based discovery, which doesn't work well for ephemeral workloads.</p>
+            <p>For cloud specifically, I use the native ServiceNow Cloud Provisioning and Governance connectors (AWS, Azure, GCP) rather than trying to discover cloud resources through IP scanning — they're faster, more complete, and maintain proper resource hierarchy in the CMDB.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="qa-card">
+        <div class="qa-question" onclick="toggleCard(this)">
+          <span class="q-marker">Q 20</span>
+          <span class="q-text">How do you handle discovery in a containerized / Kubernetes environment?</span>
+          <span class="q-toggle">▼</span>
+        </div>
+        <div class="qa-answer">
+          <div class="answer-text">
+            <p>Traditional Discovery doesn't work well for containers — IPs are ephemeral, pods spin up and down constantly, and scanning by IP range misses the orchestration layer entirely. The right approach is a <strong>Service Graph Connector for Kubernetes</strong>, which pulls from the Kubernetes API rather than scanning.</p>
+            <p>The connector models the hierarchy correctly: Cluster → Namespace → Deployment → Pod → Container, with relationships to the underlying node infrastructure. That's what enables proper impact analysis — when a node has a problem, you can see which deployments and namespaces are affected.</p>
+            <p>I supplement that with integration into the container registry and CI/CD pipeline so that when a new image is deployed, the CMDB record for that application CI is updated with the new version tag automatically. That closes the loop between deployment events and CMDB accuracy.</p>
+            <p>For observability integration, I connect the Kubernetes service topology in the CMDB to alert sources like Datadog's Kubernetes integration or Prometheus. The alert payload includes pod and namespace labels, which I use in classifier rules to resolve the affected CI through CMDB lookup — so the situation that gets created is already linked to the right service model context.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="qa-card">
+        <div class="qa-question" onclick="toggleCard(this)">
+          <span class="q-marker">Q 21</span>
+          <span class="q-text">What are the most common Discovery failure modes and how do you address them?</span>
+          <span class="q-toggle">▼</span>
+        </div>
+        <div class="qa-answer">
+          <div class="answer-text">
+            <p><strong>Credential failures</strong> — the most common. Credentials expire, accounts get locked, password rotations don't get reflected in the ServiceNow credential store. I address this with a credential health dashboard and automated rotation sync where possible, plus MID Server error alerting that surfaces credential failures within the discovery cycle.</p>
+            <p><strong>MID Server connectivity gaps</strong> — firewall rules change, network segments get added, and suddenly a swath of IPs are unreachable. I maintain a network coverage map and reconcile it against discovery IP ranges quarterly. I also set up synthetic "canary" discovery targets in each segment — known stable devices that should always be discoverable — so I have a continuous signal on MID Server health.</p>
+            <p><strong>CI duplication</strong> — when the same physical or virtual asset gets discovered under multiple identifiers. ServiceNow uses reconciliation rules and CI identifiers (serial number, FQDN, MAC address) to prevent this, but the rules need to be correctly configured per CI class. I audit for duplicates during onboarding and set up deduplication jobs that run post-discovery.</p>
+            <p><strong>Pattern gaps for custom software</strong> — Discovery uses horizontal and vertical discovery patterns to identify software CIs. Custom or internal applications often don't have patterns, so they get missed. I work with application teams to build custom discovery patterns for critical internal apps using the ServiceNow pattern designer.</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- SECTION 10: Integration Deep Dive -->
+  <div class="section" id="s10">
+    <div class="section-header" onclick="toggleSection('s10')">
+      <div class="section-icon">🔗</div>
+      <div class="section-title-group">
+        <div class="section-label">Deep Dive 03</div>
+        <div class="section-title">Integration — Observability Stack &amp; Event Pipeline</div>
+      </div>
+      <span class="section-count">2 Q&amp;A</span>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="section-body">
+
+      <div class="qa-card">
+        <div class="qa-question" onclick="toggleCard(this)">
+          <span class="q-marker">Q 22</span>
+          <span class="q-text">How do you design the event integration pipeline from external monitoring tools into ServiceNow Event Management?</span>
+          <span class="q-toggle">▼</span>
+        </div>
+        <div class="qa-answer">
+          <div class="answer-text">
+            <p>The pipeline has five distinct stages, and each one needs explicit design decisions:</p>
+            <p><strong>Stage 1 — Ingestion.</strong> Monitoring tools push events via the ServiceNow Event API (REST), typically through a MID Server for on-prem sources or directly for cloud-native tools. I standardize on a single inbound format — the ServiceNow event schema — and require all source integrations to map to it. Diverging payload formats at ingestion create downstream classifier complexity.</p>
+            <p><strong>Stage 2 — Normalization.</strong> Event rules run on raw inbound events to enrich and normalize them: resolving the affected CI from hostname or IP, mapping source severity to ServiceNow severity, tagging the event source, and stamping metadata needed for correlation. This is where CMDB quality pays off — CI resolution only works if the CMDB has accurate hostnames and IPs.</p>
+            <p><strong>Stage 3 — Deduplication.</strong> Before events hit correlation, identical or near-identical events from the same source within a time window are collapsed. I set deduplication keys per event rule — typically a composite of source, event class/type, affected CI, and message key — with configurable time windows.</p>
+            <p><strong>Stage 4 — Correlation.</strong> Event correlation rules group related events into situations based on time proximity, CI topology, and event signature patterns. I build correlation rules from actual incident post-mortems — what events co-occurred during past incidents? That empirical basis makes correlation rules more reliable than rules built from intuition alone.</p>
+            <p><strong>Stage 5 — Situation routing.</strong> Situations get assigned to the right team via assignment rules driven by CI ownership and service model. The goal is that by the time a situation reaches an operator, it already has: affected business service, CI context, correlated alert history, and a suggested runbook link.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="qa-card">
+        <div class="qa-question" onclick="toggleCard(this)">
+          <span class="q-marker">Q 23</span>
+          <span class="q-text">How do you manage bidirectional sync between ServiceNow and external monitoring tools?</span>
+          <span class="q-toggle">▼</span>
+        </div>
+        <div class="qa-answer">
+          <div class="answer-text">
+            <p>Bidirectional sync introduces state management complexity — you have two systems that can independently update the same record, and you need clear rules about who owns what.</p>
+            <p>My model: <strong>ServiceNow owns the incident lifecycle</strong> (creation, assignment, resolution, SLA tracking). The monitoring tool owns the <strong>alert state</strong> (active, resolved, severity). The integration syncs those two state machines without letting them fight each other.</p>
+            <p>On the inbound side: when a monitoring alert fires, it creates or updates a ServiceNow event. When the monitoring alert auto-resolves, a closure event is sent and ServiceNow evaluates whether the associated situation and incident should be auto-resolved — I build in a confirmation delay and correlation check before auto-closing, to prevent premature closure on intermittent alerts.</p>
+            <p>On the outbound side: when an incident is acknowledged or resolved in ServiceNow, I send a status update back to the monitoring tool via a Flow Designer action calling the tool's API. This keeps on-call engineers from being double-paged on alerts already being worked.</p>
+            <p>The failure mode to guard against is <em>sync loops</em> — where a state change in ServiceNow triggers an outbound update that triggers an inbound event that triggers another update. I prevent this with idempotency checks and a "sync in progress" flag on the record.</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- SECTION 11: Deduplication Deep Dive -->
+  <div class="section" id="s11">
+    <div class="section-header" onclick="toggleSection('s11')">
+      <div class="section-icon">🧹</div>
+      <div class="section-title-group">
+        <div class="section-label">Deep Dive 04</div>
+        <div class="section-title">Deduplication — Design &amp; Tuning</div>
+      </div>
+      <span class="section-count">2 Q&amp;A</span>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="section-body">
+
+      <div class="qa-card">
+        <div class="qa-question" onclick="toggleCard(this)">
+          <span class="q-marker">Q 24</span>
+          <span class="q-text">Explain your approach to alert deduplication in ServiceNow Event Management.</span>
+          <span class="q-toggle">▼</span>
+        </div>
+        <div class="qa-answer">
+          <div class="answer-text">
+            <p>Deduplication operates at two levels and they serve different purposes.</p>
+            <p><strong>Level 1 — Source deduplication.</strong> Before events enter ServiceNow, I configure the monitoring tool to suppress repeat alerts within a rolling window for the same condition on the same target. This is the cheapest deduplication because it never even hits the pipeline. Most mature monitoring tools support this natively.</p>
+            <p><strong>Level 2 — Event Management deduplication.</strong> Within ServiceNow, deduplication rules match incoming events against existing active events using a composite key. The key components I typically use: source name + event class/type + affected CI node + message key. When a match is found, the existing event is updated (count incremented, last occurrence timestamp updated) rather than a new event being created.</p>
+            <p>The tuning challenge is the <strong>time window</strong> — too short and you get duplicates from slow-polling sources; too long and you mask genuine re-occurrences of the same issue after a brief resolution. I start with a 15-minute window and tune based on observed alert patterns for each source system, looking at the distribution of alert inter-arrival times for known recurring conditions.</p>
+            <p>I also build <em>flap detection</em> as a deduplication variant — for conditions that repeatedly open and close (a service that's bouncing), I suppress downstream incident creation until the condition has been stable for a defined threshold. That's separate from deduplication but solves the same operator fatigue problem.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="qa-card">
+        <div class="qa-question" onclick="toggleCard(this)">
+          <span class="q-marker">Q 25</span>
+          <span class="q-text">How do you measure and continuously improve deduplication effectiveness?</span>
+          <span class="q-toggle">▼</span>
+        </div>
+        <div class="qa-answer">
+          <div class="answer-text">
+            <p>The core metric is <strong>event-to-situation ratio</strong> — how many raw events are being collapsed into each situation. A ratio of 1:1 means deduplication isn't working; your operators are still triaging individual alerts. A ratio of 50:1 or higher for a busy environment means the correlation and deduplication models are doing real work.</p>
+            <p>I also track <strong>false positive rate</strong> — situations that get created and immediately closed with no action taken. Those are usually deduplication gaps: related alerts that should have been correlated but weren't, creating noise situations.</p>
+            <p>On the flip side, I watch for <em>over-deduplication</em> — where distinct issues are being collapsed into a single situation, causing operators to miss a second concurrent problem. Post-incident reviews are the main signal here: if a review reveals that two separate issues were masked under one situation, I refine the deduplication key to be more granular.</p>
+            <p>I run a monthly deduplication tuning review — pulling the top 20 highest-volume event rules and auditing whether the deduplication behavior matches intent. In ServiceNow, the Event Management performance analytics module gives you the raw data; it's a matter of building the habit of actually using it.</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- SECTION 12: Event Management Architecture Deep Dive -->
+  <div class="section" id="s12">
+    <div class="section-header" onclick="toggleSection('s12')">
+      <div class="section-icon">⚡</div>
+      <div class="section-title-group">
+        <div class="section-label">Deep Dive 05</div>
+        <div class="section-title">ServiceNow Event Management Architecture</div>
+      </div>
+      <span class="section-count">8 Q&amp;A</span>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="section-body">
+
+      <div class="qa-card">
+        <div class="qa-question" onclick="toggleCard(this)">
+          <span class="q-marker">Q 26</span>
+          <span class="q-text">Explain the internal architecture of ServiceNow Event Management — how does data flow from raw event to actionable situation?</span>
+          <span class="q-toggle">▼</span>
+        </div>
+        <div class="qa-answer">
+          <div class="answer-text">
+            <p>Event Management processes inbound data through a layered pipeline with six distinct processing stages, each governed by configurable rules.</p>
+            <p><strong>1. Event ingestion.</strong> Events arrive via the <em>em_event</em> table — either pushed through the REST Event API, pulled by MID Server probes, or injected via IntegrationHub spokes. The raw event payload sits in a staging state until processing rules execute.</p>
+            <p><strong>2. Event rules (filtering &amp; enrichment).</strong> Event rules are the first processing gate. They evaluate incoming events against conditions and apply actions: field enrichment (resolving CI from hostname), severity remapping, category tagging, or outright filtering/suppression. Rules run in priority order — this is where I spend a lot of tuning effort because poorly ordered rules create unpredictable enrichment outcomes.</p>
+            <p><strong>3. CI binding.</strong> Event Management attempts to bind the event to a CMDB CI using the <em>node</em> field (typically hostname or IP). If the CI isn't found, the event is still processed but loses topology context — meaning correlation rules that rely on CI relationships won't fire correctly. This is the direct dependency on CMDB quality.</p>
+            <p><strong>4. Deduplication.</strong> Deduplication rules compare the incoming event against open events using composite keys. Matches increment an existing event's occurrence count; non-matches create a new event record. The dedup window and key definition are configured per event rule.</p>
+            <p><strong>5. Correlation.</strong> Active events are evaluated against correlation rules. Rules define grouping logic: time window, affected CI or CI group, event class patterns, and relationship-based topology (e.g., group all events on CIs that share a parent application). Matching events are grouped into a <em>situation</em> — a single record representing a related set of conditions.</p>
+            <p><strong>6. Alert &amp; situation management.</strong> The situation triggers alert creation, assignment group routing, and optionally incident or change request generation via alert management rules. From here, Flow Designer or Orchestration can trigger enrichment or remediation actions.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="qa-card">
+        <div class="qa-question" onclick="toggleCard(this)">
+          <span class="q-marker">Q 27</span>
+          <span class="q-text">How do you design and govern event rules at scale — what's your taxonomy and lifecycle management approach?</span>
+          <span class="q-toggle">▼</span>
+        </div>
+        <div class="qa-answer">
+          <div class="answer-text">
+            <p>Event rules proliferate quickly in large environments — without governance, you end up with hundreds of overlapping, conflicting rules that nobody fully understands. My approach starts with a <strong>naming taxonomy</strong>: every rule is named with a structured prefix — SOURCE_CICLASS_CONDITION — so rules are instantly scannable. For example: <em>Dynatrace_AppServer_HighCPU</em> or <em>Datadog_DB_ConnectionPool</em>.</p>
+            <p>I group rules into three functional categories: <em>Source normalization rules</em> that handle payload mapping and enrichment for a specific monitoring tool; <em>CI resolution rules</em> that handle special-case hostname-to-CI binding logic; and <em>Suppression rules</em> that filter known noise patterns. Each category has its own priority band so they always execute in the right order regardless of individual rule priority values.</p>
+            <p>For lifecycle management, I treat event rules as code — they live in update sets with change tracking, go through peer review before production deployment, and have an owner field populated. I run a quarterly audit that flags rules with zero event hits in the last 90 days as candidates for retirement. Dead rules are just technical debt that slows processing and confuses troubleshooting.</p>
+            <p>I also maintain a <strong>rule impact matrix</strong> — a document that maps each event rule to the monitoring source it serves, the CI classes it affects, and the downstream correlation rules that depend on its enrichment output. When a monitoring tool changes its payload format, I can immediately identify which rules need updating without reverse-engineering the dependency chain.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="qa-card">
+        <div class="qa-question" onclick="toggleCard(this)">
+          <span class="q-marker">Q 28</span>
+          <span class="q-text">How do you architect correlation rules to reflect real-world failure patterns rather than theoretical groupings?</span>
+          <span class="q-toggle">▼</span>
+        </div>
+        <div class="qa-answer">
+          <div class="answer-text">
+            <p>Correlation rules built from intuition tend to either under-correlate (too narrow — creates noise situations for every alert) or over-correlate (too broad — masks distinct concurrent issues). The only reliable foundation is <strong>empirical post-mortem data</strong>.</p>
+            <p>My process: after every significant incident, I pull the raw event log for the incident window and map which events co-occurred, in what sequence, and across which CIs. That pattern becomes the basis for a correlation rule. If three post-mortems show the same co-occurrence pattern, I know the rule will have real-world fidelity.</p>
+            <p>Structurally, I build correlation rules in three patterns. <strong>Topology-based</strong>: group events affecting CIs that share a CMDB parent — useful for cascading failures where a downstream component failure generates alerts across multiple dependent services. <strong>Signature-based</strong>: group events with matching event class and source within a narrow time window — useful for alerting storms where a single infrastructure event triggers hundreds of monitors simultaneously. <strong>Sequence-based</strong>: correlation rules that require a specific event to appear first before grouping subsequent events — useful for known failure chains where a root cause event reliably precedes downstream symptoms.</p>
+            <p>I also apply <strong>correlation confidence scoring</strong> — situations get a metadata tag indicating whether they matched a known, validated pattern or were created by a catch-all rule. Operators know to apply more scrutiny to low-confidence situations, and those situations feed my tuning backlog.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="qa-card">
+        <div class="qa-question" onclick="toggleCard(this)">
+          <span class="q-marker">Q 29</span>
+          <span class="q-text">How does ServiceNow Predictive AIOps differ from traditional Event Management correlation, and when do you use each?</span>
+          <span class="q-toggle">▼</span>
+        </div>
+        <div class="qa-answer">
+          <div class="answer-text">
+            <p>Traditional Event Management correlation is <strong>rule-based and reactive</strong> — it waits for events to arrive and groups them according to manually authored logic. It's deterministic, auditable, and works well for known failure patterns. The limitation is that it can't detect novel failure modes and requires constant human maintenance as the environment evolves.</p>
+            <p>Predictive AIOps operates on a <strong>machine learning foundation</strong>. It ingests historical alert data, builds models of normal and anomalous behavior per CI, and generates anomaly scores and predicted incidents before threshold breaches occur. It also learns correlation patterns from historical co-occurrence data rather than requiring manually authored correlation rules.</p>
+            <p>In practice, I run them in parallel with clear division of responsibility. Traditional Event Management handles <em>known failure signatures</em> — the patterns we've seen before, where a deterministic rule gives a reliable, explainable result. Predictive AIOps handles <em>anomaly detection and novel pattern discovery</em> — surfacing conditions that don't match any existing rule but statistically deviate from baseline.</p>
+            <p>The operational integration point is the situation: both engines can create situations, but I tag the source so operators know whether they're looking at a rule-matched situation or an ML-generated one. That distinction matters for how much investigative skepticism to apply. ML-generated situations get a mandatory human confirmation step before triggering automated remediation — rule-matched situations can go straight to Tier 1 automation if confidence is high.</p>
+            <p>One practical caveat: Predictive AIOps requires sufficient historical data volume to build reliable models — typically 4–6 weeks of alert history per CI class. In greenfield environments or after major infrastructure changes, the models need a retraining period before they're trustworthy.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="qa-card">
+        <div class="qa-question" onclick="toggleCard(this)">
+          <span class="q-marker">Q 30</span>
+          <span class="q-text">How do you design alert management rules and what's the decision logic for auto-incident creation vs. human review?</span>
+          <span class="q-toggle">▼</span>
+        </div>
+        <div class="qa-answer">
+          <div class="answer-text">
+            <p>Alert management rules govern the transition from situation to action — they're the bridge between event intelligence and ITSM workflow. The design decision I always make explicit is: <strong>what is the minimum situation confidence threshold that justifies automated incident creation?</strong></p>
+            <p>I define that threshold across three dimensions. <strong>Severity:</strong> Critical situations always auto-create incidents — the cost of a missed P1 outweighs the cost of a false positive incident. Warning-level situations go to an alert queue for operator review. <strong>CI criticality:</strong> Situations affecting business services with a SOX or PCI classification auto-create incidents regardless of severity, because the compliance obligation demands a documented response record. <strong>Pattern confidence:</strong> Situations matched by high-fidelity correlation rules (validated through post-mortems) auto-create; situations from catch-all or low-hit-count rules go to review.</p>
+            <p>For the alert management rule structure itself, I keep them modular: one rule per business service tier rather than a monolithic rule that tries to handle all cases. That makes it easier to tune thresholds independently for different parts of the environment without risk of unintended side effects.</p>
+            <p>I also build in a <strong>situation aging gate</strong> — a situation that persists for more than N minutes without human acknowledgment auto-escalates regardless of the original routing decision. That prevents situations from silently aging in a queue while an actual outage is in progress.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="qa-card">
+        <div class="qa-question" onclick="toggleCard(this)">
+          <span class="q-marker">Q 31</span>
+          <span class="q-text">How do you architect Event Management for high-availability and throughput at enterprise scale?</span>
+          <span class="q-toggle">▼</span>
+        </div>
+        <div class="qa-answer">
+          <div class="answer-text">
+            <p>At large enterprise scale — tens of thousands of events per hour during peak periods — Event Management throughput becomes an architectural concern, not just a configuration one.</p>
+            <p><strong>MID Server scaling.</strong> MID Servers are the first bottleneck. I deploy MID Server pools — multiple MID Servers per network zone — and configure load balancing at the application level. Each MID Server has clearly defined IP range ownership so you don't get duplicate event submissions from competing MID Servers scanning the same target. I monitor MID Server queue depth as a leading indicator of throughput saturation.</p>
+            <p><strong>Event API throttling design.</strong> Inbound event API calls from monitoring tools need to be rate-governed. I work with monitoring tool admins to configure batched event submissions rather than individual API calls per alert — most tools support event batching, and it dramatically reduces API overhead on the ServiceNow side.</p>
+            <p><strong>Event rule processing optimization.</strong> Event rules run sequentially in priority order for every inbound event. In high-volume environments, I audit rule complexity and prune conditions that require expensive CMDB lookups unless strictly necessary. I also use the "stop processing" flag on rules that match high-volume, well-understood event patterns — preventing them from being evaluated by every subsequent rule unnecessarily.</p>
+            <p><strong>Situation volume management.</strong> At scale, unbounded situation creation creates its own operational problem — operators can't triage a thousand open situations. I set situation auto-close policies for aging situations with no recent activity, and I build situation suppression windows for planned maintenance events so scheduled downtime doesn't flood the queue.</p>
+            <p><strong>Health monitoring.</strong> I instrument Event Management itself as a monitored system — tracking event processing lag, event queue depth, rule processing times, and MID Server heartbeat status. If the AIOps platform itself has a performance degradation, I need to know before it affects detection latency for production incidents.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="qa-card">
+        <div class="qa-question" onclick="toggleCard(this)">
+          <span class="q-marker">Q 32</span>
+          <span class="q-text">How do you use Health Log Analytics within the Event Management architecture, and how does it complement event-based detection?</span>
+          <span class="q-toggle">▼</span>
+        </div>
+        <div class="qa-answer">
+          <div class="answer-text">
+            <p>Health Log Analytics (HLA) operates on a fundamentally different detection model than Event Management — it's <strong>log-pattern-based</strong> rather than metric-threshold-based. That distinction is what makes it complementary rather than redundant.</p>
+            <p>Event Management detects conditions that monitoring tools have been explicitly configured to alert on — the known unknowns. HLA can detect failure signatures in log streams that no alert was configured for — application stack traces, authentication failure spikes, unusual API error rates — surfacing issues that would otherwise only be caught by a human reviewing logs after the fact.</p>
+            <p>Architecturally, HLA ingests log data via the MID Server log collector or direct API integration with log aggregators like Splunk or Elastic. Log entries are processed through <strong>parsers</strong> (which extract structured fields from raw log text), <strong>classifiers</strong> (which match parsed log patterns to known issue categories), and <strong>anomaly models</strong> (which score log pattern frequency against historical baseline).</p>
+            <p>The integration point with Event Management is the <em>log anomaly</em> — when HLA detects a significant pattern, it generates an event that enters the standard Event Management pipeline. That means HLA-sourced events go through the same enrichment, deduplication, and correlation logic as metric-based events, and can be correlated into the same situations. A situation that has both a metric alert and a correlated log anomaly is a much richer signal than either alone.</p>
+            <p>In practice, I use HLA specifically for: application-tier detection (where metric alerting often misses early-stage degradation), security event correlation (authentication anomalies, unusual access patterns), and root cause evidence collection (when a situation is created, HLA automatically surfaces recent log anomalies on the affected CI as supporting context).</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="qa-card">
+        <div class="qa-question" onclick="toggleCard(this)">
+          <span class="q-marker">Q 33</span>
+          <span class="q-text">How do you manage the transition from a legacy alert management approach to a mature Event Management architecture without disrupting operations?</span>
+          <span class="q-toggle">▼</span>
+        </div>
+        <div class="qa-answer">
+          <div class="answer-text">
+            <p>This is one of the highest-risk architectural transitions in the ITSM space because you're changing how production incidents get detected and created — any gap in coverage is a real operational risk, not just a technical inconvenience.</p>
+            <p>My approach is a <strong>shadow mode migration</strong> with three phases. In Phase 1, I run Event Management in parallel with the existing alert management system — both generate incidents, but Event Management incidents are tagged and routed to a dedicated review queue rather than the primary ops team. This lets me validate coverage, tune correlation rules, and identify gaps without the ops team being exposed to false positives or missed events.</p>
+            <p>Phase 2 is a <strong>CI-class-by-CI-class cutover</strong>. I migrate one CI class at a time — starting with well-instrumented, lower-criticality infrastructure where coverage confidence is highest. For each CI class, I run a two-week parallel period where I compare Event Management detection against the legacy system. Any detection gaps get root-caused and resolved before moving to the next class.</p>
+            <p>Phase 3 retires the legacy routing for fully migrated CI classes while keeping the legacy system as a backstop for unmigrated classes. The transition is complete only when all CI classes have passed the parallel validation period.</p>
+            <p>Throughout the migration, I maintain a <strong>coverage dashboard</strong> visible to both the engineering team and ops leadership — showing what percentage of the monitoring estate is under Event Management, detection gap metrics, and false positive rates per CI class. That transparency builds confidence with stakeholders who are naturally cautious about changes to production detection infrastructure.</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- SECTION 7: Questions to ask -->
+  <div class="section" id="s7">
+    <div class="section-header" onclick="toggleSection('s7')">
+      <div class="section-icon">💬</div>
+      <div class="section-title-group">
+        <div class="section-label">Category 08</div>
+        <div class="section-title">Questions to Ask Them</div>
+      </div>
+      <span class="section-count">5 questions</span>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="section-body" style="padding: 20px 24px;">
+      <ul class="ask-list">
+        <li><span class="ask-bullet">›</span> What does the current CMDB coverage and data quality look like, and what's the biggest data trust challenge the AIOps platform faces today?</li>
+        <li><span class="ask-bullet">›</span> How mature is the integration with the core monitoring stack — are there existing IntegrationHub connectors in place, or is that largely greenfield?</li>
+        <li><span class="ask-bullet">›</span> How does the AIOps platform team interact with application teams and SREs — is there a formal engagement model, or is it more ad hoc today?</li>
+        <li><span class="ask-bullet">›</span> What does success look like at the 12-month mark for this role?</li>
+        <li><span class="ask-bullet">›</span> How does the team navigate the balance between automation speed and change governance requirements with compliance and audit functions?</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="tip-bar">
+    <strong>Pro tip:</strong> For any answer marked ⚠️, personalize with a specific story from your own experience before the interview. The strongest answers combine a clear structure with concrete, memorable detail — not generic frameworks.
+  </div>
+
+</div>
+
+<script>
+  function toggleSection(id) {
+    const el = document.getElementById(id);
+    el.classList.toggle('open');
+  }
+
+  function toggleCard(qEl) {
+    const card = qEl.closest('.qa-card');
+    const wasOpen = card.classList.contains('open');
+    card.classList.toggle('open');
+    updateProgress();
+  }
+
+  function expandAll() {
+    document.querySelectorAll('.section').forEach(s => s.classList.add('open'));
+    document.querySelectorAll('.qa-card').forEach(c => c.classList.add('open'));
+    updateProgress();
+  }
+
+  function collapseAll() {
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('open'));
+    document.querySelectorAll('.qa-card').forEach(c => c.classList.remove('open'));
+    updateProgress();
+  }
+
+  function updateProgress() {
+    const total = document.querySelectorAll('.qa-card').length;
+    const reviewed = document.querySelectorAll('.qa-card.open').length;
+    const pct = Math.round((reviewed / total) * 100);
+    document.getElementById('progressFill').style.width = pct + '%';
+    document.getElementById('progressText').textContent = `${reviewed} of ${total} questions reviewed`;
+  }
+
+  updateProgress();
+</script>
+</body>
+</html>

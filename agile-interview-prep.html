@@ -1,0 +1,912 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Agile Interview Prep — Principal Engineer</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=Fraunces:ital,wght@0,300;0,600;1,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0f0f0f;
+    --surface: #161616;
+    --border: #2a2a2a;
+    --accent: #c8f04a;
+    --accent2: #4af0c8;
+    --text: #e8e8e0;
+    --muted: #6b6b60;
+    --tag-bg: #1e2410;
+    --tag-border: #3a4a1a;
+    --answered: #0e2a1a;
+    --answered-border: #1a4a2a;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 14px;
+    line-height: 1.7;
+    min-height: 100vh;
+  }
+
+  /* LAYOUT */
+  .shell {
+    display: flex;
+    min-height: 100vh;
+  }
+
+  /* SIDEBAR */
+  .sidebar {
+    width: 260px;
+    flex-shrink: 0;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    position: fixed;
+    top: 0; left: 0; bottom: 0;
+    overflow-y: auto;
+    padding: 28px 0;
+    z-index: 100;
+  }
+
+  .sidebar-brand {
+    padding: 0 24px 24px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 20px;
+  }
+
+  .sidebar-brand .label {
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  .sidebar-brand h1 {
+    font-family: 'Fraunces', serif;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--accent);
+    line-height: 1.3;
+  }
+
+  .progress-ring {
+    margin-top: 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .progress-bar {
+    flex: 1;
+    height: 3px;
+    background: var(--border);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 2px;
+    transition: width 0.4s ease;
+    width: 0%;
+  }
+
+  .progress-label {
+    font-size: 10px;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+
+  .nav-section {
+    padding: 0 0 8px;
+  }
+
+  .nav-section-label {
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding: 0 24px 8px;
+  }
+
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 24px;
+    color: var(--muted);
+    cursor: pointer;
+    text-decoration: none;
+    font-size: 12px;
+    transition: all 0.15s;
+    border-left: 2px solid transparent;
+  }
+
+  .nav-item:hover {
+    color: var(--text);
+    background: rgba(200,240,74,0.04);
+  }
+
+  .nav-item.active {
+    color: var(--accent);
+    border-left-color: var(--accent);
+    background: rgba(200,240,74,0.06);
+  }
+
+  .nav-count {
+    margin-left: auto;
+    font-size: 10px;
+    background: var(--border);
+    padding: 1px 6px;
+    border-radius: 10px;
+    color: var(--muted);
+  }
+
+  .nav-item.active .nav-count {
+    background: var(--tag-bg);
+    color: var(--accent);
+  }
+
+  /* MAIN */
+  .main {
+    margin-left: 260px;
+    flex: 1;
+    padding: 48px 56px;
+    max-width: 900px;
+  }
+
+  .page-header {
+    margin-bottom: 48px;
+    padding-bottom: 32px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .page-header .eyebrow {
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+
+  .page-header h2 {
+    font-family: 'Fraunces', serif;
+    font-size: 36px;
+    font-weight: 300;
+    color: var(--text);
+    line-height: 1.2;
+    margin-bottom: 12px;
+  }
+
+  .page-header h2 em {
+    font-style: italic;
+    color: var(--accent2);
+  }
+
+  .page-header p {
+    color: var(--muted);
+    font-size: 13px;
+    max-width: 560px;
+  }
+
+  /* CATEGORY */
+  .category {
+    margin-bottom: 56px;
+    scroll-margin-top: 32px;
+  }
+
+  .category-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 20px;
+  }
+
+  .category-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    background: var(--tag-bg);
+    border: 1px solid var(--tag-border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+    flex-shrink: 0;
+  }
+
+  .category-title {
+    font-family: 'Fraunces', serif;
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .category-badge {
+    margin-left: auto;
+    font-size: 10px;
+    padding: 3px 10px;
+    border: 1px solid var(--tag-border);
+    color: var(--accent);
+    border-radius: 20px;
+    letter-spacing: 0.08em;
+  }
+
+  /* QUESTION CARD */
+  .q-card {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    margin-bottom: 10px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+
+  .q-card:hover {
+    border-color: #3a3a3a;
+  }
+
+  .q-card.answered {
+    border-color: var(--answered-border);
+    background: var(--answered);
+  }
+
+  .q-trigger {
+    width: 100%;
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 18px 20px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    text-align: left;
+    color: var(--text);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    transition: background 0.15s;
+  }
+
+  .q-trigger:hover {
+    background: rgba(255,255,255,0.02);
+  }
+
+  .q-check {
+    width: 18px;
+    height: 18px;
+    border: 1.5px solid var(--border);
+    border-radius: 4px;
+    flex-shrink: 0;
+    margin-top: 1px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    cursor: pointer;
+    background: transparent;
+  }
+
+  .q-card.answered .q-check {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #0f0f0f;
+  }
+
+  .q-check svg {
+    display: none;
+    width: 10px;
+    height: 10px;
+  }
+
+  .q-card.answered .q-check svg {
+    display: block;
+  }
+
+  .q-text {
+    flex: 1;
+    font-weight: 600;
+    line-height: 1.5;
+  }
+
+  .q-tag {
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 12px;
+    background: var(--tag-bg);
+    border: 1px solid var(--tag-border);
+    color: var(--accent);
+    white-space: nowrap;
+    margin-top: 1px;
+    flex-shrink: 0;
+  }
+
+  .q-tag.star { color: var(--accent2); background: #0e1f2a; border-color: #1a3a4a; }
+
+  .q-chevron {
+    color: var(--muted);
+    font-size: 16px;
+    margin-top: 1px;
+    transition: transform 0.25s ease;
+    flex-shrink: 0;
+    line-height: 1;
+  }
+
+  .q-card.open .q-chevron {
+    transform: rotate(180deg);
+  }
+
+  /* ANSWER */
+  .q-answer {
+    display: none;
+    padding: 0 20px 20px 52px;
+    border-top: 1px solid var(--border);
+  }
+
+  .q-card.open .q-answer {
+    display: block;
+  }
+
+  .q-card.answered .q-answer {
+    border-top-color: var(--answered-border);
+  }
+
+  .answer-block {
+    margin-top: 16px;
+  }
+
+  .answer-block p {
+    color: #c0c0b0;
+    font-size: 13px;
+    margin-bottom: 12px;
+  }
+
+  .answer-block strong {
+    color: var(--accent);
+  }
+
+  /* STAR format */
+  .star-grid {
+    display: grid;
+    grid-template-columns: 80px 1fr;
+    gap: 0;
+    margin: 16px 0;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    overflow: hidden;
+  }
+
+  .star-label {
+    padding: 12px 14px;
+    background: var(--tag-bg);
+    border-right: 1px solid var(--border);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent2);
+    display: flex;
+    align-items: flex-start;
+  }
+
+  .star-content {
+    padding: 12px 16px;
+    font-size: 13px;
+    color: #c0c0b0;
+    line-height: 1.65;
+  }
+
+  .star-grid > div:not(:last-child) {
+    border-bottom: 1px solid var(--border);
+  }
+
+  /* DEEP DIVE block */
+  .deep-dive {
+    background: rgba(200,240,74,0.04);
+    border: 1px solid var(--tag-border);
+    border-radius: 6px;
+    padding: 14px 16px;
+    margin: 14px 0;
+  }
+
+  .deep-dive .dd-label {
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 8px;
+  }
+
+  .deep-dive p, .deep-dive li {
+    color: #b0b09a;
+    font-size: 12px;
+    margin-bottom: 6px;
+  }
+
+  .deep-dive ul {
+    padding-left: 18px;
+  }
+
+  .mark-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 16px;
+    padding: 7px 14px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    background: none;
+    color: var(--muted);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .mark-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .q-card.answered .mark-btn {
+    border-color: var(--answered-border);
+    color: #3a8a5a;
+  }
+
+  /* SCROLL TO TOP */
+  .back-top {
+    position: fixed;
+    bottom: 28px;
+    right: 28px;
+    width: 38px;
+    height: 38px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--muted);
+    font-size: 16px;
+    transition: all 0.2s;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .back-top.visible {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  .back-top:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  /* DIVIDER */
+  .divider { height: 1px; background: var(--border); margin: 32px 0; }
+
+  @media (max-width: 800px) {
+    .sidebar { display: none; }
+    .main { margin-left: 0; padding: 24px 20px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="shell">
+
+  <!-- SIDEBAR -->
+  <nav class="sidebar">
+    <div class="sidebar-brand">
+      <div class="label">Interview Prep</div>
+      <h1>Agile &amp; Engineering Process</h1>
+      <div class="progress-ring">
+        <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+        <div class="progress-label" id="progressLabel">0 / 10</div>
+      </div>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-section-label">Categories</div>
+      <a class="nav-item active" href="#cat-process" onclick="setActive(this)">
+        ⚙️ Process Fundamentals <span class="nav-count">3</span>
+      </a>
+      <a class="nav-item" href="#cat-debt" onclick="setActive(this)">
+        🧱 Tech Debt &amp; Quality <span class="nav-count">2</span>
+      </a>
+      <a class="nav-item" href="#cat-leadership" onclick="setActive(this)">
+        🎯 Influence &amp; Leadership <span class="nav-count">2</span>
+      </a>
+      <a class="nav-item" href="#cat-scale" onclick="setActive(this)">
+        🔗 Scaled Agile <span class="nav-count">2</span>
+      </a>
+      <a class="nav-item" href="#cat-meta" onclick="setActive(this)">
+        🧠 Principal-Level Meta <span class="nav-count">1</span>
+      </a>
+    </div>
+  </nav>
+
+  <!-- MAIN CONTENT -->
+  <main class="main">
+
+    <div class="page-header">
+      <div class="eyebrow">Principal Engineer · Interview Prep</div>
+      <h2>Agile &amp; <em>Engineering Process</em></h2>
+      <p>10 questions across 5 categories. Includes deep-dive context and STAR-format behavioral answers. Mark each question complete as you practice.</p>
+    </div>
+
+    <!-- ── CATEGORY 1 ── -->
+    <section class="category" id="cat-process">
+      <div class="category-header">
+        <div class="category-icon">⚙️</div>
+        <div class="category-title">Process Fundamentals</div>
+        <div class="category-badge">3 questions</div>
+      </div>
+
+      <!-- Q1 -->
+      <div class="q-card" id="q1">
+        <button class="q-trigger" onclick="toggle('q1')">
+          <div class="q-check" onclick="event.stopPropagation(); markDone('q1')">
+            <svg viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="q-text">How do you keep a team from treating story points as a productivity metric?</div>
+          <div class="q-tag">Concept</div>
+          <div class="q-chevron">▾</div>
+        </button>
+        <div class="q-answer">
+          <div class="answer-block">
+            <div class="deep-dive">
+              <div class="dd-label">Deep Dive</div>
+              <p>Story points measure <strong>complexity and uncertainty</strong>, not output. The moment they're used for performance reviews or cross-team comparisons, the team starts inflating estimates to protect themselves.</p>
+              <p>Better alternatives: <strong>cycle time</strong> (how long a story takes from start to done) and <strong>throughput</strong> (how many stories shipped per week). These are harder to game and more honest for forecasting.</p>
+            </div>
+            <p>Reframe the conversation early. When stakeholders start comparing velocity across teams, push back with flow metrics. Use historical cycle time data to forecast deliveries — it's more accurate and removes the perverse incentive to inflate points.</p>
+            <button class="mark-btn" onclick="markDone('q1')">✓ Mark as practiced</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Q2 -->
+      <div class="q-card" id="q2">
+        <button class="q-trigger" onclick="toggle('q2')">
+          <div class="q-check" onclick="event.stopPropagation(); markDone('q2')">
+            <svg viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="q-text">What's the difference between a team that <em>does</em> Agile and one that <em>is</em> Agile?</div>
+          <div class="q-tag">Concept</div>
+          <div class="q-chevron">▾</div>
+        </button>
+        <div class="q-answer">
+          <div class="answer-block">
+            <div class="deep-dive">
+              <div class="dd-label">Deep Dive — 3 Anti-Patterns That Expose Theater Agile</div>
+              <ul>
+                <li><strong>Velocity as commitment</strong> — treating yesterday's weather as a guarantee.</li>
+                <li><strong>Sprint goals that are just lists</strong> — no unifying objective, just a backlog dump.</li>
+                <li><strong>Retros with no memory</strong> — nothing from last retro is ever referenced again.</li>
+              </ul>
+              <p style="margin-top:8px">A good sprint goal: <em>"Enable customers to complete onboarding without support intervention."</em><br>A bad one: <em>"Complete stories 142, 143, 145, 149."</em></p>
+            </div>
+            <p>A team <strong>doing</strong> Agile follows the ceremonies but doesn't internalize the principles — standups are status reports, retros produce no action items, sprints are two-week waterfalls. A team <strong>being</strong> Agile has psychological safety to surface problems, continuously improves its own process, and treats the sprint as a learning loop.</p>
+            <button class="mark-btn" onclick="markDone('q2')">✓ Mark as practiced</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Q3 -->
+      <div class="q-card" id="q3">
+        <button class="q-trigger" onclick="toggle('q3')">
+          <div class="q-check" onclick="event.stopPropagation(); markDone('q3')">
+            <svg viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="q-text">How do you run a retrospective that actually produces change?</div>
+          <div class="q-tag">Practice</div>
+          <div class="q-chevron">▾</div>
+        </button>
+        <div class="q-answer">
+          <div class="answer-block">
+            <div class="deep-dive">
+              <div class="dd-label">The Three Non-Negotiables</div>
+              <ul>
+                <li><strong>Anonymized input</strong> so people speak honestly, not performatively.</li>
+                <li><strong>Pick two max</strong> — one or two action items, not a laundry list of twelve.</li>
+                <li><strong>Owner + due date</strong> for each item, and reviewed at the top of the next retro.</li>
+              </ul>
+            </div>
+            <p>Without the accountability loop — opening each retro by reviewing last sprint's commitments — retros become venting sessions with no memory. The ritual of saying "we said we'd do X, did we?" is more powerful than any facilitation technique.</p>
+            <button class="mark-btn" onclick="markDone('q3')">✓ Mark as practiced</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── CATEGORY 2 ── -->
+    <section class="category" id="cat-debt">
+      <div class="category-header">
+        <div class="category-icon">🧱</div>
+        <div class="category-title">Tech Debt &amp; Quality</div>
+        <div class="category-badge">2 questions</div>
+      </div>
+
+      <!-- Q4 -->
+      <div class="q-card" id="q4">
+        <button class="q-trigger" onclick="toggle('q4')">
+          <div class="q-check" onclick="event.stopPropagation(); markDone('q4')">
+            <svg viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="q-text">How do you handle tech debt in an agile shop that only cares about features?</div>
+          <div class="q-tag">Concept</div>
+          <div class="q-chevron">▾</div>
+        </button>
+        <div class="q-answer">
+          <div class="answer-block">
+            <div class="deep-dive">
+              <div class="dd-label">The Debt Ledger Model</div>
+              <p>Maintain a living backlog item with <strong>estimated carrying cost per quarter</strong>. Attach numbers: defect escape rate, MTTR, deploy frequency degradation. This gives the PM something concrete to weigh against feature work — and shifts the dynamic from "engineering nagging" to "engineering presenting a trade-off."</p>
+            </div>
+            <p>Treat tech debt like a product concern, not an engineering complaint. Quantify it in business language — slower delivery, higher defect rates, longer onboarding. Negotiate a standing allocation (typically 20%) and make debt work visible in the backlog alongside features. If leadership won't engage, build refactoring into story estimates so it happens implicitly.</p>
+
+            <div class="star-grid">
+              <div class="star-label">Situation</div><div class="star-content">A monolithic order processing service causing 3–4 hours of debugging per incident — near-zero observability.</div>
+              <div class="star-label">Task</div><div class="star-content">Get buy-in for a multi-sprint refactor with no user-visible output.</div>
+              <div class="star-label">Action</div><div class="star-content">Ran a 90-day incident retrospective. Calculated ~15 engineering hours/week lost, framed as $180K/year drag. Proposed a phased strangler-fig refactor tied to an upcoming compliance deadline requiring better audit logging.</div>
+              <div class="star-label">Result</div><div class="star-content">6-week allocation approved. Incidents on that service dropped 70% within two quarters. Compliance deadline hit on time.</div>
+            </div>
+
+            <button class="mark-btn" onclick="markDone('q4')">✓ Mark as practiced</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Q5 -->
+      <div class="q-card" id="q5">
+        <button class="q-trigger" onclick="toggle('q5')">
+          <div class="q-check" onclick="event.stopPropagation(); markDone('q5')">
+            <svg viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="q-text">A sprint is going sideways mid-week. What do you do?</div>
+          <div class="q-tag star">STAR</div>
+          <div class="q-chevron">▾</div>
+        </button>
+        <div class="q-answer">
+          <div class="answer-block">
+            <div class="deep-dive">
+              <div class="dd-label">Early Signal Detection Framework</div>
+              <ul>
+                <li><strong>Day 1–2 of delay:</strong> pair someone on it quietly.</li>
+                <li><strong>Day 3:</strong> raise in standup explicitly, offer to descope.</li>
+                <li><strong>Day 4+:</strong> PM conversation — replan in the open, don't hide it.</li>
+              </ul>
+              <p style="margin-top:6px">Descoping is not failure. Hiding a miss until the sprint review is.</p>
+            </div>
+
+            <div class="star-grid">
+              <div class="star-label">Situation</div><div class="star-content">Two days before sprint end, a payments integration was blocked by undocumented third-party API behavior.</div>
+              <div class="star-label">Task</div><div class="star-content">Decide whether to push toward a likely incomplete delivery or replan.</div>
+              <div class="star-label">Action</div><div class="star-content">Called a 20-minute triage. Assessed that even best-case vendor response meant untested integration. Proposed splitting the story: internal wiring + contract tests this sprint, live endpoint next sprint. Presented to PM as a risk-based decision.</div>
+              <div class="star-label">Result</div><div class="star-content">PM agreed. Fully tested internal implementation shipped on time. Live endpoint delivered cleanly the following sprint with zero incidents.</div>
+            </div>
+
+            <button class="mark-btn" onclick="markDone('q5')">✓ Mark as practiced</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── CATEGORY 3 ── -->
+    <section class="category" id="cat-leadership">
+      <div class="category-header">
+        <div class="category-icon">🎯</div>
+        <div class="category-title">Influence &amp; Leadership</div>
+        <div class="category-badge">2 questions</div>
+      </div>
+
+      <!-- Q6 -->
+      <div class="q-card" id="q6">
+        <button class="q-trigger" onclick="toggle('q6')">
+          <div class="q-check" onclick="event.stopPropagation(); markDone('q6')">
+            <svg viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="q-text">Tell me about a time you inherited a team doing cargo-cult Agile and changed it.</div>
+          <div class="q-tag star">STAR</div>
+          <div class="q-chevron">▾</div>
+        </button>
+        <div class="q-answer">
+          <div class="answer-block">
+            <div class="deep-dive">
+              <div class="dd-label">Cargo-Cult Agile Symptoms</div>
+              <ul>
+                <li>Standups running 20+ minutes — no one's blocking, everyone's reporting.</li>
+                <li>Retros produce 12 action items, zero get closed.</li>
+                <li>Velocity treated as a delivery guarantee by PM and leadership.</li>
+              </ul>
+            </div>
+
+            <div class="star-grid">
+              <div class="star-label">Situation</div><div class="star-content">Joined a team with all ceremonies, zero outcomes. 25-minute standups, retros with untracked action items, velocity used as a commitment.</div>
+              <div class="star-label">Task</div><div class="star-content">Improve process with informal influence only — no direct authority over team operations.</div>
+              <div class="star-label">Action</div><div class="star-content">Started with retros: introduced anonymous input, a strict "pick two" action item rule, and opened each retro by reviewing last sprint's commitments. For standups, modeled the behavior — three-sentence updates, blockers surfaced publicly. Brought cycle time data to planning to challenge velocity as a proxy metric.</div>
+              <div class="star-label">Result</div><div class="star-content">Within 6 weeks, retro items were closing. Standups averaged 12 minutes. Team was primed for flow metrics because they'd seen the data themselves.</div>
+            </div>
+
+            <button class="mark-btn" onclick="markDone('q6')">✓ Mark as practiced</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Q7 -->
+      <div class="q-card" id="q7">
+        <button class="q-trigger" onclick="toggle('q7')">
+          <div class="q-check" onclick="event.stopPropagation(); markDone('q7')">
+            <svg viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="q-text">How do you onboard a senior hire who's used to waterfall?</div>
+          <div class="q-tag">Practice</div>
+          <div class="q-chevron">▾</div>
+        </button>
+        <div class="q-answer">
+          <div class="answer-block">
+            <div class="deep-dive">
+              <div class="dd-label">The Shift That's Actually Hard</div>
+              <p>The move from "big design upfront" to "just enough design" feels uncomfortable — not because people don't understand it intellectually, but because it requires tolerating ambiguity. Acknowledge that discomfort directly. The feedback loops are faster; that's the payoff.</p>
+            </div>
+            <p>Don't lecture on Agile theory. Pair them early, make the <strong>why behind each ceremony explicit</strong>, and give them small wins quickly. Make it safe to ask "why do we do it this way" — the best hires push back productively. The ones who ask why the retro format works are the ones who will eventually improve it.</p>
+            <button class="mark-btn" onclick="markDone('q7')">✓ Mark as practiced</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── CATEGORY 4 ── -->
+    <section class="category" id="cat-scale">
+      <div class="category-header">
+        <div class="category-icon">🔗</div>
+        <div class="category-title">Scaled Agile &amp; Dependencies</div>
+        <div class="category-badge">2 questions</div>
+      </div>
+
+      <!-- Q8 -->
+      <div class="q-card" id="q8">
+        <button class="q-trigger" onclick="toggle('q8')">
+          <div class="q-check" onclick="event.stopPropagation(); markDone('q8')">
+            <svg viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="q-text">How do you manage dependencies between squads in a scaled agile environment?</div>
+          <div class="q-tag">Concept</div>
+          <div class="q-chevron">▾</div>
+        </button>
+        <div class="q-answer">
+          <div class="answer-block">
+            <div class="deep-dive">
+              <div class="dd-label">Key Techniques</div>
+              <ul>
+                <li><strong>Dependency matrix</strong> during PI/quarterly planning — who needs what from whom, by when.</li>
+                <li><strong>Contract-first API design</strong> — publish the interface before implementation so dependent teams can mock and proceed in parallel.</li>
+                <li><strong>Explicit buffer stories</strong> — create a story to validate the integration point early in the sprint, not at the end.</li>
+              </ul>
+            </div>
+            <p>Dependencies are a planning problem before they become a delivery problem. Push for dependency mapping during PI Planning. Advocate for async communication patterns so teams aren't blocked waiting on each other. When dependencies are unavoidable, escalate to the program level early rather than letting one team become another's blocker.</p>
+            <button class="mark-btn" onclick="markDone('q8')">✓ Mark as practiced</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Q9 -->
+      <div class="q-card" id="q9">
+        <button class="q-trigger" onclick="toggle('q9')">
+          <div class="q-check" onclick="event.stopPropagation(); markDone('q9')">
+            <svg viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="q-text">Give me an example of a cross-team dependency that derailed delivery and what you changed.</div>
+          <div class="q-tag star">STAR</div>
+          <div class="q-chevron">▾</div>
+        </button>
+        <div class="q-answer">
+          <div class="answer-block">
+            <div class="star-grid">
+              <div class="star-label">Situation</div><div class="star-content">Building a customer dashboard that depended on a data platform team to expose a new aggregation endpoint. Both teams planned producing and consuming work in the same sprint.</div>
+              <div class="star-label">Task</div><div class="star-content">Data platform team hit schema complications midway. Our UI work was 80% done with nothing to connect to.</div>
+              <div class="star-label">Action</div><div class="star-content">Short-term: built against a mock service so UI work could be reviewed and tested independently. Long-term: facilitated a cross-team retro and established two rules — (1) producing teams must be one sprint ahead of consuming teams, (2) any cross-team dependency requires a signed-off interface contract before either team begins implementation.</div>
+              <div class="star-label">Result</div><div class="star-content">Dashboard shipped one sprint late with full test coverage. "Producer leads by one sprint" became a program-wide standard. Zero mid-sprint cross-team blocks in the following quarter.</div>
+            </div>
+            <button class="mark-btn" onclick="markDone('q9')">✓ Mark as practiced</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── CATEGORY 5 ── -->
+    <section class="category" id="cat-meta">
+      <div class="category-header">
+        <div class="category-icon">🧠</div>
+        <div class="category-title">Principal-Level Meta</div>
+        <div class="category-badge">1 question</div>
+      </div>
+
+      <!-- Q10 -->
+      <div class="q-card" id="q10">
+        <button class="q-trigger" onclick="toggle('q10')">
+          <div class="q-check" onclick="event.stopPropagation(); markDone('q10')">
+            <svg viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="q-text">How do you influence Agile process improvements when you have no formal authority?</div>
+          <div class="q-tag star">STAR</div>
+          <div class="q-chevron">▾</div>
+        </button>
+        <div class="q-answer">
+          <div class="answer-block">
+            <div class="deep-dive">
+              <div class="dd-label">The Through-Line for Principal-Level Answers</div>
+              <p>Always show <strong>systems thinking</strong> (changing the process, not just the output), <strong>influence without authority</strong>, and <strong>quantified outcomes</strong>. If you can't attach a number to the result, find one.</p>
+            </div>
+
+            <div class="star-grid">
+              <div class="star-label">Situation</div><div class="star-content">Definition of Done was inconsistently applied — stories being called complete without integration tests or documentation, causing rework in QA.</div>
+              <div class="star-label">Task</div><div class="star-content">Tighten the DoD without creating the perception of policing the team.</div>
+              <div class="star-label">Action</div><div class="star-content">Rather than proposing a policy, brought data to a retro — tracked 8 stories from the last two sprints that came back from QA and mapped them to missing DoD criteria. The team identified the pattern themselves. Then facilitated a working session where <em>they</em> rewrote the DoD. My role was scribe and occasional question-asker, not author.</div>
+              <div class="star-label">Result</div><div class="star-content">DoD adopted immediately because the team owned it. QA kickbacks dropped 60% in two sprints. Engineers began self-policing — flagging incomplete stories before they hit review.</div>
+            </div>
+
+            <button class="mark-btn" onclick="markDone('q10')">✓ Mark as practiced</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- Back to top -->
+<div class="back-top" id="backTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</div>
+
+<script>
+  const TOTAL = 10;
+
+  function toggle(id) {
+    const card = document.getElementById(id);
+    card.classList.toggle('open');
+  }
+
+  function markDone(id) {
+    const card = document.getElementById(id);
+    card.classList.toggle('answered');
+    updateProgress();
+  }
+
+  function updateProgress() {
+    const done = document.querySelectorAll('.q-card.answered').length;
+    const pct = Math.round((done / TOTAL) * 100);
+    document.getElementById('progressFill').style.width = pct + '%';
+    document.getElementById('progressLabel').textContent = done + ' / ' + TOTAL;
+  }
+
+  function setActive(el) {
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    el.classList.add('active');
+  }
+
+  // Scroll spy
+  const sections = ['cat-process','cat-debt','cat-leadership','cat-scale','cat-meta'];
+  const navLinks = document.querySelectorAll('.nav-item');
+
+  window.addEventListener('scroll', () => {
+    // Back to top
+    document.getElementById('backTop').classList.toggle('visible', window.scrollY > 300);
+
+    // Active nav
+    let current = sections[0];
+    sections.forEach(id => {
+      const el = document.getElementById(id);
+      if (el && el.getBoundingClientRect().top < 120) current = id;
+    });
+    navLinks.forEach(link => {
+      link.classList.toggle('active', link.getAttribute('href') === '#' + current);
+    });
+  });
+</script>
+</body>
+</html>

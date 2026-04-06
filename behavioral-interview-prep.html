@@ -1,0 +1,1369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Behavioral Interview Questions</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,300;0,8..60,400;0,8..60,600;1,8..60,300&family=JetBrains+Mono:wght@400;500&display=swap');
+
+  :root {
+    --bg:        #0f1117;
+    --surface:   #171b26;
+    --card:      #1e2333;
+    --border:    #2a3048;
+    --accent:    #4f9cf9;
+    --accent2:   #a78bfa;
+    --gold:      #f5c842;
+    --green:     #34d399;
+    --red:       #f87171;
+    --purple:    #c084fc;
+    --text:      #e2e8f0;
+    --muted:     #8892a4;
+    --sidebar-w: 300px;
+    --header-h:  56px;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Source Serif 4', Georgia, serif;
+    background: var(--bg);
+    color: var(--text);
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    font-size: 16px;
+    line-height: 1.7;
+  }
+
+  /* ─── TOPBAR ─────────────────────────────────────────── */
+  #topbar {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    height: var(--header-h);
+    background: rgba(15,17,23,0.92);
+    backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    z-index: 200;
+    gap: 16px;
+  }
+
+  #menu-btn {
+    background: none; border: none; cursor: pointer;
+    color: var(--muted); font-size: 20px; padding: 6px;
+    border-radius: 6px; transition: color .2s, background .2s;
+    display: flex; align-items: center;
+  }
+  #menu-btn:hover { color: var(--text); background: var(--border); }
+
+  #topbar-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.05rem;
+    color: var(--text);
+    letter-spacing: .02em;
+    white-space: nowrap;
+  }
+
+  #search-wrap {
+    margin-left: auto;
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+  #search-wrap svg { position: absolute; left: 10px; color: var(--muted); pointer-events:none; }
+  #search {
+    background: var(--card);
+    border: 1px solid var(--border);
+    color: var(--text);
+    border-radius: 8px;
+    padding: 6px 12px 6px 34px;
+    font-size: .85rem;
+    width: 220px;
+    outline: none;
+    transition: border-color .2s, width .3s;
+  }
+  #search:focus { border-color: var(--accent); width: 280px; }
+  #search::placeholder { color: var(--muted); }
+
+  #print-btn {
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 7px;
+    padding: 7px 16px;
+    font-size: .82rem;
+    cursor: pointer;
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: .03em;
+    transition: opacity .2s;
+    white-space: nowrap;
+  }
+  #print-btn:hover { opacity: .85; }
+
+  /* ─── LAYOUT ─────────────────────────────────────────── */
+  #shell {
+    display: flex;
+    margin-top: var(--header-h);
+    min-height: calc(100vh - var(--header-h));
+  }
+
+  /* ─── SIDEBAR ────────────────────────────────────────── */
+  #sidebar {
+    width: var(--sidebar-w);
+    flex-shrink: 0;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    position: fixed;
+    top: var(--header-h);
+    bottom: 0;
+    left: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    transition: transform .3s ease, width .3s ease;
+    z-index: 100;
+    padding-bottom: 40px;
+  }
+  #sidebar.collapsed { transform: translateX(calc(-1 * var(--sidebar-w))); }
+
+  #sidebar::-webkit-scrollbar { width: 5px; }
+  #sidebar::-webkit-scrollbar-track { background: transparent; }
+  #sidebar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+  .sb-header {
+    padding: 20px 16px 12px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: .68rem;
+    color: var(--muted);
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .sb-count {
+    background: var(--accent);
+    color: #fff;
+    border-radius: 100px;
+    padding: 1px 8px;
+    font-size: .65rem;
+  }
+
+  .sb-group { border-bottom: 1px solid var(--border); }
+
+  .sb-cat {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 11px 16px;
+    cursor: pointer;
+    transition: background .15s;
+    user-select: none;
+  }
+  .sb-cat:hover { background: var(--card); }
+  .sb-cat.active { background: rgba(79,156,249,.08); }
+
+  .sb-cat-icon {
+    width: 28px; height: 28px;
+    border-radius: 7px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+
+  .sb-cat-label {
+    flex: 1;
+    font-size: .82rem;
+    font-family: 'Source Serif 4', serif;
+    font-weight: 600;
+    color: var(--text);
+    line-height: 1.3;
+  }
+
+  .sb-cat-arrow {
+    color: var(--muted);
+    transition: transform .2s;
+    font-size: 12px;
+    flex-shrink: 0;
+  }
+  .sb-cat.open .sb-cat-arrow { transform: rotate(90deg); }
+
+  .sb-questions {
+    display: none;
+    padding: 2px 0 6px;
+  }
+  .sb-cat.open + .sb-questions { display: block; }
+
+  .sb-q {
+    display: block;
+    padding: 7px 16px 7px 52px;
+    font-size: .78rem;
+    color: var(--muted);
+    text-decoration: none;
+    line-height: 1.35;
+    transition: color .15s, background .15s;
+    border-left: 2px solid transparent;
+  }
+  .sb-q:hover { color: var(--text); background: rgba(255,255,255,.03); }
+  .sb-q.current { color: var(--accent); border-left-color: var(--accent); background: rgba(79,156,249,.06); }
+  .sb-q-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: .68rem;
+    background: var(--border);
+    border-radius: 4px;
+    padding: 1px 5px;
+    margin-right: 5px;
+    color: var(--muted);
+  }
+
+  /* ─── MAIN CONTENT ───────────────────────────────────── */
+  #main {
+    margin-left: var(--sidebar-w);
+    flex: 1;
+    padding: 48px 56px 80px;
+    max-width: 880px;
+    transition: margin-left .3s;
+  }
+  #main.full { margin-left: 0; }
+
+  /* ─── CATEGORY SECTION ───────────────────────────────── */
+  .cat-section { margin-bottom: 64px; }
+
+  .cat-heading {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 28px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+  }
+  .cat-icon {
+    width: 44px; height: 44px;
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+  }
+  .cat-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.55rem;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: -.01em;
+  }
+  .cat-badge {
+    margin-left: auto;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: .7rem;
+    color: var(--muted);
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 3px 10px;
+    white-space: nowrap;
+  }
+
+  /* ─── QUESTION CARD ──────────────────────────────────── */
+  .q-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    margin-bottom: 20px;
+    overflow: hidden;
+    transition: border-color .2s;
+  }
+  .q-card:hover { border-color: #3a4468; }
+  .q-card.highlight { border-color: var(--accent); }
+
+  .q-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 20px 22px;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .q-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: .72rem;
+    font-weight: 500;
+    background: var(--border);
+    color: var(--accent);
+    border-radius: 6px;
+    padding: 3px 8px;
+    white-space: nowrap;
+    margin-top: 3px;
+    flex-shrink: 0;
+  }
+
+  .q-text {
+    flex: 1;
+    font-size: 1.02rem;
+    font-weight: 600;
+    line-height: 1.45;
+    color: var(--text);
+  }
+
+  .q-toggle {
+    color: var(--muted);
+    font-size: 18px;
+    flex-shrink: 0;
+    transition: transform .3s, color .2s;
+    margin-top: 2px;
+  }
+  .q-card.open .q-toggle { transform: rotate(180deg); color: var(--accent); }
+
+  /* ─── STAR BODY ──────────────────────────────────────── */
+  .q-body {
+    display: none;
+    padding: 0 22px 22px;
+    border-top: 1px solid var(--border);
+  }
+  .q-card.open .q-body { display: block; }
+
+  .star-row {
+    display: grid;
+    grid-template-columns: 110px 1fr;
+    gap: 0;
+    margin-top: 18px;
+  }
+
+  .star-key {
+    padding: 14px 0 14px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: .72rem;
+    font-weight: 500;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+    color: var(--muted);
+  }
+  .star-key .dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    margin-top: 5px;
+    flex-shrink: 0;
+  }
+  .star-key.s .dot { background: var(--accent); }
+  .star-key.t .dot { background: var(--gold); }
+  .star-key.a .dot { background: var(--green); }
+  .star-key.r .dot { background: var(--purple); }
+
+  .star-val {
+    padding: 14px 0 14px 16px;
+    border-left: 2px solid var(--border);
+    font-size: .92rem;
+    line-height: 1.7;
+    color: #c8d0e0;
+  }
+  .star-key.s ~ .star-val { border-left-color: var(--accent); }
+  .star-key.t ~ .star-val { border-left-color: var(--gold); }
+  .star-key.a ~ .star-val { border-left-color: var(--green); }
+  .star-key.r ~ .star-val { border-left-color: var(--purple); }
+
+  /* Pair the grid rows */
+  .star-pair {
+    display: contents;
+  }
+  .star-pair:hover .star-key,
+  .star-pair:hover .star-val {
+    background: rgba(255,255,255,.02);
+  }
+
+  .star-val ul {
+    padding-left: 20px;
+    margin: 4px 0;
+  }
+  .star-val li { margin: 4px 0; }
+
+  .star-val p { margin: 0; }
+
+  /* Result highlight */
+  .q-card .star-val.result {
+    color: var(--text);
+    font-weight: 600;
+  }
+
+  /* ─── EMPTY SEARCH STATE ─────────────────────────────── */
+  #no-results {
+    display: none;
+    text-align: center;
+    padding: 80px 20px;
+    color: var(--muted);
+  }
+  #no-results.show { display: block; }
+  #no-results svg { opacity: .3; margin-bottom: 16px; }
+  #no-results p { font-size: 1rem; }
+
+  /* ─── PROGRESS BAR ───────────────────────────────────── */
+  #progress-bar {
+    position: fixed;
+    top: var(--header-h);
+    left: 0; right: 0;
+    height: 3px;
+    background: transparent;
+    z-index: 300;
+  }
+  #progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    width: 0%;
+    transition: width .1s;
+  }
+
+  /* ─── BACK TO TOP ────────────────────────────────────── */
+  #btt {
+    position: fixed;
+    bottom: 28px; right: 28px;
+    width: 40px; height: 40px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    color: var(--muted);
+    transition: opacity .3s, color .2s, background .2s;
+    opacity: 0;
+    pointer-events: none;
+    z-index: 150;
+  }
+  #btt.show { opacity: 1; pointer-events: auto; }
+  #btt:hover { background: var(--border); color: var(--text); }
+
+  /* ─── CATEGORY COLOR THEMES ──────────────────────────── */
+  .theme-blue  .cat-icon, .theme-blue  .sb-cat-icon  { background: rgba(79,156,249,.15); color: #4f9cf9; }
+  .theme-gold  .cat-icon, .theme-gold  .sb-cat-icon  { background: rgba(245,200,66,.15); color: #f5c842; }
+  .theme-green .cat-icon, .theme-green .sb-cat-icon  { background: rgba(52,211,153,.15); color: #34d399; }
+  .theme-purple .cat-icon, .theme-purple .sb-cat-icon { background: rgba(167,139,250,.15); color: #a78bfa; }
+  .theme-red   .cat-icon, .theme-red   .sb-cat-icon  { background: rgba(248,113,113,.15); color: #f87171; }
+  .theme-teal  .cat-icon, .theme-teal  .sb-cat-icon  { background: rgba(45,212,191,.15); color: #2dd4bf; }
+  .theme-orange .cat-icon, .theme-orange .sb-cat-icon { background: rgba(251,146,60,.15); color: #fb923c; }
+  .theme-pink  .cat-icon, .theme-pink  .sb-cat-icon  { background: rgba(244,114,182,.15); color: #f472b6; }
+
+  /* ─── PRINT ──────────────────────────────────────────── */
+  @media print {
+    #topbar, #sidebar, #btt, #progress-bar { display: none !important; }
+    #main { margin-left: 0 !important; padding: 20px !important; }
+    .q-body { display: block !important; }
+    body { background: #fff; color: #000; }
+    .q-card { border: 1px solid #ddd; page-break-inside: avoid; }
+  }
+
+  /* ─── RESPONSIVE ─────────────────────────────────────── */
+  @media (max-width: 768px) {
+    #sidebar { transform: translateX(calc(-1 * var(--sidebar-w))); }
+    #sidebar.open { transform: translateX(0); }
+    #main { margin-left: 0; padding: 24px 20px 60px; }
+    #search { width: 160px; }
+    #topbar-title { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- PROGRESS BAR -->
+<div id="progress-bar"><div id="progress-fill"></div></div>
+
+<!-- TOPBAR -->
+<header id="topbar">
+  <button id="menu-btn" title="Toggle sidebar">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+      <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+    </svg>
+  </button>
+  <span id="topbar-title">Behavioral Interview Q&amp;A</span>
+  <div id="search-wrap">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+      <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+    </svg>
+    <input id="search" type="text" placeholder="Search questions…" autocomplete="off">
+  </div>
+  <button id="print-btn" onclick="window.print()">⬡ Print / PDF</button>
+</header>
+
+<!-- LAYOUT SHELL -->
+<div id="shell">
+
+<!-- SIDEBAR -->
+<nav id="sidebar">
+  <div class="sb-header">
+    <span>21 Questions</span>
+    <span class="sb-count" id="sb-count">16 Topics</span>
+  </div>
+
+  <!-- Sidebar items injected by JS -->
+  <div id="sb-list"></div>
+</nav>
+
+<!-- MAIN -->
+<main id="main">
+  <div id="no-results">
+    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    <p>No questions match your search.</p>
+  </div>
+
+  <!-- ═══ CATEGORY 1 ═══════════════════════════════════ -->
+  <section class="cat-section theme-blue" data-cat="leadership-influence" id="cat-leadership-influence">
+    <div class="cat-heading">
+      <div class="cat-icon">🎯</div>
+      <h2 class="cat-title">Leadership &amp; Influence</h2>
+      <span class="cat-badge">Q1 – Q2</span>
+    </div>
+
+    <div class="q-card" id="q1" data-q="1">
+      <div class="q-header" onclick="toggleQ(this)">
+        <span class="q-num">Q01</span>
+        <span class="q-text">Tell me about a time when you had to influence a decision without having direct authority over the stakeholders.</span>
+        <span class="q-toggle">▾</span>
+      </div>
+      <div class="q-body">
+        <div class="star-row">
+          <div class="star-key s"><span class="dot"></span>Situation</div>
+          <div class="star-val">At Jenius Bank, we needed to standardize our observability approach across multiple teams, but each team was using different tools (ELK, homegrown solutions). I didn't have direct authority over these delivery teams.</div>
+          <div class="star-key t"><span class="dot"></span>Task</div>
+          <div class="star-val">I needed to gain consensus on adopting Splunk Observability as our enterprise standard without mandating it top-down, which could create resistance.</div>
+          <div class="star-key a"><span class="dot"></span>Action</div>
+          <div class="star-val"><ul>
+            <li>Conducted a thorough vendor evaluation with clear criteria (cost, capabilities, integration, learning curve)</li>
+            <li>Involved representatives from each team in the evaluation process to build ownership</li>
+            <li>Created a reference architecture and proof-of-concept demonstrating how Splunk would solve their specific pain points</li>
+            <li>Developed reusable frameworks that made adoption easier, not harder</li>
+            <li>Presented business value in terms each team cared about — reduced MTTR for ops, better debugging for devs, compliance for security</li>
+          </ul></div>
+          <div class="star-key r"><span class="dot"></span>Result</div>
+          <div class="star-val result">All teams voluntarily adopted the platform within 6 months. Consistent observability across Azure and GCP, reducing MTTR by <strong>40%</strong> and eliminating tool sprawl costing <strong>$200K+</strong> annually.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="q-card" id="q2" data-q="2">
+      <div class="q-header" onclick="toggleQ(this)">
+        <span class="q-num">Q02</span>
+        <span class="q-text">Describe a situation where you had to align multiple cross-functional teams around a complex technical initiative.</span>
+        <span class="q-toggle">▾</span>
+      </div>
+      <div class="q-body">
+        <div class="star-row">
+          <div class="star-key s"><span class="dot"></span>Situation</div>
+          <div class="star-val">At American Express, migrating 100+ Mobile &amp; Web Engineering apps from legacy infrastructure to OpenShift. Involved dev, ops, security, compliance, networking, and database teams — all with different priorities.</div>
+          <div class="star-key t"><span class="dot"></span>Task</div>
+          <div class="star-val">As Lead Architect, create alignment and momentum while addressing each team's concerns without delaying the migration timeline.</div>
+          <div class="star-key a"><span class="dot"></span>Action</div>
+          <div class="star-val"><ul>
+            <li>Developed a "factory-style migration model" with clear phases, entry/exit criteria, and role definitions</li>
+            <li>Created cloud migration accelerators (automated tooling) reducing manual work by 60%</li>
+            <li>Held tailored architecture review sessions — technical deep-dives for engineers, risk assessments for security, cost-benefit for finance</li>
+            <li>Established a weekly steering committee with cross-functional reps to surface blockers early</li>
+            <li>Phased approach where early wins built confidence for skeptical teams</li>
+          </ul></div>
+          <div class="star-key r"><span class="dot"></span>Result</div>
+          <div class="star-val result">Migrated all applications within 18 months — <strong>2 months ahead of schedule</strong>. Accelerators reused across AmEx, migrating <strong>500+ additional apps</strong>. Became the template for future platform migrations.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ CATEGORY 2 ═══════════════════════════════════ -->
+  <section class="cat-section theme-gold" id="cat-problem-solving">
+    <div class="cat-heading">
+      <div class="cat-icon">🔍</div>
+      <h2 class="cat-title">Problem-Solving &amp; Ambiguity</h2>
+      <span class="cat-badge">Q3 – Q4</span>
+    </div>
+
+    <div class="q-card" id="q3" data-q="3">
+      <div class="q-header" onclick="toggleQ(this)">
+        <span class="q-num">Q03</span>
+        <span class="q-text">Tell me about a time when you had to make a critical architectural decision with incomplete information.</span>
+        <span class="q-toggle">▾</span>
+      </div>
+      <div class="q-body">
+        <div class="star-row">
+          <div class="star-key s"><span class="dot"></span>Situation</div>
+          <div class="star-val">At Jenius Bank during initial platform build, we needed to decide on our event-driven architecture approach with limited production data, an evolving roadmap, and pressure to launch quickly.</div>
+          <div class="star-key t"><span class="dot"></span>Task</div>
+          <div class="star-val">Design an enterprise event ingestion platform that would scale with unknowns around event volume, variety, and future use cases.</div>
+          <div class="star-key a"><span class="dot"></span>Action</div>
+          <div class="star-val"><ul>
+            <li>Analyzed comparable digital banks to model potential scale (events/second, growth curves)</li>
+            <li>Designed for optionality — abstraction layers allowing technology swaps if needed</li>
+            <li>Created shared frameworks standardizing event production/consumption, making patterns easier to evolve</li>
+            <li>Implemented feature flags and circuit breakers to mitigate risk during early rollout</li>
+            <li>Established clear metrics to validate assumptions and trigger re-evaluation</li>
+            <li>Documented key assumptions in ADRs so future teams would understand context</li>
+          </ul></div>
+          <div class="star-key r"><span class="dot"></span>Result</div>
+          <div class="star-val result">Platform handled <strong>3× initial volume projections</strong> without re-architecture. New event types for fraud detection integrated in days instead of weeks. Abstraction layers proved valuable when optimizing cost by tiering hot vs. cold event storage.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="q-card" id="q4" data-q="4">
+      <div class="q-header" onclick="toggleQ(this)">
+        <span class="q-num">Q04</span>
+        <span class="q-text">Describe a time when you had to solve a complex performance problem under pressure.</span>
+        <span class="q-toggle">▾</span>
+      </div>
+      <div class="q-body">
+        <div class="star-row">
+          <div class="star-key s"><span class="dot"></span>Situation</div>
+          <div class="star-val">At American Express, high-volume APIs powering AmericanExpress.com started experiencing degraded response times during peak hours. 48 hours before a major marketing campaign that would increase traffic by 40%.</div>
+          <div class="star-key t"><span class="dot"></span>Task</div>
+          <div class="star-val">Identify root cause and implement fixes before the campaign launched without a risky deployment during peak hours.</div>
+          <div class="star-key a"><span class="dot"></span>Action</div>
+          <div class="star-val"><ul>
+            <li>Pulled Real User Metrics (RUM) and distributed tracing — identified database connection pool exhaustion</li>
+            <li>Assembled a war room with database, application, and infrastructure teams</li>
+            <li>Rather than increasing pool size (masking the issue), analyzed query patterns and found N+1 queries in a recently deployed feature</li>
+            <li>Implemented query optimization and introduced caching for hot-path data</li>
+            <li>Created a performance testing framework to simulate campaign load and validate fixes</li>
+            <li>Established canary deployment to roll out fixes incrementally with automated rollback</li>
+          </ul></div>
+          <div class="star-key r"><span class="dot"></span>Result</div>
+          <div class="star-val result">Response times improved by <strong>60%</strong> before campaign. Handled <strong>50% more traffic</strong> than projected with better performance than baseline. Performance testing framework became standard for all future releases.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ CATEGORY 3 ═══════════════════════════════════ -->
+  <section class="cat-section theme-green" id="cat-technical-depth">
+    <div class="cat-heading">
+      <div class="cat-icon">⚙️</div>
+      <h2 class="cat-title">Technical Depth &amp; Innovation</h2>
+      <span class="cat-badge">Q5 – Q6</span>
+    </div>
+
+    <div class="q-card" id="q5" data-q="5">
+      <div class="q-header" onclick="toggleQ(this)">
+        <span class="q-num">Q05</span>
+        <span class="q-text">Tell me about a time when you introduced a new technology or approach that significantly improved outcomes.</span>
+        <span class="q-toggle">▾</span>
+      </div>
+      <div class="q-body">
+        <div class="star-row">
+          <div class="star-key s"><span class="dot"></span>Situation</div>
+          <div class="star-val">At American Express, operational overhead from manual incident response and recurring issues. On-call engineers were firefighting constantly and MTTR was increasing as system complexity grew.</div>
+          <div class="star-key t"><span class="dot"></span>Task</div>
+          <div class="star-val">Shift from reactive to proactive operations, but needed to prove value before getting budget for a major investment.</div>
+          <div class="star-key a"><span class="dot"></span>Action</div>
+          <div class="star-val"><ul>
+            <li>Conceived an ML-based operations platform for anomaly detection, predictive monitoring, and self-healing</li>
+            <li>Started with a POC using existing log data and open-source ML libraries</li>
+            <li>Demonstrated early wins: detecting a memory leak 2 hours before it would have caused an outage</li>
+            <li>Built the business case showing potential reduction in MTTR and on-call burden</li>
+            <li>Architected the full platform once funded, selecting appropriate ML algorithms for different problem types</li>
+            <li>Trained the operations team on interpreting predictions and tuning models</li>
+          </ul></div>
+          <div class="star-key r"><span class="dot"></span>Result</div>
+          <div class="star-val result">Reduced P1 incidents by <strong>35%</strong>. Self-healing resolved <strong>40%</strong> of common issues automatically. On-call burden decreased <strong>50%</strong>. Platform adopted by <strong>5 additional business units</strong>.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="q-card" id="q6" data-q="6">
+      <div class="q-header" onclick="toggleQ(this)">
+        <span class="q-num">Q06</span>
+        <span class="q-text">Describe your approach to evaluating and adopting emerging technologies like Generative AI.</span>
+        <span class="q-toggle">▾</span>
+      </div>
+      <div class="q-body">
+        <div class="star-row">
+          <div class="star-key s"><span class="dot"></span>Situation</div>
+          <div class="star-val">At Jenius Bank, excitement about GenAI but skepticism about real business value vs. hype. Leadership wanted to explore but needed evidence before significant investment.</div>
+          <div class="star-key t"><span class="dot"></span>Task</div>
+          <div class="star-val">As a Google Cloud Certified Generative AI Leader, separate signal from noise and identify high-value use cases specific to digital banking.</div>
+          <div class="star-key a"><span class="dot"></span>Action</div>
+          <div class="star-val"><ul>
+            <li>Studied the technology deeply — completed Google's GenAI certification to understand capabilities and limitations</li>
+            <li>Identified specific pain points (customer service knowledge bases, regulatory doc analysis, code generation)</li>
+            <li>Built RAG-based POCs using Google Gemini, Vertex AI, and PGVectorDB</li>
+            <li>Involved business stakeholders early to validate POCs solved real problems</li>
+            <li>Transparent about limitations, costs, and risks (hallucinations, data privacy)</li>
+            <li>Created a framework for evaluating GenAI use cases: business value, technical feasibility, data availability, risk profile</li>
+          </ul></div>
+          <div class="star-key r"><span class="dot"></span>Result</div>
+          <div class="star-val result">Two POCs moved to production: customer service assistant reduced handle time by <strong>20%</strong>, compliance assistant accelerated policy review by <strong>30%</strong>. Established a GenAI Center of Excellence.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ CATEGORY 4 ═══════════════════════════════════ -->
+  <section class="cat-section theme-purple" id="cat-strategic-thinking">
+    <div class="cat-heading">
+      <div class="cat-icon">♟️</div>
+      <h2 class="cat-title">Strategic Thinking &amp; Business Acumen</h2>
+      <span class="cat-badge">Q7 – Q8</span>
+    </div>
+
+    <div class="q-card" id="q7" data-q="7">
+      <div class="q-header" onclick="toggleQ(this)">
+        <span class="q-num">Q07</span>
+        <span class="q-text">Tell me about a time when you had to balance technical excellence with business constraints like budget or timeline.</span>
+        <span class="q-toggle">▾</span>
+      </div>
+      <div class="q-body">
+        <div class="star-row">
+          <div class="star-key s"><span class="dot"></span>Situation</div>
+          <div class="star-val">At Jenius Bank, needed to implement RPA to eliminate manual processes. Leadership wanted quick ROI, but poorly implemented RPA creates technical debt and maintenance nightmares.</div>
+          <div class="star-key t"><span class="dot"></span>Task</div>
+          <div class="star-val">Deliver business value quickly while establishing sustainable practices that wouldn't create problems later.</div>
+          <div class="star-key a"><span class="dot"></span>Action</div>
+          <div class="star-val"><ul>
+            <li>Led enterprise evaluation and selected UiPath; negotiated a phased licensing approach to control costs</li>
+            <li>Defined governance and standards upfront — code review, error handling, monitoring requirements</li>
+            <li>Prioritized high-value, low-complexity processes first to demonstrate ROI within 90 days</li>
+            <li>Established a Center of Excellence model with trained citizen developers for simple automations</li>
+            <li>Implemented observability for bots (treating them like applications) to measure actual time savings</li>
+            <li>Created reusable components to accelerate future automation development</li>
+          </ul></div>
+          <div class="star-key r"><span class="dot"></span>Result</div>
+          <div class="star-val result">Automated 15 processes in year one, eliminating <strong>2,000+ hours</strong> of manual work monthly. Automation success rate <strong>98%</strong> with minimal maintenance burden. Governance model prevented "bot sprawl."</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="q-card" id="q8" data-q="8">
+      <div class="q-header" onclick="toggleQ(this)">
+        <span class="q-num">Q08</span>
+        <span class="q-text">Describe a situation where you had to say 'no' to a stakeholder request. How did you handle it?</span>
+        <span class="q-toggle">▾</span>
+      </div>
+      <div class="q-body">
+        <div class="star-row">
+          <div class="star-key s"><span class="dot"></span>Situation</div>
+          <div class="star-val">At Jenius Bank, a product team wanted to build a custom data pipeline rather than use our enterprise data architecture framework. They argued our framework was too slow and they needed to move faster.</div>
+          <div class="star-key t"><span class="dot"></span>Task</div>
+          <div class="star-val">Protect architectural integrity without being seen as a blocker to business agility.</div>
+          <div class="star-key a"><span class="dot"></span>Action</div>
+          <div class="star-val"><ul>
+            <li>First understood their actual requirements and timeline, not just their proposed solution</li>
+            <li>Discovered the real pain point was a 2-week wait for new data source integrations</li>
+            <li>Rather than saying no, built a self-service mechanism within the existing framework</li>
+            <li>Showed how their custom approach would create data governance issues, support burden, and security risks</li>
+            <li>Committed to accelerating their specific integration request as a pilot for the new self-service model</li>
+            <li>Involved them in designing the self-service approach so they had ownership</li>
+          </ul></div>
+          <div class="star-key r"><span class="dot"></span>Result</div>
+          <div class="star-val result">Data source integrated in <strong>4 days</strong> instead of 2 weeks using the enterprise framework. Self-service mechanism enabled all teams to integrate new sources in under a week without architect involvement. Product team became advocates.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ CATEGORY 5 ═══════════════════════════════════ -->
+  <section class="cat-section theme-red" id="cat-failure-learning">
+    <div class="cat-heading">
+      <div class="cat-icon">📈</div>
+      <h2 class="cat-title">Handling Failure &amp; Learning</h2>
+      <span class="cat-badge">Q9 – Q10</span>
+    </div>
+
+    <div class="q-card" id="q9" data-q="9">
+      <div class="q-header" onclick="toggleQ(this)">
+        <span class="q-num">Q09</span>
+        <span class="q-text">Tell me about a time when something you architected didn't work as planned. What did you learn?</span>
+        <span class="q-toggle">▾</span>
+      </div>
+      <div class="q-body">
+        <div class="star-row">
+          <div class="star-key s"><span class="dot"></span>Situation</div>
+          <div class="star-val">At American Express, I designed a caching strategy for high-volume APIs that I believed would significantly improve performance. After deployment, we saw minimal improvement and actually increased infrastructure costs.</div>
+          <div class="star-key t"><span class="dot"></span>Task</div>
+          <div class="star-val">Understand why my design didn't deliver expected results and correct course quickly.</div>
+          <div class="star-key a"><span class="dot"></span>Action</div>
+          <div class="star-val"><ul>
+            <li>Immediately pulled back from broader rollout and analyzed production metrics</li>
+            <li>Discovered cache hit rate assumptions were wrong — traffic patterns had more unique requests than modeled from test data</li>
+            <li>Realized I'd optimized for the wrong metric (response time) when the actual bottleneck was database connection management</li>
+            <li>Conducted a blameless post-mortem with the team to understand what we missed</li>
+            <li>Pivoted to connection pooling optimization and query pattern analysis</li>
+            <li>Updated architecture review checklist to validate caching assumptions with production-realistic data patterns</li>
+          </ul></div>
+          <div class="star-key r"><span class="dot"></span>Result</div>
+          <div class="star-val result">Revised approach improved performance by <strong>60%</strong> at lower cost. Learned to validate architectural assumptions with production-realistic data. Now always include observability instrumentation in designs to validate and course-correct quickly.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="q-card" id="q10" data-q="10">
+      <div class="q-header" onclick="toggleQ(this)">
+        <span class="q-num">Q10</span>
+        <span class="q-text">Describe a time when you received critical feedback. How did you respond?</span>
+        <span class="q-toggle">▾</span>
+      </div>
+      <div class="q-body">
+        <div class="star-row">
+          <div class="star-key s"><span class="dot"></span>Situation</div>
+          <div class="star-val">At Jenius Bank, after presenting our observability strategy to executive leadership, the CTO told me my presentation was "too technical" and I'd lost the business executives in the room.</div>
+          <div class="star-key t"><span class="dot"></span>Task</div>
+          <div class="star-val">Improve my ability to communicate technical concepts to non-technical audiences — a crucial skill at the Principal Architect level.</div>
+          <div class="star-key a"><span class="dot"></span>Action</div>
+          <div class="star-val"><ul>
+            <li>Asked for specific examples of where I lost people and what would have been more effective</li>
+            <li>Sought out communication training through Harvard's Leadership Excellence program</li>
+            <li>Practiced the "So What?" test — for every technical detail, asking "why does this matter to the business?"</li>
+            <li>Began creating tiered presentation materials: executive summary with business outcomes, technical details in appendix</li>
+            <li>Started presentations with business problems and customer impact, introducing technical solutions as the "how"</li>
+            <li>Asked trusted colleagues to review presentations and flag when I got too technical</li>
+          </ul></div>
+          <div class="star-key r"><span class="dot"></span>Result</div>
+          <div class="star-val result">Three months later, presented GenAI strategy to the same executive group. The CTO specifically complimented my business focus and clarity. Now routinely present to C-level stakeholders and board members.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ CATEGORY 6 ═══════════════════════════════════ -->
+  <section class="cat-section theme-teal" id="cat-collaboration">
+    <div class="cat-heading">
+      <div class="cat-icon">🤝</div>
+      <h2 class="cat-title">Collaboration &amp; Conflict Resolution</h2>
+      <span class="cat-badge">Q11</span>
+    </div>
+
+    <div class="q-card" id="q11" data-q="11">
+      <div class="q-header" onclick="toggleQ(this)">
+        <span class="q-num">Q11</span>
+        <span class="q-text">Tell me about a time when you had a significant disagreement with another architect or technical leader. How did you resolve it?</span>
+        <span class="q-toggle">▾</span>
+      </div>
+      <div class="q-body">
+        <div class="star-row">
+          <div class="star-key s"><span class="dot"></span>Situation</div>
+          <div class="star-val">At Jenius Bank, I advocated for a unified API management platform on Azure, while our Cloud Architect believed we should use Google Cloud's Apigee since most workloads were on GCP. The disagreement was creating confusion for delivery teams.</div>
+          <div class="star-key t"><span class="dot"></span>Task</div>
+          <div class="star-val">Resolve the disagreement in a way that reached the best technical decision while maintaining our working relationship.</div>
+          <div class="star-key a"><span class="dot"></span>Action</div>
+          <div class="star-val"><ul>
+            <li>Proposed stepping back and clearly defining evaluation criteria before debating solutions</li>
+            <li>Agreed on criteria: cost, operational complexity, multi-cloud support, feature gaps, team learning curve</li>
+            <li>Conducted a structured evaluation together, involving security and operations teams</li>
+            <li>Acknowledged where Apigee was stronger (native GCP integration, analytics)</li>
+            <li>He acknowledged where Azure API Management was stronger (multi-cloud, cost, existing team expertise)</li>
+            <li>Discovered neither solution fit our multi-cloud reality — together proposed a hybrid approach</li>
+          </ul></div>
+          <div class="star-key r"><span class="dot"></span>Result</div>
+          <div class="star-val result">Leadership approved the hybrid approach. Developed a stronger working relationship. Established a pattern of structured evaluation for future architectural decisions, reducing disagreements and improving decision quality organization-wide.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ CATEGORY 7 ═══════════════════════════════════ -->
+  <section class="cat-section theme-blue" id="cat-additional-leadership">
+    <div class="cat-heading">
+      <div class="cat-icon">🏆</div>
+      <h2 class="cat-title">Additional Leadership &amp; Influence</h2>
+      <span class="cat-badge">Q12</span>
+    </div>
+
+    <div class="q-card" id="q12" data-q="12">
+      <div class="q-header" onclick="toggleQ(this)">
+        <span class="q-num">Q12</span>
+        <span class="q-text">Tell me about a time when you had to influence stakeholders to adopt a new technology or strategy.</span>
+        <span class="q-toggle">▾</span>
+      </div>
+      <div class="q-body">
+        <div class="star-row">
+          <div class="star-key s"><span class="dot"></span>Situation</div>
+          <div class="star-val">At Jenius Bank, heavy reliance on multiple SaaS vendors for credit decisioning and fraud verification across product lines, leading to high operational costs and integration complexity.</div>
+          <div class="star-key t"><span class="dot"></span>Task</div>
+          <div class="star-val">Convince executive leadership and SMBC Global Architecture to approve a multi-million dollar investment in building an internalized Credit and Fraud Decisioning Platform.</div>
+          <div class="star-key a"><span class="dot"></span>Action</div>
+          <div class="star-val"><ul>
+            <li>Developed comprehensive C4 architecture models in Ardoq showing current-state pain points and target-state benefits</li>
+            <li>Created a detailed cost-benefit analysis demonstrating 40–50% operational savings</li>
+            <li>Partnered with AI Risk and Model Governance teams to address Fair Lending Act compliance concerns</li>
+            <li>Presented the business case to executive leadership and collaborated with SMBC Global Architecture to secure approvals</li>
+          </ul></div>
+          <div class="star-key r"><span class="dot"></span>Result</div>
+          <div class="star-val result">Secured approval and funding. Unified decisioning platform consolidated services across all lending and savings products, delivered projected <strong>40–50% cost savings</strong>, and positioned for efficient scaling.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ CATEGORY 8 ═══════════════════════════════════ -->
+  <section class="cat-section theme-gold" id="cat-tech-innovation">
+    <div class="cat-heading">
+      <div class="cat-icon">💡</div>
+      <h2 class="cat-title">Problem Solving &amp; Technical Innovation</h2>
+      <span class="cat-badge">Q13</span>
+    </div>
+
+    <div class="q-card" id="q13" data-q="13">
+      <div class="q-header" onclick="toggleQ(this)">
+        <span class="q-num">Q13</span>
+        <span class="q-text">Describe a time when you solved a complex technical problem that had significant business impact.</span>
+        <span class="q-toggle">▾</span>
+      </div>
+      <div class="q-body">
+        <div class="star-row">
+          <div class="star-key s"><span class="dot"></span>Situation</div>
+          <div class="star-val">At Wells Fargo, legacy Credit Card Integration Services (CCBS/CISN) were monolithic, difficult to scale, and created deployment bottlenecks that slowed feature releases and partner integrations.</div>
+          <div class="star-key t"><span class="dot"></span>Task</div>
+          <div class="star-val">Lead the modernization strategy to transform legacy systems into cloud-native platforms while maintaining zero downtime for critical credit card operations serving millions of customers.</div>
+          <div class="star-key a"><span class="dot"></span>Action</div>
+          <div class="star-val"><ul>
+            <li>Defined target-state architecture using domain-driven design principles and architected containerized microservices deployable across multiple cloud providers</li>
+            <li>Designed real-time event-driven integrations using pub/sub patterns for monetary and non-monetary transactions</li>
+            <li>Served as solution lead for co-brand platform initiatives, ensuring seamless onboarding of external partners</li>
+            <li>Created comprehensive migration plans allowing incremental transformation without disrupting existing services</li>
+          </ul></div>
+          <div class="star-key r"><span class="dot"></span>Result</div>
+          <div class="star-val result">Modernized platform to cloud-native architecture, enabling faster feature releases and seamless partner integrations. New event-driven architecture improved system resilience and scalability while supporting digital wallets, mobile apps, and partner applications in real-time.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ CATEGORY 9 ═══════════════════════════════════ -->
+  <section class="cat-section theme-green" id="cat-aiml">
+    <div class="cat-heading">
+      <div class="cat-icon">🧠</div>
+      <h2 class="cat-title">AI/ML &amp; Innovation</h2>
+      <span class="cat-badge">Q14</span>
+    </div>
+
+    <div class="q-card" id="q14" data-q="14">
+      <div class="q-header" onclick="toggleQ(this)">
+        <span class="q-num">Q14</span>
+        <span class="q-text">Tell me about a time when you drove innovation in your organization.</span>
+        <span class="q-toggle">▾</span>
+      </div>
+      <div class="q-body">
+        <div class="star-row">
+          <div class="star-key s"><span class="dot"></span>Situation</div>
+          <div class="star-val">At Jenius Bank, opportunities to leverage AI/ML to improve customer experience during onboarding, but the organization lacked a clear GenAI adoption strategy and had concerns about regulatory compliance.</div>
+          <div class="star-key t"><span class="dot"></span>Task</div>
+          <div class="star-val">Identify high-value AI use cases, build proofs of concept, ensure regulatory compliance, and drive enterprise-wide adoption of both predictive and generative AI.</div>
+          <div class="star-key a"><span class="dot"></span>Action</div>
+          <div class="star-val"><ul>
+            <li>Designed, trained, and deployed predictive ML models on Vertex AI for real-time risk scoring, personalized product recommendations, and proactive dropout prevention</li>
+            <li>Delivered RAG-based POCs using Gemini, Vertex AI, and PGVectorDB to enable AI-driven decisioning and analytics</li>
+            <li>Identified agentic AI opportunities to automate loan operations, pending case workflows, and past-due customer communications</li>
+            <li>Collaborated closely with AI Risk and Model Governance teams to assess risks related to the Fair Lending Act</li>
+          </ul></div>
+          <div class="star-key r"><span class="dot"></span>Result</div>
+          <div class="star-val result">Drove GenAI adoption across multiple platforms. Predictive ML models improved onboarding conversion rates. RAG-based solutions enabled faster, more accurate decisioning. Established a compliant framework for continued AI innovation.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ CATEGORY 10 ═══════════════════════════════════ -->
+  <section class="cat-section theme-teal" id="cat-cross-functional">
+    <div class="cat-heading">
+      <div class="cat-icon">🌐</div>
+      <h2 class="cat-title">Cross-Functional Collaboration</h2>
+      <span class="cat-badge">Q15</span>
+    </div>
+
+    <div class="q-card" id="q15" data-q="15">
+      <div class="q-header" onclick="toggleQ(this)">
+        <span class="q-num">Q15</span>
+        <span class="q-text">Describe a situation where you had to work with multiple teams or departments to achieve a goal.</span>
+        <span class="q-toggle">▾</span>
+      </div>
+      <div class="q-body">
+        <div class="star-row">
+          <div class="star-key s"><span class="dot"></span>Situation</div>
+          <div class="star-val">At Jenius Bank, needed to launch a centralized Communication Hub handling all customer communications across email, SMS, push, and in-app channels. Required coordination across Marketing, Compliance, Legal, Engineering, and Operations.</div>
+          <div class="star-key t"><span class="dot"></span>Task</div>
+          <div class="star-val">Design the architecture for an omnichannel Communication Hub ensuring regulatory compliance, marketing needs, and technical scalability.</div>
+          <div class="star-key a"><span class="dot"></span>Action</div>
+          <div class="star-val"><ul>
+            <li>Collaborated with business teams to understand marketing campaign requirements and customer communication workflows</li>
+            <li>Partnered with Legal and Compliance to ensure all communications met banking regulations and opt-in/opt-out requirements</li>
+            <li>Worked with SMBC Global Architecture to align with enterprise standards and secure vendor approvals</li>
+            <li>Drafted MSAs and SOWs with cross-functional stakeholders</li>
+            <li>Designed a centralized, compliant, and scalable architecture supporting multiple communication channels</li>
+          </ul></div>
+          <div class="star-key r"><span class="dot"></span>Result</div>
+          <div class="star-val result">Delivered a unified Communication Hub enabling compliant, consistent customer messaging across all channels. Supported the bank's launch and ongoing marketing campaigns while meeting all regulatory requirements.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ CATEGORY 11 ═══════════════════════════════════ -->
+  <section class="cat-section theme-red" id="cat-challenges">
+    <div class="cat-heading">
+      <div class="cat-icon">⛰️</div>
+      <h2 class="cat-title">Handling Challenges &amp; Setbacks</h2>
+      <span class="cat-badge">Q16</span>
+    </div>
+
+    <div class="q-card" id="q16" data-q="16">
+      <div class="q-header" onclick="toggleQ(this)">
+        <span class="q-num">Q16</span>
+        <span class="q-text">Tell me about a time when you faced significant technical or organizational challenges. How did you overcome them?</span>
+        <span class="q-toggle">▾</span>
+      </div>
+      <div class="q-body">
+        <div class="star-row">
+          <div class="star-key s"><span class="dot"></span>Situation</div>
+          <div class="star-val">At American Express, needed to migrate legacy .NET receipts services from aging infrastructure to a modern cloud platform. Business-critical with zero tolerance for downtime and limited documentation for the legacy codebase.</div>
+          <div class="star-key t"><span class="dot"></span>Task</div>
+          <div class="star-val">Lead migration to OpenShift while improving scalability and reducing costs without disrupting service to small business cardholders relying on expense tracking and reimbursements.</div>
+          <div class="star-key a"><span class="dot"></span>Action</div>
+          <div class="star-val"><ul>
+            <li>Thoroughly analyzed the legacy codebase and documented the current architecture</li>
+            <li>Designed a phased migration approach allowing incremental moves with rollback capabilities</li>
+            <li>Implemented comprehensive testing strategies including automated tests to ensure feature parity</li>
+            <li>Established DevOps standards for CI/CD, monitoring, and alerting before migration began</li>
+            <li>Worked closely with operations teams to plan the cutover and ensure 24/7 support during transition</li>
+          </ul></div>
+          <div class="star-key r"><span class="dot"></span>Result</div>
+          <div class="star-val result">Migrated all receipts services to OpenShift with <strong>zero downtime</strong>. Improved scalability and resilience while reducing infrastructure and operational costs. New platform better supported growing expense management and digital receipts features.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ CATEGORY 12 ═══════════════════════════════════ -->
+  <section class="cat-section theme-purple" id="cat-strategy-planning">
+    <div class="cat-heading">
+      <div class="cat-icon">🗺️</div>
+      <h2 class="cat-title">Strategic Thinking &amp; Planning</h2>
+      <span class="cat-badge">Q17</span>
+    </div>
+
+    <div class="q-card" id="q17" data-q="17">
+      <div class="q-header" onclick="toggleQ(this)">
+        <span class="q-num">Q17</span>
+        <span class="q-text">Describe a time when you developed a long-term strategy that shaped your organization's direction.</span>
+        <span class="q-toggle">▾</span>
+      </div>
+      <div class="q-body">
+        <div class="star-row">
+          <div class="star-key s"><span class="dot"></span>Situation</div>
+          <div class="star-val">At Jenius Bank while building the digital bank from the ground up, we lacked a cohesive event-driven architecture strategy. Different teams were implementing point-to-point integrations and custom event handling, creating scalability and maintenance challenges.</div>
+          <div class="star-key t"><span class="dot"></span>Task</div>
+          <div class="star-val">Design an enterprise event ingestion platform and establish a long-term event-driven architecture strategy supporting rapid product expansion.</div>
+          <div class="star-key a"><span class="dot"></span>Action</div>
+          <div class="star-val"><ul>
+            <li>Researched industry best practices and emerging patterns in event-driven architectures</li>
+            <li>Designed a centralized event ingestion platform with shared frameworks standardizing how services produce and consume events</li>
+            <li>Created ADRs documenting rationale and standards</li>
+            <li>Defined target-state architecture in Ardoq using C4 models</li>
+            <li>Socialized the strategy with delivery teams and influenced multi-year roadmaps</li>
+            <li>Provided guidance and governance to ensure teams followed established patterns</li>
+          </ul></div>
+          <div class="star-key r"><span class="dot"></span>Result</div>
+          <div class="star-val result">Established enterprise-wide event-driven architecture improving scalability, resilience, and interoperability. Standardized frameworks reduced development time for new integrations and positioned the bank to scale efficiently with new products.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ CATEGORY 13 ═══════════════════════════════════ -->
+  <section class="cat-section theme-orange" id="cat-measuring-success">
+    <div class="cat-heading">
+      <div class="cat-icon">📊</div>
+      <h2 class="cat-title">Measuring Success &amp; Delivering Results</h2>
+      <span class="cat-badge">Q18</span>
+    </div>
+
+    <div class="q-card" id="q18" data-q="18">
+      <div class="q-header" onclick="toggleQ(this)">
+        <span class="q-num">Q18</span>
+        <span class="q-text">Tell me about a time when you delivered measurable improvements to system performance or efficiency.</span>
+        <span class="q-toggle">▾</span>
+      </div>
+      <div class="q-body">
+        <div class="star-row">
+          <div class="star-key s"><span class="dot"></span>Situation</div>
+          <div class="star-val">At American Express, backend APIs supporting expense reporting and reimbursements were experiencing performance issues frustrating small business cardholders and generating support tickets.</div>
+          <div class="star-key t"><span class="dot"></span>Task</div>
+          <div class="star-val">Modernize APIs to improve performance while establishing better DevOps practices for ongoing maintenance and monitoring.</div>
+          <div class="star-key a"><span class="dot"></span>Action</div>
+          <div class="star-val"><ul>
+            <li>Conducted performance profiling to identify bottlenecks in the legacy APIs</li>
+            <li>Redesigned the API architecture with caching strategies, database query optimization, and more efficient data processing</li>
+            <li>Established CI/CD pipelines, monitoring/alerting for proactive issue detection, and test automation to prevent regressions</li>
+            <li>Implemented internationalization support to better serve the global customer base</li>
+          </ul></div>
+          <div class="star-key r"><span class="dot"></span>Result</div>
+          <div class="star-val result">Achieved approximately <strong>70% performance improvement</strong> in API response times. Reduced support tickets related to performance. Established DevOps practices that improved deployment frequency and system reliability.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ CATEGORY 14 ═══════════════════════════════════ -->
+  <section class="cat-section theme-gold" id="cat-governance">
+    <div class="cat-heading">
+      <div class="cat-icon">🛡️</div>
+      <h2 class="cat-title">Governance &amp; Risk Management</h2>
+      <span class="cat-badge">Q19</span>
+    </div>
+
+    <div class="q-card" id="q19" data-q="19">
+      <div class="q-header" onclick="toggleQ(this)">
+        <span class="q-num">Q19</span>
+        <span class="q-text">Describe a time when you had to balance innovation with compliance or regulatory requirements.</span>
+        <span class="q-toggle">▾</span>
+      </div>
+      <div class="q-body">
+        <div class="star-row">
+          <div class="star-key s"><span class="dot"></span>Situation</div>
+          <div class="star-val">At Jenius Bank, wanted to leverage GenAI and predictive ML to improve customer onboarding and operations. As a regulated financial institution, faced strict requirements around Fair Lending Act compliance and AI governance.</div>
+          <div class="star-key t"><span class="dot"></span>Task</div>
+          <div class="star-val">Drive AI innovation while ensuring all solutions met regulatory standards and could pass scrutiny from AI Risk and Model Governance teams.</div>
+          <div class="star-key a"><span class="dot"></span>Action</div>
+          <div class="star-val"><ul>
+            <li>Proactively engaged with AI Risk and Model Governance teams from the beginning to understand compliance requirements</li>
+            <li>Designed all ML models with explainability and fairness in mind, demonstrating compliance with Fair Lending Act</li>
+            <li>Documented all model decisions, training data sources, and validation approaches</li>
+            <li>Worked with governance teams to assess risks for GenAI use cases before implementation</li>
+            <li>Created a framework balancing innovation with appropriate controls and oversight</li>
+          </ul></div>
+          <div class="star-key r"><span class="dot"></span>Result</div>
+          <div class="star-val result">Deployed multiple AI/ML solutions including predictive models for risk scoring with full regulatory compliance. Established a trusted partnership with governance teams enabling faster approval of future AI initiatives. Created a repeatable framework for compliant AI innovation in banking.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ CATEGORY 15 ═══════════════════════════════════ -->
+  <section class="cat-section theme-blue" id="cat-stakeholder">
+    <div class="cat-heading">
+      <div class="cat-icon">👔</div>
+      <h2 class="cat-title">Stakeholder Management</h2>
+      <span class="cat-badge">Q20</span>
+    </div>
+
+    <div class="q-card" id="q20" data-q="20">
+      <div class="q-header" onclick="toggleQ(this)">
+        <span class="q-num">Q20</span>
+        <span class="q-text">Tell me about a time when you had to manage expectations with senior leadership or executive stakeholders.</span>
+        <span class="q-toggle">▾</span>
+      </div>
+      <div class="q-body">
+        <div class="star-row">
+          <div class="star-key s"><span class="dot"></span>Situation</div>
+          <div class="star-val">At Jenius Bank, owning architecture for multiple critical domains (Credit, Fraud, Communication Hub, MarTech), each with different stakeholder groups and competing priorities for the engineering roadmap.</div>
+          <div class="star-key t"><span class="dot"></span>Task</div>
+          <div class="star-val">Influence multi-year technology roadmaps across domains while managing executive expectations about what could be delivered, when, and with what resources.</div>
+          <div class="star-key a"><span class="dot"></span>Action</div>
+          <div class="star-val"><ul>
+            <li>Developed clear current-state and target-state architectures using C4 models in Ardoq for each domain, making complexity visible to non-technical stakeholders</li>
+            <li>Created ADRs documenting key decisions and tradeoffs</li>
+            <li>Regularly presented roadmap proposals to leadership, clearly articulating dependencies, risks, and business value</li>
+            <li>Partnered with delivery teams to ensure realistic timelines and worked with product owners to prioritize by business impact</li>
+            <li>Maintained transparent communication about progress, challenges, and necessary plan adjustments</li>
+          </ul></div>
+          <div class="star-key r"><span class="dot"></span>Result</div>
+          <div class="star-val result">Successfully influenced and aligned multi-year roadmaps across multiple critical domains. Built trusted relationships with executive stakeholders. Guided delivery teams to execute on target architectures while maintaining flexibility for changing business needs.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ CATEGORY 16 ═══════════════════════════════════ -->
+  <section class="cat-section theme-pink" id="cat-mentorship">
+    <div class="cat-heading">
+      <div class="cat-icon">🌱</div>
+      <h2 class="cat-title">Mentorship &amp; Team Development</h2>
+      <span class="cat-badge">Q21</span>
+    </div>
+
+    <div class="q-card" id="q21" data-q="21">
+      <div class="q-header" onclick="toggleQ(this)">
+        <span class="q-num">Q21</span>
+        <span class="q-text">Describe a time when you helped develop or mentor others on your team.</span>
+        <span class="q-toggle">▾</span>
+      </div>
+      <div class="q-body">
+        <div class="star-row">
+          <div class="star-key s"><span class="dot"></span>Situation</div>
+          <div class="star-val">At Jenius Bank, delivery teams had varying levels of experience in cloud-native architecture, event-driven systems, and modern API design patterns.</div>
+          <div class="star-key t"><span class="dot"></span>Task</div>
+          <div class="star-val">Beyond designing the architecture, ensure teams could effectively implement and maintain these systems — requiring knowledge transfer and capability building.</div>
+          <div class="star-key a"><span class="dot"></span>Action</div>
+          <div class="star-val"><ul>
+            <li>Created comprehensive architecture documentation using C4 models and ADRs as learning resources</li>
+            <li>Conducted architecture review sessions with delivery teams to explain rationale behind design decisions</li>
+            <li>Established API governance standards and provided hands-on guidance to teams implementing them</li>
+            <li>Made myself available for technical consultation and code reviews</li>
+            <li>Shared best practices for microservices, event-driven patterns, and cloud-native development through both formal presentations and informal mentoring</li>
+          </ul></div>
+          <div class="star-key r"><span class="dot"></span>Result</div>
+          <div class="star-val result">Delivery teams successfully adopted cloud-native and event-driven architecture patterns. Teams gained confidence in modern architecture approaches, reducing dependencies on me for every decision while maintaining architectural consistency across the platform.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+</div>
+
+<!-- BACK TO TOP -->
+<button id="btt" title="Back to top" onclick="window.scrollTo({top:0,behavior:'smooth'})">
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="18 15 12 9 6 15"/></svg>
+</button>
+
+<script>
+// ─── DATA ──────────────────────────────────────────────────────────────────
+const CATS = [
+  { id: 'cat-leadership-influence', label: 'Leadership & Influence', icon: '🎯', theme: 'blue', qs: [1,2] },
+  { id: 'cat-problem-solving',      label: 'Problem-Solving & Ambiguity', icon: '🔍', theme: 'gold', qs: [3,4] },
+  { id: 'cat-technical-depth',      label: 'Technical Depth & Innovation', icon: '⚙️', theme: 'green', qs: [5,6] },
+  { id: 'cat-strategic-thinking',   label: 'Strategic Thinking & Acumen', icon: '♟️', theme: 'purple', qs: [7,8] },
+  { id: 'cat-failure-learning',     label: 'Handling Failure & Learning', icon: '📈', theme: 'red', qs: [9,10] },
+  { id: 'cat-collaboration',        label: 'Collaboration & Conflict', icon: '🤝', theme: 'teal', qs: [11] },
+  { id: 'cat-additional-leadership',label: 'Additional Leadership', icon: '🏆', theme: 'blue', qs: [12] },
+  { id: 'cat-tech-innovation',      label: 'Problem Solving & Tech Innovation', icon: '💡', theme: 'gold', qs: [13] },
+  { id: 'cat-aiml',                 label: 'AI/ML & Innovation', icon: '🧠', theme: 'green', qs: [14] },
+  { id: 'cat-cross-functional',     label: 'Cross-Functional Collaboration', icon: '🌐', theme: 'teal', qs: [15] },
+  { id: 'cat-challenges',           label: 'Handling Challenges & Setbacks', icon: '⛰️', theme: 'red', qs: [16] },
+  { id: 'cat-strategy-planning',    label: 'Strategic Thinking & Planning', icon: '🗺️', theme: 'purple', qs: [17] },
+  { id: 'cat-measuring-success',    label: 'Measuring Success & Results', icon: '📊', theme: 'orange', qs: [18] },
+  { id: 'cat-governance',           label: 'Governance & Risk Management', icon: '🛡️', theme: 'gold', qs: [19] },
+  { id: 'cat-stakeholder',          label: 'Stakeholder Management', icon: '👔', theme: 'blue', qs: [20] },
+  { id: 'cat-mentorship',           label: 'Mentorship & Team Development', icon: '🌱', theme: 'pink', qs: [21] },
+];
+
+// ─── BUILD SIDEBAR ─────────────────────────────────────────────────────────
+const sbList = document.getElementById('sb-list');
+CATS.forEach(cat => {
+  const group = document.createElement('div');
+  group.className = 'sb-group';
+
+  const catEl = document.createElement('div');
+  catEl.className = `sb-cat theme-${cat.theme}`;
+  catEl.dataset.target = cat.id;
+  catEl.innerHTML = `
+    <div class="sb-cat-icon">${cat.icon}</div>
+    <div class="sb-cat-label">${cat.label}</div>
+    <span class="sb-cat-arrow">›</span>
+  `;
+  catEl.onclick = () => {
+    const isOpen = catEl.classList.contains('open');
+    // close all
+    document.querySelectorAll('.sb-cat').forEach(c => c.classList.remove('open'));
+    if (!isOpen) {
+      catEl.classList.add('open');
+      document.getElementById(cat.id).scrollIntoView({behavior:'smooth', block:'start'});
+    }
+  };
+
+  const qsEl = document.createElement('div');
+  qsEl.className = 'sb-questions';
+  cat.qs.forEach(qn => {
+    const card = document.getElementById('q'+qn);
+    const text = card.querySelector('.q-text').textContent.trim().replace(/^Q\d+:\s*/,'');
+    const link = document.createElement('a');
+    link.className = 'sb-q';
+    link.href = '#q'+qn;
+    link.innerHTML = `<span class="sb-q-num">Q${String(qn).padStart(2,'0')}</span>${text}`;
+    link.onclick = e => {
+      e.preventDefault();
+      document.getElementById('q'+qn).scrollIntoView({behavior:'smooth'});
+      document.querySelectorAll('.sb-q').forEach(l => l.classList.remove('current'));
+      link.classList.add('current');
+    };
+    qsEl.appendChild(link);
+  });
+
+  group.appendChild(catEl);
+  group.appendChild(qsEl);
+  sbList.appendChild(group);
+});
+
+// ─── SIDEBAR TOGGLE ─────────────────────────────────────────────────────────
+const sidebar = document.getElementById('sidebar');
+const main    = document.getElementById('main');
+let sidebarOpen = true;
+
+document.getElementById('menu-btn').onclick = () => {
+  sidebarOpen = !sidebarOpen;
+  if (sidebarOpen) {
+    sidebar.classList.remove('collapsed');
+    main.classList.remove('full');
+  } else {
+    sidebar.classList.add('collapsed');
+    main.classList.add('full');
+  }
+};
+
+// ─── QUESTION TOGGLE ────────────────────────────────────────────────────────
+function toggleQ(header) {
+  const card = header.parentElement;
+  const wasOpen = card.classList.contains('open');
+  card.classList.toggle('open', !wasOpen);
+}
+
+// ─── SEARCH ─────────────────────────────────────────────────────────────────
+const searchEl = document.getElementById('search');
+const noResults = document.getElementById('no-results');
+
+searchEl.addEventListener('input', () => {
+  const q = searchEl.value.toLowerCase().trim();
+  let anyVisible = false;
+
+  document.querySelectorAll('.cat-section').forEach(sec => {
+    let catVisible = false;
+    sec.querySelectorAll('.q-card').forEach(card => {
+      const text = card.textContent.toLowerCase();
+      const match = !q || text.includes(q);
+      card.style.display = match ? '' : 'none';
+      if (match) { catVisible = true; anyVisible = true; }
+      if (match && q) card.classList.add('highlight');
+      else card.classList.remove('highlight');
+    });
+    sec.style.display = catVisible ? '' : 'none';
+  });
+
+  noResults.classList.toggle('show', !anyVisible);
+});
+
+// ─── SCROLL PROGRESS ────────────────────────────────────────────────────────
+const progressFill = document.getElementById('progress-fill');
+const btt = document.getElementById('btt');
+
+window.addEventListener('scroll', () => {
+  const total = document.body.scrollHeight - window.innerHeight;
+  const pct = total > 0 ? (window.scrollY / total) * 100 : 0;
+  progressFill.style.width = pct + '%';
+  btt.classList.toggle('show', window.scrollY > 400);
+
+  // Highlight current sidebar link
+  const scrollY = window.scrollY + 80;
+  document.querySelectorAll('.q-card').forEach(card => {
+    const top = card.offsetTop;
+    const bot = top + card.offsetHeight;
+    const qn = card.id;
+    const link = document.querySelector(`.sb-q[href="#${qn}"]`);
+    if (link) link.classList.toggle('current', scrollY >= top && scrollY < bot);
+  });
+});
+
+// ─── KEYBOARD SHORTCUTS ─────────────────────────────────────────────────────
+document.addEventListener('keydown', e => {
+  if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+    e.preventDefault();
+    searchEl.focus();
+    searchEl.select();
+  }
+  if (e.key === 'Escape') {
+    searchEl.value = '';
+    searchEl.dispatchEvent(new Event('input'));
+    searchEl.blur();
+  }
+});
+</script>
+</body>
+</html>

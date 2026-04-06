@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Security Quiz - Questions & Answers</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+        
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        header h1 {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+        
+        header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+        
+        .content {
+            padding: 30px;
+        }
+        
+        .qa-item {
+            margin-bottom: 30px;
+            border-left: 4px solid #667eea;
+            padding-left: 20px;
+        }
+        
+        .question {
+            font-size: 1.2em;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 15px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .question:hover {
+            color: #667eea;
+        }
+        
+        .question-number {
+            background: #667eea;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9em;
+            flex-shrink: 0;
+        }
+        
+        .answer {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 10px;
+            display: none;
+        }
+        
+        .answer.show {
+            display: block;
+            animation: slideDown 0.3s ease-out;
+        }
+        
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .answer h4 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        
+        .answer p {
+            margin-bottom: 10px;
+            color: #555;
+        }
+        
+        .answer ul, .answer ol {
+            margin-left: 20px;
+            margin-bottom: 10px;
+        }
+        
+        .answer li {
+            margin-bottom: 8px;
+            color: #555;
+        }
+        
+        code {
+            background: #e9ecef;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            color: #d63384;
+        }
+        
+        pre {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 15px;
+            border-radius: 6px;
+            overflow-x: auto;
+            margin: 10px 0;
+        }
+        
+        pre code {
+            background: none;
+            color: #f8f8f2;
+            padding: 0;
+        }
+        
+        .toggle-all {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .toggle-all button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
+            transition: background 0.3s;
+        }
+        
+        .toggle-all button:hover {
+            background: #5568d3;
+        }
+        
+        .example {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 10px 15px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+        
+        .important {
+            background: #f8d7da;
+            border-left: 4px solid #dc3545;
+            padding: 10px 15px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+        
+        strong {
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🔐 API Security Quiz</h1>
+            <p>20 Questions & Answers</p>
+        </header>
+        
+        <div class="content">
+            <div class="toggle-all">
+                <button onclick="toggleAll()">Show/Hide All Answers</button>
+            </div>
+            
+            <div class="qa-item">
+                <div class="question" onclick="toggleAnswer(this)">
+                    <span class="question-number">1</span>
+                    <span>What's the difference between authentication and authorization?</span>
+                </div>
+                <div class="answer">
+                    <p><strong>Authentication</strong> verifies <em>who you are</em> - confirming identity (like showing ID at airport security).</p>
+                    <p><strong>Authorization</strong> determines <em>what you're allowed to do</em> - checking permissions after identity is confirmed (like your boarding pass determining gate access).</p>
+                    <p><strong>Why you need both:</strong> Authentication identifies the user, but doesn't specify permissions. Someone authenticated shouldn't necessarily access all endpoints or data. Together they create secure systems.</p>
+                </div>
+            </div>
+            
+            <div class="qa-item">
+                <div class="question" onclick="toggleAnswer(this)">
+                    <span class="question-number">2</span>
+                    <span>What is an API rate limit and why implement one?</span>
+                </div>
+                <div class="answer">
+                    <p>An <strong>API rate limit</strong> restricts how many requests a client can make within a time window (e.g., 100 requests/minute).</p>
+                    <p><strong>Two key reasons:</strong></p>
+                    <ol>
+                        <li><strong>Prevent abuse and DoS attacks</strong> - Protects from malicious actors or buggy clients overwhelming the service</li>
+                        <li><strong>Resource management and cost control</strong> - Ensures fair usage and prevents single users from consuming disproportionate resources</li>
+                    </ol>
+                </div>
+            </div>
+            
+            <div class="qa-item">
+                <div class="question" onclick="toggleAnswer(this)">
+                    <span class="question-number">3</span>
+                    <span>What vulnerability exists in SQL query string concatenation?</span>
+                </div>
+                <div class="answer">
+                    <p><strong>Vulnerability:</strong> SQL Injection</p>
+                    <div class="example">
+                        <strong>Vulnerable code:</strong>
+                        <pre><code>const query = `SELECT * FROM users WHERE email = '${req.body.email}'`;</code></pre>
+                    </div>
+                    <p>An attacker can inject SQL commands like: <code>admin@example.com' OR '1'='1</code></p>
+                    <p><strong>Fix:</strong> Use parameterized queries:</p>
+                    <pre><code>const query = 'SELECT * FROM users WHERE email = ?';
+db.query(query, [req.body.email]);</code></pre>
+                </div>
+            </div>
+            
+            <div class="qa-item">
+                <div class="question" onclick="toggleAnswer(this)">
+                    <span class="question-number">4</span>
+                    <span>What is CORS and why might it cause errors even with valid API keys?</span>
+                </div>
+                <div class="answer">
+                    <p><strong>CORS (Cross-Origin Resource Sharing)</strong> is a browser security mechanism controlling whether web pages from one domain can request APIs on different domains.</p>
+                    <p><strong>Why CORS errors occur with valid keys:</strong></p>
+                    <p>CORS is a <strong>browser-level</strong> check that happens <em>before</em> authentication. If the API doesn't include proper CORS headers (<code>Access-Control-Allow-Origin</code>), the browser blocks the request before your API key is even checked.</p>
+                    <div class="important">
+                        <strong>Important:</strong> CORS errors only happen in browsers, not server-to-server calls or tools like Postman.
+                    </div>
+                </div>
+            </div>
+            
+            <div class="qa-item">
+                <div class="question" onclick="toggleAnswer(this)">
+                    <span class="question-number">5</span>
+                    <span>What are the differences between API keys, OAuth tokens, and JWTs?</span>
+                </div>
+                <div class="answer">
+                    <p><strong>API Keys:</strong></p>
+                    <ul>
+                        <li>Simple string identifiers for applications</li>
+                        <li>Long-lived, typically don't expire</li>
+                        <li>Use: Machine-to-machine, server-to-server (e.g., Google Maps API)</li>
+                    </ul>
+                    
+                    <p><strong>OAuth Tokens:</strong></p>
+                    <ul>
+                        <li>Obtained through OAuth protocol</li>
+                        <li>Grant delegated access with specific scopes</li>
+                        <li>Short-lived with refresh tokens</li>
+                        <li>Use: Accessing user data from third parties (e.g., "Sign in with Google")</li>
+                    </ul>
+                    
+                    <p><strong>JWTs (JSON Web Tokens):</strong></p>
+                    <ul>
+                        <li>Self-contained, digitally signed tokens</li>
+                        <li>Stateless - contains user info and permissions</li>
+                        <li>Use: Modern authentication in your own APIs, microservices, SSO</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="qa-item">
+                <div class="question" onclick="toggleAnswer(this)">
+                    <span class="question-number">6</span>
+                    <span>What is the principle of least privilege in API security?</span>
+                </div>
+                <div class="answer">
+                    <p>Granting the <strong>minimum level of access necessary</strong> to perform a specific function.</p>
+                    <p><strong>Applications in APIs:</strong></p>
+                    <ul>
+                        <li><strong>Endpoint access:</strong> Regular users shouldn't access admin endpoints</li>
+                        <li><strong>Data scope:</strong> Users only see their own data</li>
+                        <li><strong>API key permissions:</strong> Each key has only needed permissions</li>
+                        <li><strong>Token scopes:</strong> OAuth/JWT tokens include specific scopes</li>
+                        <li><strong>Service accounts:</strong> Backend services get minimal permissions</li>
+                    </ul>
+                    <p><strong>Why it matters:</strong> Limits damage if credentials are compromised.</p>
+                </div>
+            </div>
+            
+            <div class="qa-item">
+                <div class="question" onclick="toggleAnswer(this)">
+                    <span class="question-number">7</span>
+                    <span>What is the OWASP API Security Top 10?</span>
+                </div>
+                <div class="answer">
+                    <p>A list by OWASP identifying the most critical security risks for APIs.</p>
+                    <p><strong>Three critical vulnerabilities:</strong></p>
+                    <ol>
+                        <li><strong>Broken Object Level Authorization (BOLA/IDOR):</strong> API doesn't verify users have permission to access specific objects (e.g., changing user ID in URL to access others' data)</li>
+                        <li><strong>Broken Authentication:</strong> Weak authentication mechanisms, no rate limiting, exposed session tokens, improperly signed JWTs</li>
+                        <li><strong>Excessive Data Exposure:</strong> APIs return more data than necessary, relying on client filtering (e.g., returning password hashes in user objects)</li>
+                    </ol>
+                </div>
+            </div>
+            
+            <div class="qa-item">
+                <div class="question" onclick="toggleAnswer(this)">
+                    <span class="question-number">8</span>
+                    <span>Where should JWTs be stored in browsers and what are the tradeoffs?</span>
+                </div>
+                <div class="answer">
+                    <p><strong>1. localStorage/sessionStorage</strong></p>
+                    <ul>
+                        <li>✅ Easy to implement, persists across refreshes</li>
+                        <li>❌ Vulnerable to XSS attacks</li>
+                    </ul>
+                    
+                    <p><strong>2. Cookies (HttpOnly, Secure, SameSite)</strong></p>
+                    <ul>
+                        <li>✅ Protected from XSS when HttpOnly is set</li>
+                        <li>❌ Vulnerable to CSRF if not properly configured</li>
+                        <li><strong>Best practice when properly configured</strong></li>
+                    </ul>
+                    
+                    <p><strong>3. Memory (JavaScript variable)</strong></p>
+                    <ul>
+                        <li>✅ Most secure against XSS</li>
+                        <li>❌ Poor UX - token lost on refresh</li>
+                    </ul>
+                    
+                    <div class="important">
+                        <strong>Recommended approach:</strong> Store refresh tokens in HttpOnly cookies, keep short-lived access tokens in memory.
+                    </div>
+                </div>
+            </div>
+            
+            <div class="qa-item">
+                <div class="question" onclick="toggleAnswer(this)">
+                    <span class="question-number">9</span>
+                    <span>What is API versioning and why is it important for security?</span>
+                </div>
+                <div class="answer">
+                    <p><strong>API versioning</strong> maintains multiple API versions simultaneously (e.g., <code>/api/v1/users</code> vs <code>/api/v2/users</code>).</p>
+                    <p><strong>Security importance:</strong></p>
+                    <ul>
+                        <li><strong>Deprecating insecure endpoints:</strong> Fix vulnerabilities in v2 while giving clients time to migrate from v1</li>
+                        <li><strong>Enforcing stronger security:</strong> Require stronger auth in newer versions</li>
+                        <li><strong>Removing dangerous features:</strong> Eliminate security risks in new versions</li>
+                        <li><strong>Compliance:</strong> Meet new regulations in v2 while v1 clients transition</li>
+                        <li><strong>Controlled rollout:</strong> Test security improvements before forcing upgrades</li>
+                    </ul>
+                    <div class="important">
+                        <strong>Important:</strong> Old versions need deprecation strategies - they can't live forever as permanent attack vectors.
+                    </div>
+                </div>
+            </div>
+            
+            <div class="qa-item">
+                <div class="question" onclick="toggleAnswer(this)">
+                    <span class="question-number">10</span>
+                    <span>What's the difference between encryption in transit and at rest? What does HTTPS provide?</span>
+                </div>
+                <div class="answer">
+                    <p><strong>Encryption in transit:</strong> Protects data while moving between systems (traveling over networks).</p>
+                    <p><strong>Encryption at rest:</strong> Protects data while stored on disk, databases, or backups.</p>
+                    
+                    <div class="important">
+                        <strong>HTTPS provides encryption in transit ONLY.</strong>
+                    </div>
+                    
+                    <p><strong>What HTTPS protects against:</strong></p>
+                    <ul>
+                        <li>Man-in-the-middle attacks</li>
+                        <li>Network sniffing</li>
+                        <li>ISPs seeing request/response content</li>
+                    </ul>
+                    
+                    <p><strong>What HTTPS does NOT protect:</strong></p>
+                    <ul>
+                        <li>Data stored in databases</li>
+                        <li>Data in server logs</li>
+                        <li>Data in backups</li>
+                        <li>Data accessible with direct server access</li>
+                    </ul>
+                    
+                    <p><strong>Why both are needed:</strong> Complete security requires protecting data both during transmission and storage.</p>
+                </div>
+            </div>
+            
+            <div class="qa-item">
+                <div class="question" onclick="toggleAnswer(this)">
+                    <span class="question-number">11</span>
+                    <span>What is a replay attack and how can you prevent it?</span>
+                </div>
+                <div class="answer">
+                    <p>A <strong>replay attack</strong> occurs when an attacker intercepts a valid API request and re-sends it later to perform unauthorized actions.</p>
+                    
+                    <p><strong>Two prevention techniques:</strong></p>
+                    
+                    <p><strong>1. Nonces (Number Used Once)</strong></p>
+                    <ul>
+                        <li>Include unique, one-time-use token with each request</li>
+                        <li>Server tracks used nonces and rejects duplicates</li>
+                        <li>Nonces expire after short time window</li>
+                    </ul>
+                    
+                    <p><strong>2. Timestamps with short expiration</strong></p>
+                    <ul>
+                        <li>Include timestamp in each request</li>
+                        <li>Server rejects requests outside acceptable window (e.g., 60 seconds)</li>
+                        <li>Often part of JWT or request signature</li>
+                    </ul>
+                    
+                    <p><strong>Bonus:</strong> Request signing with timestamps combines both approaches.</p>
+                </div>
+            </div>
+            
+            <div class="qa-item">
+                <div class="question" onclick="toggleAnswer(this)">
+                    <span class="question-number">12</span>
+                    <span>What's the difference between symmetric and asymmetric encryption for JWTs?</span>
+                </div>
+                <div class="answer">
+                    <p><strong>Symmetric encryption:</strong></p>
+                    <ul>
+                        <li>Same key for encryption and decryption</li>
+                        <li>Faster and more efficient</li>
+                        <li>Examples: AES, DES</li>
+                    </ul>
+                    
+                    <p><strong>Asymmetric encryption:</strong></p>
+                    <ul>
+                        <li>Key pair: public key and private key</li>
+                        <li>Slower, more computationally expensive</li>
+                        <li>Examples: RSA, ECDSA</li>
+                    </ul>
+                    
+                    <p><strong>For signing JWTs:</strong></p>
+                    
+                    <p><strong>Symmetric (HMAC - HS256):</strong></p>
+                    <ul>
+                        <li>Shared secret signs and verifies</li>
+                        <li>Use when: Your servers both create and verify tokens</li>
+                    </ul>
+                    
+                    <p><strong>Asymmetric (RS256, ES256):</strong></p>
+                    <ul>
+                        <li>Private key signs, public key verifies</li>
+                        <li>Use when: Multiple services verify tokens or third parties need verification</li>
+                    </ul>
+                    
+                    <div class="important">
+                        <strong>Best practice:</strong> Asymmetric is preferred for production, especially in microservices.
+                    </div>
+                </div>
+            </div>
+            
+            <div class="qa-item">
+                <div class="question" onclick="toggleAnswer(this)">
+                    <span class="question-number">13</span>
+                    <span>Why validate input even when using parameterized queries?</span>
+                </div>
+                <div class="answer">
+                    <p>Parameterized queries prevent SQL injection but don't protect against:</p>
+                    
+                    <p><strong>1. Business logic vulnerabilities</strong></p>
+                    <ul>
+                        <li>Negative quantities in orders</li>
+                        <li>Invalid ages or future birthdates</li>
+                    </ul>
+                    
+                    <p><strong>2. Other injection attacks</strong></p>
+                    <ul>
+                        <li>NoSQL injection (MongoDB)</li>
+                        <li>Command injection</li>
+                        <li>XSS when data is displayed</li>
+                        <li>LDAP, XML injection</li>
+                    </ul>
+                    
+                    <p><strong>3. Application crashes</strong></p>
+                    <ul>
+                        <li>Type mismatches causing errors</li>
+                        <li>Extremely long strings causing DoS</li>
+                    </ul>
+                    
+                    <p><strong>4. Data integrity issues</strong></p>
+                    <ul>
+                        <li>Garbage data in database</li>
+                        <li>Invalid formats breaking functionality</li>
+                    </ul>
+                    
+                    <div class="important">
+                        <strong>Defense in depth:</strong> Input validation and parameterized queries work together as complementary layers.
+                    </div>
+                </div>
+            </div>
+            
+            <div class="qa-item">
+                <div class="question" onclick="toggleAnswer(this)">
+                    <span class="question-number">14</span>
+                    <span>What's the difference between whitelist and blacklist validation?</span>
+                </div>
+                <div class="answer">
+                    <p><strong>Whitelist (Allow-list):</strong></p>
+                    <ul>
+                        <li>Define what IS allowed, reject everything else</li>
+                        <li>Default: REJECT</li>
+                        <li>Example: "Username must be alphanumeric, 3-20 chars"</li>
+                    </ul>
+                    
+                    <p><strong>Blacklist (Deny-list):</strong></p>
+                    <ul>
+                        <li>Define what is NOT allowed, accept everything else</li>
+                        <li>Default: ACCEPT</li>
+                        <li>Example: "Reject if contains &lt;script&gt;"</li>
+                    </ul>
+                    
+                    <div class="important">
+                        <strong>Whitelist is MUCH more secure</strong>
+                    </div>
+                    
+                    <p><strong>Why whitelisting is better:</strong></p>
+                    <ol>
+                        <li><strong>Attackers are creative</strong> - Can't anticipate every attack</li>
+                        <li><strong>Bypass techniques</strong> - Encoding, obfuscation, variations</li>
+                        <li><strong>Incomplete coverage</strong> - Impossible to list all bad inputs</li>
+                        <li><strong>Maintenance burden</strong> - Requires constant updates</li>
+                    </ol>
+                    
+                    <div class="example">
+                        <strong>Example:</strong>
+                        <pre><code>// WEAK - Blacklist
+if (username.includes('<') || username.includes('script')) reject();
+
+// STRONG - Whitelist  
+if (!/^[a-zA-Z0-9_]{3,20}$/.test(username)) reject();</code></pre>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="qa-item">
+                <div class="question" onclick="toggleAnswer(this)">
+                    <span class="question-number">15</span>
+                    <span>How does "never trust user input" extend beyond the request body?</span>
+                </div>
+                <div class="answer">
+                    <p>User input isn't just <code>req.body</code> - attackers can manipulate:</p>
+                    
+                    <p><strong>1. URL parameters and query strings</strong></p>
+                    <pre><code>GET /api/users?id=123
+GET /api/search?q=&lt;script&gt;alert(1)&lt;/script&gt;</code></pre>
+                    
+                    <p><strong>2. HTTP headers</strong></p>
+                    <ul>
+                        <li>User-Agent, Referer, X-Forwarded-For can be forged</li>
+                        <li>Content-Type manipulation</li>
+                        <li>Custom headers like X-API-Key</li>
+                    </ul>
+                    
+                    <p><strong>3. Cookies</strong></p>
+                    <ul>
+                        <li>Can be modified in browser</li>
+                        <li>Never trust without validation</li>
+                    </ul>
+                    
+                    <p><strong>4. File uploads</strong></p>
+                    <ul>
+                        <li>File names: <code>../../../etc/passwd</code></li>
+                        <li>MIME types can be spoofed</li>
+                        <li>Malicious file content</li>
+                    </ul>
+                    
+                    <p><strong>5. URL paths</strong></p>
+                    <ul>
+                        <li>Path traversal: <code>/api/users/../../admin/delete</code></li>
+                    </ul>
+                    
+                    <p><strong>6. Authentication tokens</strong></p>
+                    <ul>
+                        <li>JWTs, OAuth tokens must be validated</li>
+                    </ul>
+                    
+                    <div class="important">
+                        <strong>Key principle:</strong> If it crosses the trust boundary (comes from outside), validate it.
+                    </div>
+                </div>
+            </div>
+            
+            <div class="qa-item">
+                <div class="question" onclick="toggleAnswer(this)">
+                    <span class="question-number">16</span>
+                    <span>What is SSRF and how does it affect APIs accepting URLs?</span>
+                </div>
+                <div class="answer">
+                    <p><strong>SSRF (Server-Side Request Forgery)</strong> tricks your server into making HTTP requests to unintended locations.</p>
+                    
+                    <p><strong>Vulnerable scenarios:</strong></p>
+                    <ul>
+                        <li>Webhook functionality accepting user URLs</li>
+                        <li>Image/avatar fetching from URLs</li>
+                        <li>PDF generation or screenshot services</li>
+                    </ul>
+                    
+                    <p><strong>What attackers can do:</strong></p>
+                    <ol>
+                        <li><strong>Access cloud metadata:</strong> AWS <code>http://169.254.169.254/latest/meta-data/</code> to steal credentials</li>
+                        <li><strong>Port scan internal network:</strong> <code>http://192.168.1.1:22</code></li>
+                        <li><strong>Access internal services:</strong> <code>http://localhost:6379</code> (Redis)</li>
+                        <li><strong>Read local files:</strong> <code>file:///etc/passwd</code></li>
+                    </ol>
+                    
+                    <p><strong>Prevention:</strong></p>
+                    <ul>
+                        <li>Whitelist allowed domains/protocols</li>
+                        <li>Block private IP ranges and metadata services</li>
+                        <li>Disable unnecessary protocols (file://, gopher://)</li>
+                        <li>Use separate network segments</li>
+                        <li>Validate and sanitize URLs</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="qa-item">
+                <div class="question" onclick="toggleAnswer(this)">
+                    <span class="question-number">17</span>
+                    <span>What is API key rotation and why is it important?</span>
+                </div>
+                <div class="answer">
+                    <p><strong>API key rotation</strong> is periodically replacing API keys with new ones, retiring old keys after a transition period.</p>
+                    
+                    <p><strong>Why it's important:</strong></p>
+                    <ol>
+                        <li><strong>Limits exposure window:</strong> Leaked keys from months ago become invalid with rotation</li>
+                        <li><strong>Compartmentalizes breach impact:</strong> Know timeframe of potential unauthorized access</li>
+                        <li><strong>Removes forgotten keys:</strong> Old integrations and employee keys get cleaned up</li>
+                        <li><strong>Compliance requirements:</strong> PCI-DSS, SOC 2, HIPAA require credential rotation</li>
+                        <li><strong>Reduces logging risk:</strong> Accidentally logged keys have limited validity</li>
+                    </ol>
+                    
+                    <p><strong>Best practices:</strong></p>
+                    <ul>
+                        <li><strong>Overlapping validity:</strong> Generate new key → both valid during transition → revoke old</li>
+                        <li><strong>Automated rotation:</strong> Use short-lived tokens with auto-rotation</li>
+                        <li><strong>Communication:</strong> Give consumers advance notice</li>
+                        <li><strong>Monitor usage:</strong> Track which key is being used</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="qa-item">
+                <div class="question" onclick="toggleAnswer(this)">
+                    <span class="question-number">18</span>
+                    <span>What's the difference between horizontal and vertical privilege escalation?</span>
+                </div>
+                <div class="answer">
+                    <p><strong>Horizontal Privilege Escalation:</strong></p>
+                    <ul>
+                        <li>Accessing resources of <strong>another user at same privilege level</strong></li>
+                        <li>Example: User A accesses User B's orders</li>
+                        <li>Related to: Broken Object Level Authorization (BOLA/IDOR)</li>
+                    </ul>
+                    <div class="example">
+                        <pre><code>// User 123 changes ID to access User 456's data
+GET /api/users/456/orders</code></pre>
+                    </div>
+                    
+                    <p><strong>Vertical Privilege Escalation:</strong></p>
+                    <ul>
+                        <li>Gaining <strong>higher-level permissions</strong> than you should have</li>
+                        <li>Example: Regular user accesses admin functionality</li>
+                        <li>Related to: Broken Function Level Authorization</li>
+                    </ul>
+                    <div class="example">
+                        <pre><code>// Regular user calls admin endpoint
+DELETE /api/admin/users/456</code></pre>
+                    </div>
+                    
+                    <p><strong>Key difference:</strong></p>
+                    <ul>
+                        <li>Horizontal = Same level, wrong user</li>
+                        <li>Vertical = Higher level, wrong role</li>
+                    </ul>
+                    
+                    <p><strong>Prevention:</strong></p>
+                    <pre><code>// Prevent Horizontal - check ownership
+if (order.userId !== authenticatedUser.id) return 403;
+
+// Prevent Vertical - check role
+if (!authenticatedUser.roles.includes('admin')) return 403;</code></pre>
+                </div>
+            </div>
+            
+            <div class="qa-item">
+                <div class="question" onclick="toggleAnswer(this)">
+                    <span class="question-number">19</span>
+                    <span>What is a timing attack and how is it exploited in authentication?</span>
+                </div>
+                <div class="answer">
+                    <p>A <strong>timing attack</strong> exploits differences in response times to extract sensitive information.</p>
+                    
+                    <p><strong>How it works in authentication:</strong></p>
+                    <p>String comparisons often stop at first mismatch, creating timing differences:</p>
+                    <ul>
+                        <li><code>"aaaaaaaaa"</code> fails immediately → ~1ms</li>
+                        <li><code>"saaaaaaaa"</code> fails on 2nd char → ~2ms</li>
+                        <li><code>"seaaaaaa"</code> fails on 3rd char → ~3ms</li>
+                        <li><code>"secret123key"</code> all match → ~12ms</li>
+                    </ul>
+                    
+                    <p>Attackers measure response times to build the correct key character by character.</p>
+                    
+                    <p><strong>Other scenarios:</strong></p>
+                    <ul>
+                        <li>Username enumeration (existing user takes longer)</li>
+                        <li>Password reset token validation</li>
+                        <li>Account existence checks</li>
+                    </ul>
+                    
+                    <p><strong>Prevention:</strong></p>
+                    <ol>
+                        <li><strong>Constant-time comparison:</strong>
+                            <pre><code>const crypto = require('crypto');
+crypto.timingSafeEqual(validKey, providedKey);</code></pre>
+                        </li>
+                        <li><strong>Artificial delays:</strong> Always take minimum time to respond</li>
+                        <li><strong>Consistent processing:</strong> Hash password even if username doesn't exist</li>
+                        <li><strong>Rate limiting:</strong> Makes collecting timing samples impractical</li>
+                    </ol>
+                </div>
+            </div>
+            
+            <div class="qa-item">
+                <div class="question" onclick="toggleAnswer(this)">
+                    <span class="question-number">20</span>
+                    <span>What's the difference between identification, authentication, and authorization?</span>
+                </div>
+                <div class="answer">
+                    <p><strong>1. Identification</strong> - <em>Who are you claiming to be?</em></p>
+                    <ul>
+                        <li>User asserts their identity (username, email, user ID)</li>
+                        <li>No proof yet - just a claim</li>
+                    </ul>
+                    
+                    <p><strong>2. Authentication</strong> - <em>Can you prove it?</em></p>
+                    <ul>
+                        <li>Verifying the identity claim is legitimate</li>
+                        <li>Provides credentials: password, API key, JWT</li>
+                    </ul>
+                    
+                    <p><strong>3. Authorization</strong> - <em>What are you allowed to do?</em></p>
+                    <ul>
+                        <li>Determining permissions/access rights</li>
+                        <li>Happens AFTER authentication</li>
+                        <li>Checks roles, permissions, resource ownership</li>
+                    </ul>
+                    
+                    <div class="example">
+                        <strong>Typical flow:</strong>
+                        <pre><code>GET /api/orders/789
+Header: Authorization: Bearer eyJhbGc...
+
+1. IDENTIFICATION: Token claims user_id: 123
+2. AUTHENTICATION: Validate token signature & expiration  
+3. AUTHORIZATION: Does user 123 own order 789?
+   → Order belongs to user 456
+   → Return 403 Forbidden</code></pre>
+                    </div>
+                    
+                    <p><strong>Always in this order:</strong> Identification → Authentication → Authorization</p>
+                    
+                    <div class="important">
+                        <strong>Common confusion:</strong>
+                        <ul>
+                            <li>401 Unauthorized = authentication failed</li>
+                            <li>403 Forbidden = authorization failed</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+    
+    <script>
+        function toggleAnswer(element) {
+            const answer = element.nextElementSibling;
+            answer.classList.toggle('show');
+        }
+        
+        let allShown = false;
+        function toggleAll() {
+            const answers = document.querySelectorAll('.answer');
+            allShown = !allShown;
+            answers.forEach(answer => {
+                if (allShown) {
+                    answer.classList.add('show');
+                } else {
+                    answer.classList.remove('show');
+                }
+            });
+        }
+    </script>
+</body>
+</html>
